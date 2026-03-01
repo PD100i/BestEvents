@@ -1,0 +1,6 @@
+@BestEvents_HostAddress = http://localhost:5038
+
+GET {{BestEvents_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

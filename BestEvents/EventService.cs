@@ -5,45 +5,54 @@ namespace BestEvents
 {
     public class EventService : IEventService
     {
-        readonly List<Event> events = [];
+        readonly EventRepository repository;
 
-        public void AddEvent(string title, string descriptor, DateTime startAt, DateTime endAt)
+        public EventService(EventRepository repository)
         {
-            events.Add(new Event(title, descriptor, startAt, endAt));
+            this.repository = repository;
         }
 
-        public void DeleteEvent(int id)
+        public void CreateEvent(EventDto _event)
         {
-            Event? _event = FindEvent(id) ?? throw new NotFoundException();
-            events.Remove(_event);
+            repository.CreateEvent(_event.Title, _event.Description, _event.StartAt, _event.EndAt);
         }
 
-        public Event GetEvent(int id)
+        public void DeleteEvent(string id)
         {
-            return FindEvent(id) ?? throw new NotFoundException();
+            repository.RemoveEvent(GuidFromString(id));
         }
 
-        public List<Event> GetEvents()
+        public EventDtoExtended GetEvent(string id)
         {
-            return events;
+            return GetDtoFromEvent(repository.GetEvent(GuidFromString(id)));
         }
 
-        public void ReplaceEvent(Event _event)
+        public List<EventDtoExtended> GetEvents()
         {
-            int index = FindEventIndex(_event.Id);
-            if (index == -1)
-                throw new NotFoundException();
-            events[index] = _event;
+            List<EventDtoExtended> dto = [];
+            repository.GetAll().ForEach(i => dto.Add(GetDtoFromEvent(i))) ;
+            return dto;
         }
 
-        private Event? FindEvent(int id)
+        public void ReplaceEvent(EventDtoExtended _event)
         {
-            return events.Find(e => e.Id.GetHashCode() == id);
+            repository.ReplaceEvent(GetEventFromDto(_event));
         }
 
-        private int FindEventIndex(Guid id)
+        private EventDtoExtended GetDtoFromEvent (Event _event)
         {
-            return events.FindIndex(e => e.Equals(id));
+            return new EventDtoExtended(_event.Id.ToString(), _event.Title,  _event.StartAt, _event.EndAt, _event.Description);
+        }
+
+        private Event GetEventFromDto(EventDtoExtended _event)
+        {
+            return new Event(GuidFromString(_event.id), _event.Title, _event.StartAt, _event.EndAt, _event.Description);
+        }
+        private Guid GuidFromString(string id)
+        {
+            if (Guid.TryParse(id, out var _id))
+                return _id;
+            throw new ArgumentException("Неверный формат параметра id");
         }
     }
 }

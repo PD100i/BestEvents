@@ -4,7 +4,7 @@ namespace BestEvents
 {
     public class Event
     {
-        public Event(Guid id, string title, string Descriptor, DateTime startAt, DateTime endAt)
+        public Event(Guid id, string title, DateTime startAt, DateTime endAt, string description = "")
         {
             Id = id;
             Title = title;
@@ -12,6 +12,7 @@ namespace BestEvents
                 throw new ArgumentException("Завершение мероприятия не может быть позже его начала. Скорректируйте даты");
             StartAt = startAt;
             EndAt = endAt;
+            Description = description;
         }
 
         [Required(ErrorMessage = "Не задан Id")]

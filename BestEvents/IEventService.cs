@@ -2,14 +2,14 @@
 {
     public interface IEventService
     {
-        List<Event> GetEvents();
+        List<EventDtoExtended> GetEvents();
 
-        Event GetEvent(int id);
+        EventDtoExtended GetEvent(string id);
 
-        void CreateEvent(string title, string descriptor, DateTime startAt, DateTime endAt);
+        void CreateEvent(EventDto _event);
 
-        void ReplaceEvent(Event @event);
+        void ReplaceEvent(EventDtoExtended _event);
 
-        void DeleteEvent(int id);
+        void DeleteEvent(string id);
     }
 }

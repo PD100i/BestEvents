@@ -1,51 +1,38 @@
 ﻿
 using BestEvents.Exceptions;
+using System.Collections.Concurrent;
+using System.Reflection.Metadata.Ecma335;
 
 namespace BestEvents
 {
     public class EventRepository : IEventsRepository
     {
-        static readonly List<Event> events = [];
+        static readonly ConcurrentDictionary<Guid, Event> events = new();
 
-        public void AddEvent(Event _event)
+        public void CreateEvent(string title, string desctiption, DateTime startAt, DateTime endAt)
         {
-            events.Add(_event);
+            Guid id = Guid.NewGuid();
+            events.TryAdd(id, new Event(id, title, startAt, endAt, desctiption));
         }
 
         public void RemoveEvent(Guid id)
         {
-            Event? _event = FindEvent(id) ?? throw new NotFoundException();
-            events.Remove(_event);
+            events.TryRemove(id, out _);
         }
 
         public Event GetEvent(Guid id)
         {
-            return FindEvent(id) ?? throw new NotFoundException();
+            return events[id];
         }
 
         public List<Event> GetAll()
         {
-            return events;
+            return [..events.Values];
         }
 
         public void ReplaceEvent(Event _event)
         {
-            int index = FindEventIndex(_event.Id);
-            if (index == -1)
-                throw new NotFoundException();
-            events[index] = _event;
-        }
-
-        private Event? FindEvent(Guid id)
-        {
-            return events.Find(e => e.Equals(id));
-        }
-
-        private int FindEventIndex(Guid id)
-        {
-            return events.FindIndex(e => e.Equals(id));
-        }
-
-        
+            events[_event.Id] = _event;
+        }        
     }
 }

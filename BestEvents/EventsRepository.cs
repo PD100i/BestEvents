@@ -3,27 +3,27 @@ using BestEvents.Exceptions;
 
 namespace BestEvents
 {
-    public class EventService : IEventService
+    public class EventRepository : IEventsRepository
     {
-        readonly List<Event> events = [];
+        static readonly List<Event> events = [];
 
-        public void AddEvent(string title, string descriptor, DateTime startAt, DateTime endAt)
+        public void AddEvent(Event _event)
         {
-            events.Add(new Event(title, descriptor, startAt, endAt));
+            events.Add(_event);
         }
 
-        public void DeleteEvent(int id)
+        public void RemoveEvent(Guid id)
         {
             Event? _event = FindEvent(id) ?? throw new NotFoundException();
             events.Remove(_event);
         }
 
-        public Event GetEvent(int id)
+        public Event GetEvent(Guid id)
         {
             return FindEvent(id) ?? throw new NotFoundException();
         }
 
-        public List<Event> GetEvents()
+        public List<Event> GetAll()
         {
             return events;
         }
@@ -36,14 +36,16 @@ namespace BestEvents
             events[index] = _event;
         }
 
-        private Event? FindEvent(int id)
+        private Event? FindEvent(Guid id)
         {
-            return events.Find(e => e.Id.GetHashCode() == id);
+            return events.Find(e => e.Equals(id));
         }
 
         private int FindEventIndex(Guid id)
         {
             return events.FindIndex(e => e.Equals(id));
         }
+
+        
     }
 }

@@ -6,7 +6,7 @@
 
         Event GetEvent(int id);
 
-        void AddEvent(Event @event);
+        void CreateEvent(string title, string descriptor, DateTime startAt, DateTime endAt);
 
         void ReplaceEvent(Event @event);
 

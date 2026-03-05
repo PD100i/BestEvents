@@ -1,6 +1,6 @@
 ﻿namespace BestEvents.Exceptions
 {
-    public class NotFounfException
+    public class NotFoundException: Exception
     {
     }
 }

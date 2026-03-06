@@ -6,7 +6,9 @@
 
         EventDtoExtended GetEvent(string id);
 
-        void CreateEvent(EventDto _event);
+        // void CreateEvent(string title, DateTime startAt, DateTime endAt, string description = "");
+
+        void CreateEvent(EventDto eventDto);
 
         void ReplaceEvent(EventDtoExtended _event);
 

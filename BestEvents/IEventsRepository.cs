@@ -2,7 +2,7 @@
 {
     public interface IEventsRepository
     {
-        void CreateEvent(string title, string desctiption, DateTime startAt, DateTime endAt);
+        void CreateEvent(string title, DateTime startAt, DateTime endAt, string description);
 
         void RemoveEvent(Guid id);
 

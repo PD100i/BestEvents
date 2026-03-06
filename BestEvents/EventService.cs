@@ -12,9 +12,10 @@ namespace BestEvents
             this.repository = repository;
         }
 
+        
         public void CreateEvent(EventDto _event)
         {
-            repository.CreateEvent(_event.Title, _event.Description, _event.StartAt, _event.EndAt);
+            repository.CreateEvent(_event.Title, _event.StartAt, _event.endAt, _event.Description);
         }
 
         public void DeleteEvent(string id)

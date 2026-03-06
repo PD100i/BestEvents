@@ -9,7 +9,7 @@ namespace BestEvents
     {
         static readonly ConcurrentDictionary<Guid, Event> events = new();
 
-        public void CreateEvent(string title, string desctiption, DateTime startAt, DateTime endAt)
+        public void CreateEvent(string title, DateTime startAt, DateTime endAt, string desctiption = "")
         {
             Guid id = Guid.NewGuid();
             events.TryAdd(id, new Event(id, title, startAt, endAt, desctiption));

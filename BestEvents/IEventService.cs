@@ -1,17 +1,40 @@
 ﻿namespace BestEvents
 {
+    /// <summary>
+    /// Интерфейс сервиса работы с событиями
+    /// </summary>
     public interface IEventService
     {
-        List<EventDtoExtended> GetEvents();
+        /// <summary>
+        /// Возвращает все события в виде списка EventDto
+        /// </summary>
+        /// <returns></returns>
+        List<EventDto> GetEvents();
 
-        EventDtoExtended GetEvent(string id);
+        /// <summary>
+        /// Возвращает событие по его идентификатору в виде EventDto. Если событие с таким идентификатором не найдено, возвращает null.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        EventDto GetEvent(string id);
 
-        // void CreateEvent(string title, DateTime startAt, DateTime endAt, string description = "");
+        /// <summary>
+        /// Создает новое событие, используя данные из Dto объекта
+        /// </summary>
+        /// <param name="eventDto"></param>
+        void CreateEvent(EventDtoBase eventDto);
 
-        void CreateEvent(EventDto eventDto);
+        /// <summary>
+        /// Перезаписывает событие, используя данные из Dto объекта
+        /// </summary>
+        /// <param name="eventDto"></param>
+        /// /// <param name="id"></param>
+        void ReplaceEvent(string id, EventDto eventDto);
 
-        void ReplaceEvent(EventDtoExtended _event);
-
+        /// <summary>
+        /// Удаляет событие по его идентификатору
+        /// </summary>
+        /// <param name="id"></param>
         void DeleteEvent(string id);
     }
 }

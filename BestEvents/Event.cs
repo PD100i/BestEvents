@@ -1,32 +1,73 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BestEvents.Exceptions;
 
 namespace BestEvents
 {
+    /// <summary>
+    /// Модель события
+    /// </summary>
     public class Event
     {
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="id">Идентификатор</param>
+        /// <param name="title">Название события</param>
+        /// <param name="startAt">Дата начала</param>
+        /// <param name="endAt">Дата завершения</param>
+        /// <param name="description">Описание (необязательный параметр)</param>
         public Event(Guid id, string title, DateTime startAt, DateTime endAt, string description = "")
         {
             Id = id;
+            if (string.IsNullOrEmpty(title))
+                throw new EventWrongParameterException("Название события не может быть пустым");
             Title = title;
+            if(startAt == default)
+                throw new EventWrongParameterException("Дата начала события не может быть пустой");
+            if(endAt == default)
+                throw new EventWrongParameterException("Дата завершения события не может быть пустой");
             if (startAt > endAt)
-                throw new ArgumentException("Завершение мероприятия не может быть позже его начала. Скорректируйте даты");
+                throw new EventWrongParameterException("Дата начала события не может быть позже даты завершения");
             StartAt = startAt;
             EndAt = endAt;
             Description = description;
         }
 
-        [Required(ErrorMessage = "Не задан Id")]
-        public Guid Id {  get;  }
+        /// <summary>
+        /// Конструктор без параметра id, который генерируется автоматически при создании события
+        /// </summary>
+        /// <param name="title">Название события</param>
+        /// <param name="startAt">Дата начала</param>
+        /// <param name="endAt">Дата завершения</param>
+        /// <param name="description">Описание (необязательный параметр)</param>
+        public Event(string title, DateTime startAt, DateTime endAt, string description = "") : this(Guid.NewGuid(), title, startAt, endAt, description)
+        {   
+        }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо указать название мероприятия")]
+
+        /// <summary>
+        /// Идентификатор
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Название события
+        /// </summary>
         public string Title {  get; set; }
 
+        /// <summary>
+        /// Описание события
+        /// </summary>
         public string Description { get; set; } = "";
-
-        [Required(ErrorMessage = "Не указана дата начала мероприятия")]
+        
+        /// <summary>
+        /// Время начала
+        /// </summary>
         public DateTime StartAt { get; set; }
 
-        [Required(ErrorMessage = "Не указана дата завершения мероприятия")]
+        /// <summary>
+        /// Время завершения
+        /// </summary>
         public DateTime EndAt { get; set; }
 
     }

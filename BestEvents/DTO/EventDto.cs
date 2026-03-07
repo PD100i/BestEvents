@@ -10,7 +10,7 @@ namespace BestEvents
     /// <param name="startAt">Дата начала</param>
     /// <param name="endAt">Дата завершения</param>
     /// <param name="description">Описание (необязательный параметр)</param>
-    public class EventDto(string id, string title, DateTime startAt, DateTime endAt, string? description) :
+    public class EventDto(string id, string title, DateTime? startAt, DateTime? endAt, string? description) :
         EventDtoBase( title, startAt, endAt, description)    
     {
         /// <summary>

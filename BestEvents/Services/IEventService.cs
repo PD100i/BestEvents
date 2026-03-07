@@ -22,7 +22,7 @@
         /// Создает новое событие, используя данные из Dto объекта
         /// </summary>
         /// <param name="eventDto"></param>
-        void CreateEvent(EventDtoBase eventDto);
+        EventDto CreateEvent(EventDtoBase eventDto);
 
         /// <summary>
         /// Перезаписывает событие, используя данные из Dto объекта

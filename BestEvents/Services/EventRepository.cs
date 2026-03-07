@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 using BestEvents.Exceptions;
+using System.ComponentModel;
 
 
 namespace BestEvents
@@ -21,10 +22,12 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Опсание (необязательное поле)</param>
-        public void CreateEvent(string title, DateTime startAt, DateTime endAt, string? description)
+        public Event CreateEvent(string title, DateTime? startAt, DateTime? endAt, string? description)
         {
             Guid id = Guid.NewGuid();
-            events.TryAdd(id, new Event(id, title, startAt, endAt, description));
+            Event newEvent = new(id, title, startAt, endAt, description);
+            events.TryAdd(id, newEvent);
+            return newEvent;
         }
 
         /// <summary>
@@ -33,7 +36,8 @@ namespace BestEvents
         /// <param name="id"></param>
         public void RemoveEvent(Guid id)
         {
-            events.TryRemove(id, out _);
+            if (!events.TryRemove(id, out _))
+                throw new EventsNotFoundException($"Событие с идентификатором {id} не найдено. Удаление не произведено");
         }
 
         /// <summary>
@@ -57,9 +61,7 @@ namespace BestEvents
         public List<Event> GetAll()
         {
             List<Event> result = [..events.Values];
-            if (result.Count > 0)
                 return result;
-            throw new EventsNotFoundException("Ни одного события не найдено");
         }
 
         /// <summary>
@@ -69,8 +71,9 @@ namespace BestEvents
         /// <returns></returns>
         public void ReplaceEvent(Event _event)
         {
-            if (events.ContainsKey(_event.Id))
-                events[_event.Id] = _event;
+            if (!events.ContainsKey(_event.Id))
+                throw new EventsNotFoundException($"Событие с идентификатором {_event.Id} не найдено. Обновление не произведено");
+            events[_event.Id] = _event;
         }        
     }
 }

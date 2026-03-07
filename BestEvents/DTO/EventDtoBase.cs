@@ -9,7 +9,7 @@ namespace BestEvents
     /// <param name="startAt">Дата начала</param>
     /// <param name="endAt">Дата завершения</param>
     /// <param name="description">Описание (необязательный параметр)</param>
-    public class EventDtoBase(string title, DateTime startAt, DateTime endAt, string? description)
+    public class EventDtoBase(string title, DateTime? startAt, DateTime? endAt, string? description)
     {
         /// <summary>
         /// Название события
@@ -27,13 +27,13 @@ namespace BestEvents
         /// </summary>
         [Required(ErrorMessage = "Не указана дата начала события")]
         [DataType(DataType.Date, ErrorMessage = "Неверный формат даты начала события")]
-        public DateTime StartAt { get; set; } = startAt;
+        public DateTime? StartAt { get; set; } = startAt;
 
         /// <summary>
         /// Дата завершения события
         /// </summary>
         [Required(ErrorMessage = "Не указана дата завершения мероприятия")]
         [DataType(DataType.Date, ErrorMessage = "Неверный формат даты завершения события")]
-        public DateTime EndAt { get; set; } = endAt;
+        public DateTime? EndAt { get; set; } = endAt;
     }
 }

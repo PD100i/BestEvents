@@ -25,9 +25,9 @@ namespace BestEvents
         /// Создает новое событие, используя данные из Dto объекта и передает их в репозиторий для сохранения
         /// </summary>
         /// <param name="_event"></param>
-        public void CreateEvent(EventDtoBase _event)
+        public EventDto CreateEvent(EventDtoBase _event)
         {
-            repository.CreateEvent(_event.Title, _event.StartAt, _event.EndAt, _event.Description);
+            return GetDtoFromEvent(repository.CreateEvent(_event.Title, _event.StartAt, _event.EndAt, _event.Description));
         }
 
         /// <summary>

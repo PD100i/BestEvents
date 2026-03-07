@@ -8,12 +8,11 @@ namespace BestEvents.Controllers
     /// </summary>
     /// <param name="eventService"></param>
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/events")]
     public class EventsController(IEventService eventService) : ControllerBase
     {
         /// <summary>
-        /// Возвращает все события. Возвращает HTTP статус-код 200 Ok в случае успеха, 
-        /// или 404 (Not Found), если событий не найдено
+        /// Возвращает все события. Возвращает HTTP статус-код 200 Ok в случае успеха
         /// </summary>
         /// <response code="200">Возвращается JSON-структура EventDto[] с деталями ответа
         /// и HTTP статус-кодом 200 Ok в случае успеха</response>
@@ -45,13 +44,13 @@ namespace BestEvents.Controllers
         [HttpPost]
         public IActionResult CreateEvent([FromBody] EventDtoBase eventDto)
         {
-            eventService.CreateEvent(eventDto);
-            return Created();
+            return Created(Request.Path.ToString(), eventService.CreateEvent(eventDto));
         }
 
 
         /// <summary>
-        /// Перезаписывает событие с идентификатором id. Возвращает HTTP статус-код 204 No Content в любом случае
+        /// Перезаписывает событие с идентификатором id. Возвращает HTTP статус-код 204 No Content в случае успеха, или 404 (Not Found), 
+        /// если событие с таким идентификатором не найдено
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <param name="eventDto"></param>
@@ -64,7 +63,8 @@ namespace BestEvents.Controllers
         }
 
         /// <summary>
-        /// Удаляет событие с идентификатором id. Возвращает HTTP статус-код 204 No Content в любом случае
+        /// Удаляет событие с идентификатором id. Возвращает HTTP статус-код 204 No Content  в случае успеха, или 404 (Not Found), 
+        /// если событие с таким идентификатором не найдено
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <response code="204"></response>

@@ -12,7 +12,8 @@ namespace BestEvents.Controllers
     public class EventsController(IEventService eventService) : ControllerBase
     {
         /// <summary>
-        /// Возвращает все события
+        /// Возвращает все события. Возвращает HTTP статус-код 200 Ok в случае успеха, 
+        /// или 404 (Not Found), если событий не найдено
         /// </summary>
         /// <response code="200">Возвращается JSON-структура EventDto[] с деталями ответа
         /// и HTTP статус-кодом 200 Ok в случае успеха</response>
@@ -24,7 +25,8 @@ namespace BestEvents.Controllers
         }
 
         /// <summary>
-        /// Возвращает событие по его идентификатору
+        /// Возвращает событие по его идентификаторую Возвращает HTTP статус-код 200 Ok в случае успеха, 
+        /// или 404 (Not Found), если событие с таким идентификатором не найдено
         /// </summary>
         /// <param name="id">Идентификационный номер для получения события </param>
         /// <response code="200">Возвращается JSON-структура EventDto с деталями ответа
@@ -36,7 +38,7 @@ namespace BestEvents.Controllers
         }
 
         /// <summary>
-        /// Создает новое событие и добавляет в хранилище
+        /// Создает новое событие и добавляет в репозиторий. Возвращает HTTP статус-код 201 Created в случае успеха
         /// </summary>
         /// <param name="eventDto">JSON структура с параметрами события</param>
         /// <response code="201"></response>
@@ -49,7 +51,7 @@ namespace BestEvents.Controllers
 
 
         /// <summary>
-        /// Перезаписывает событие с идентификатором id
+        /// Перезаписывает событие с идентификатором id. Возвращает HTTP статус-код 204 No Content в любом случае
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <param name="eventDto"></param>
@@ -62,7 +64,7 @@ namespace BestEvents.Controllers
         }
 
         /// <summary>
-        /// Удаляет событие с идентификатором id
+        /// Удаляет событие с идентификатором id. Возвращает HTTP статус-код 204 No Content в любом случае
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <response code="204"></response>

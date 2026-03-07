@@ -9,7 +9,7 @@ namespace BestEvents
     /// <param name="startAt">Дата начала</param>
     /// <param name="endAt">Дата завершения</param>
     /// <param name="description">Описание (необязательный параметр)</param>
-    public class EventDtoBase(string title, DateTime startAt, DateTime endAt, string description = "")
+    public class EventDtoBase(string title, DateTime startAt, DateTime endAt, string? description)
     {
         /// <summary>
         /// Название события
@@ -20,7 +20,7 @@ namespace BestEvents
         /// <summary>
         /// Описание события
         /// </summary>
-        public string Description { get; set; } = description;
+        public string? Description { get; set; } = description;
 
         /// <summary>
         /// Дата начала события

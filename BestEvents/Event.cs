@@ -16,7 +16,7 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Описание (необязательный параметр)</param>
-        public Event(Guid id, string title, DateTime startAt, DateTime endAt, string description = "")
+        public Event(Guid id, string title, DateTime startAt, DateTime endAt, string? description)
         {
             Id = id;
             if (string.IsNullOrEmpty(title))
@@ -58,7 +58,7 @@ namespace BestEvents
         /// <summary>
         /// Описание события
         /// </summary>
-        public string Description { get; set; } = "";
+        public string? Description { get; set; } = "";
         
         /// <summary>
         /// Время начала

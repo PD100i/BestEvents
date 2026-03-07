@@ -21,7 +21,7 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Опсание (необязательное поле)</param>
-        public void CreateEvent(string title, DateTime startAt, DateTime endAt, string description = "")
+        public void CreateEvent(string title, DateTime startAt, DateTime endAt, string? description)
         {
             Guid id = Guid.NewGuid();
             events.TryAdd(id, new Event(id, title, startAt, endAt, description));

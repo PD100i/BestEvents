@@ -8,19 +8,26 @@ namespace BestEvents.Controllers
     /// </summary>
     /// <param name="eventService"></param>
     [ApiController]
-    [Route("api/events")]
+    [Route("events")]
     public class EventsController(IEventService eventService) : ControllerBase
     {
         /// <summary>
-        /// Возвращает все события. Возвращает HTTP статус-код 200 Ok в случае успеха
+        /// 
         /// </summary>
+
+
+        /// <summary>
+        /// Возвращает события, фильтруя их по параметрам name, from, to. Возвращает HTTP статус-код 200 Ok в случае успеха
+        /// </summary>
+        /// <param name="title">Название события для поиска (необязательный)</param>
+        /// <param name="from">Дата для поиска событий, которые начинаются не раньше этой даты (необязательный) </param>
+        /// <param name="to">Дата для поиска событий, которые заканчиваются не позже этой даты</param>
         /// <response code="200">Возвращается JSON-структура EventDto[] с деталями ответа
         /// и HTTP статус-кодом 200 Ok в случае успеха</response>
-
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetEvents([FromQuery] string? title, DateTime? from, DateTime? to)
         {
-            return Ok(eventService.GetEvents());
+            return Ok(eventService.GetEvents(title, from, to));
         }
 
         /// <summary>

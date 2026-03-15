@@ -9,7 +9,7 @@
         /// Возвращает все события в виде списка EventDto
         /// </summary>
         /// <returns></returns>
-        List<EventDto> GetEvents();
+        List<EventDto> GetEvents(string? title, DateTime? from, DateTime? to);
 
         /// <summary>
         /// Возвращает событие по его идентификатору в виде EventDto. Если событие с таким идентификатором не найдено, возвращает null.

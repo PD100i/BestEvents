@@ -53,10 +53,10 @@ namespace BestEvents
         /// Получает все события из репозитория, преобразует их в Dto объекты и возвращает в виде списка.
         /// </summary>
         /// <returns></returns>
-        public List<EventDto> GetEvents()
+        public List<EventDto> GetEvents(string? title, DateTime? from, DateTime? to)
         {
             List<EventDto> dto = [];
-            repository.GetAll().ForEach(i => dto.Add(GetDtoFromEvent(i)));
+            repository.GetEvents(title, from, to).ForEach(i => dto.Add(GetDtoFromEvent(i)));
             return dto;
         }
 

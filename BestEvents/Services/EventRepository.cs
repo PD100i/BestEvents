@@ -54,17 +54,6 @@ namespace BestEvents
         }
 
         /// <summary>
-        /// Возвращает спиок всех событий в хранилище
-        /// </summary>
-        /// <returns></returns>
-        [Produces("List<Event>")]
-        public List<Event> GetAll()
-        {
-            List<Event> result = [..events.Values];
-                return result;
-        }
-
-        /// <summary>
         /// Перезаписывает событие в хранилище,
         /// если событие с таким идентификатором существует
         /// </summary>
@@ -74,6 +63,44 @@ namespace BestEvents
             if (!events.ContainsKey(_event.Id))
                 throw new EventsNotFoundException($"Событие с идентификатором {_event.Id} не найдено. Обновление не произведено");
             events[_event.Id] = _event;
-        }        
+        }
+
+        /// <summary>
+        /// Возвращает спиок всех событий в хранилище
+        /// </summary>
+        /// <returns></returns>
+        [Produces("List<Event>")]
+        public List<Event> GetEvents(string? title, DateTime? from, DateTime? to)
+        {
+            var result = FilterEventsByTitle(events.Values, title);
+            result = FilterEventsByDateFrom(result, from);
+            result = FilterEventsByDateTo(result, to);
+
+            return result.ToList();
+        }
+
+        private IEnumerable<Event> FilterEventsByTitle(IEnumerable<Event> events, string? title)
+        {
+            if (title == null)
+                return events;
+            return events.Where(e => IsContained(e.Title, title));
+        }
+        private IEnumerable<Event> FilterEventsByDateFrom(IEnumerable<Event> events, DateTime? from)
+        {
+            if (from == null)
+                return events;
+            return events.Where(e => e.StartAt >= from);
+        }
+        private IEnumerable<Event> FilterEventsByDateTo(IEnumerable<Event> events, DateTime? to)
+        {
+            if (to == null)
+                return events;
+            return events.Where(e => e.EndAt <= to);
+        }
+        private bool IsContained(string title, string value)
+        {
+            return title.Contains(value, StringComparison.OrdinalIgnoreCase);
+        }
+
     }
 }

@@ -37,7 +37,7 @@
         /// Получает все события из хранилища и возвращает их в виде списка.
         /// </summary>
         /// <returns></returns>
-        List<Event> GetAll();
+        List<Event> GetEvents(string? title, DateTime? from, DateTime? to);
 
         
     }

@@ -69,14 +69,16 @@ namespace BestEvents
         /// Возвращает спиок всех событий в хранилище
         /// </summary>
         /// <returns></returns>
-        [Produces("List<Event>")]
-        public List<Event> GetEvents(string? title, DateTime? from, DateTime? to)
+        
+        public PaginatedResult<Event> GetEvents(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
         {
             var result = FilterEventsByTitle(events.Values, title);
             result = FilterEventsByDateFrom(result, from);
             result = FilterEventsByDateTo(result, to);
 
-            return result.ToList();
+            int totalCount = result.Count();
+            result = result.Skip(page - 1).Take(size);
+            return new PaginatedResult<Event>(result.ToList(), page, totalCount);
         }
 
         private IEnumerable<Event> FilterEventsByTitle(IEnumerable<Event> events, string? title)

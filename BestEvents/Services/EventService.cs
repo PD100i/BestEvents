@@ -1,4 +1,5 @@
-﻿using BestEvents.Exceptions;
+﻿
+using BestEvents.Exceptions;
 
 namespace BestEvents
 {
@@ -53,11 +54,20 @@ namespace BestEvents
         /// Получает все события из репозитория, преобразует их в Dto объекты и возвращает в виде списка.
         /// </summary>
         /// <returns></returns>
-        public List<EventDto> GetEvents(string? title, DateTime? from, DateTime? to)
+        public PaginatedResultDto GetEvents(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
         {
-            List<EventDto> dto = [];
-            repository.GetEvents(title, from, to).ForEach(i => dto.Add(GetDtoFromEvent(i)));
-            return dto;
+            var events = repository.GetEvents(title, from, to, page, size);
+            var eventsDto = new List<EventDto>();
+            events.ResultsPerPage.ForEach(e => eventsDto.Add(GetDtoFromEvent(e)));
+
+            return new PaginatedResultDto()
+            {
+                CurrentPage = events.CurrentPage,
+                EventsNumber = events.TotalResultsNumber,
+                Events = eventsDto,
+                EventsNumberPerPage = events.ResultsNumberPerPage
+            };
+           
         }
 
         /// <summary>

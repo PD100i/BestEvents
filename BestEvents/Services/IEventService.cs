@@ -1,4 +1,5 @@
-﻿namespace BestEvents
+﻿
+namespace BestEvents
 {
     /// <summary>
     /// Интерфейс сервиса работы с событиями
@@ -9,7 +10,7 @@
         /// Возвращает все события в виде списка EventDto
         /// </summary>
         /// <returns></returns>
-        List<EventDto> GetEvents(string? title, DateTime? from, DateTime? to);
+        PaginatedResultDto GetEvents(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10);
 
         /// <summary>
         /// Возвращает событие по его идентификатору в виде EventDto. Если событие с таким идентификатором не найдено, возвращает null.

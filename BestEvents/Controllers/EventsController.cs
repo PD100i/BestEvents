@@ -11,23 +11,21 @@ namespace BestEvents.Controllers
     [Route("events")]
     public class EventsController(IEventService eventService) : ControllerBase
     {
-        /// <summary>
-        /// 
-        /// </summary>
-
-
+        
         /// <summary>
         /// Возвращает события, фильтруя их по параметрам name, from, to. Возвращает HTTP статус-код 200 Ok в случае успеха
         /// </summary>
         /// <param name="title">Название события для поиска (необязательный)</param>
         /// <param name="from">Дата для поиска событий, которые начинаются не раньше этой даты (необязательный) </param>
         /// <param name="to">Дата для поиска событий, которые заканчиваются не позже этой даты</param>
+        /// <param name="page">Номер страницы для вывода</param>
+        /// <param name="size">Количество страниц для вывода</param>
         /// <response code="200">Возвращается JSON-структура EventDto[] с деталями ответа
         /// и HTTP статус-кодом 200 Ok в случае успеха</response>
         [HttpGet]
-        public IActionResult GetEvents([FromQuery] string? title, DateTime? from, DateTime? to)
+        public IActionResult GetEvents([FromQuery] string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
         {
-            return Ok(eventService.GetEvents(title, from, to));
+            return Ok(eventService.GetEvents(title, from, to, page, size));
         }
 
         /// <summary>

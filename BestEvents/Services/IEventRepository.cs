@@ -37,7 +37,7 @@
         /// Получает все события из хранилища и возвращает их в виде списка.
         /// </summary>
         /// <returns></returns>
-        List<Event> GetEvents(string? title, DateTime? from, DateTime? to);
+        PaginatedResult<Event> GetEvents(string? name, DateTime? from, DateTime? to, int page = 1, int size = 10);
 
         
     }

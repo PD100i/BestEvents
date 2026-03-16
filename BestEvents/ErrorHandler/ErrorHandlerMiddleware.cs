@@ -8,14 +8,17 @@ namespace BestEvents
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ErrorHandlerMiddleware> _logger;
 
         /// <summary>
         /// Конструктор обработчика исключений
         /// </summary>
         /// <param name="next"></param>
-        public ErrorHandlerMiddleware(RequestDelegate next)
+        /// <param name="logger"></param>
+        public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         /// <summary>
@@ -36,6 +39,12 @@ namespace BestEvents
                 await context.Response.WriteAsync(ex.Message);
             }
             catch(EventWrongParameterException ex)
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(ex.Message);
+            }
+            catch (FilterWrongParameterException ex)
             {
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;

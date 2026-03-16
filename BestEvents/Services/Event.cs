@@ -22,9 +22,9 @@ namespace BestEvents
             if (string.IsNullOrEmpty(title))
                 throw new EventWrongParameterException("Название события не может быть пустым");
             Title = title;
-            if(startAt == null || startAt == default)
+            if (startAt == null || startAt == default)
                 throw new EventWrongParameterException("Дата начала события не может быть пустой");
-            if(endAt == null || endAt == default)
+            if (endAt == null || endAt == default)
                 throw new EventWrongParameterException("Дата завершения события не может быть пустой");
             if (startAt > endAt)
                 throw new EventWrongParameterException("Дата начала события не может быть позже даты завершения");
@@ -48,27 +48,27 @@ namespace BestEvents
         /// <summary>
         /// Идентификатор
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Название события
         /// </summary>
-        public string Title {  get; set; }
+        public string Title { get; }
 
         /// <summary>
         /// Описание события
         /// </summary>
-        public string? Description { get; set; } = "";
+        public string? Description { get; } = "";
         
         /// <summary>
         /// Время начала
         /// </summary>
-        public DateTime? StartAt { get; set; }
+        public DateTime? StartAt { get; }
 
         /// <summary>
         /// Время завершения
         /// </summary>
-        public DateTime? EndAt { get; set; }
+        public DateTime? EndAt { get; }
 
     }
 

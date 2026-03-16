@@ -72,6 +72,8 @@ namespace BestEvents
         
         public PaginatedResult<Event> GetEvents(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
         {
+            if (from != null && to != null && from > to)
+                throw new FilterWrongParameterException("Дата начала события не может быть позже даты завершения");
             var result = filters.FilterEventsByTitle(events.Values, title);
             result = filters.FilterEventsByDateFrom(result, from);
             result = filters.FilterEventsByDateTo(result, to);

@@ -10,7 +10,7 @@ namespace BestEvents
     /// <summary>
     /// Хранилище для событий Event. Реализация интерфейса IEventRepository
     /// </summary>
-    public class EventRepository : IEventRepository
+    public class EventRepository(EventsFilters filters, Pagination<Event> pagination) : IEventRepository
     {
 
         static readonly ConcurrentDictionary<Guid, Event> events = new();
@@ -72,36 +72,11 @@ namespace BestEvents
         
         public PaginatedResult<Event> GetEvents(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
         {
-            var result = FilterEventsByTitle(events.Values, title);
-            result = FilterEventsByDateFrom(result, from);
-            result = FilterEventsByDateTo(result, to);
+            var result = filters.FilterEventsByTitle(events.Values, title);
+            result = filters.FilterEventsByDateFrom(result, from);
+            result = filters.FilterEventsByDateTo(result, to);
 
-            int totalCount = result.Count();
-            result = result.Skip(page - 1).Take(size);
-            return new PaginatedResult<Event>(result.ToList(), page, totalCount);
-        }
-
-        private IEnumerable<Event> FilterEventsByTitle(IEnumerable<Event> events, string? title)
-        {
-            if (title == null)
-                return events;
-            return events.Where(e => IsContained(e.Title, title));
-        }
-        private IEnumerable<Event> FilterEventsByDateFrom(IEnumerable<Event> events, DateTime? from)
-        {
-            if (from == null)
-                return events;
-            return events.Where(e => e.StartAt >= from);
-        }
-        private IEnumerable<Event> FilterEventsByDateTo(IEnumerable<Event> events, DateTime? to)
-        {
-            if (to == null)
-                return events;
-            return events.Where(e => e.EndAt <= to);
-        }
-        private bool IsContained(string title, string value)
-        {
-            return title.Contains(value, StringComparison.OrdinalIgnoreCase);
+            return pagination.GetResult(result, page, size);
         }
 
     }

@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddScoped<EventsFilters>();
+builder.Services.AddScoped<Pagination<Event>>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
 

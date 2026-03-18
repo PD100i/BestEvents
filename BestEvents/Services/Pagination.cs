@@ -21,14 +21,14 @@ namespace BestEvents
         public PaginatedResult<T> GetResult(IEnumerable<T> data, int page, int size)
         {
             if (data == null)
-                return new PaginatedResult<T>([], 1, 0, 0);
+                return new PaginatedResult<T>([], page, 0);
             if (page <= 0)
                 throw new PaginationWromgParameterException($"Попытка пагинации с недопустимым значением номера страницы (page={page})");
             if (size <= 0)
                 throw new PaginationWromgParameterException($"Попытка пагинации с недопустимым значением размера выборки на странице (size={size})");
             int totalCount = data.Count();
-            var result = data.Skip(page - 1).Take(size);
-            return new PaginatedResult<T>([.. result], page, result.Count(), totalCount);
+            var result = data.Skip((page - 1)*size).Take(size);
+            return new PaginatedResult<T>([.. result], page, totalCount);
         }
     }
 }

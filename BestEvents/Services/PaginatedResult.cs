@@ -6,10 +6,9 @@
     /// <typeparam name="T"></typeparam>
     /// /// <param name="resultsPerPage"></param>
     /// <param name="currentPage"></param>
-    /// /// <param name="resultsNumberPerPage"></param>
     /// <param name="totalResultsNumber"></param>
 
-    public record PaginatedResult<T>(List<T> resultsPerPage, int currentPage, int resultsNumberPerPage, int totalResultsNumber)
+    public class PaginatedResult<T>(List<T> resultsPerPage, int currentPage, int totalResultsNumber): IEquatable<PaginatedResult<T>>
     {
         /// <summary>
         /// Общее количество записей
@@ -29,7 +28,41 @@
         /// <summary>
         /// Количество записей на странице
         /// </summary>
-        public int ResultsNumberPerPage { get; } = resultsNumberPerPage;
+        public int ResultsNumberPerPage { get; } = resultsPerPage.Count;
 
+        
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj is not PaginatedResult<T> _other)
+                return false;
+            return Equals(_other);
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(PaginatedResult<T>? other)
+        {
+            if (other == null)
+                return false;
+            if (TotalResultsNumber != other.TotalResultsNumber)
+                return false;
+            if (CurrentPage != other.CurrentPage)
+                return false;
+            if (ResultsNumberPerPage != other.ResultsNumberPerPage)
+                return false;
+            if (ResultsPerPage.Count != other.ResultsPerPage.Count)
+                return false;
+            if (!ResultsPerPage.SequenceEqual(other.ResultsPerPage))
+                return false;
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(TotalResultsNumber, CurrentPage, ResultsNumberPerPage, ResultsPerPage);
+
+        }
     }
 }

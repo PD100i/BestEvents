@@ -28,7 +28,7 @@ namespace BestEvents
         /// <param name="_event"></param>
         public EventDto CreateEvent(EventDtoBase _event)
         {
-            return GetDtoFromEvent(repository.CreateEvent(_event.Title, _event.StartAt, _event.EndAt, _event.Description));
+            return GetDtoFromEvent(repository.AddEvent(_event.Title, _event.StartAt, _event.EndAt, _event.Description));
         }
 
         /// <summary>

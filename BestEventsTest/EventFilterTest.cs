@@ -10,22 +10,12 @@ using BestEvents;
 namespace BestEventsTest
 {
 
-    public class EventsFilterTest
+    public class EventFilterTest
     {
-        private static readonly EventsFilters filters = new EventsFilters();
+        private static readonly EventFilters filters = new EventFilters();
 
 
-        private readonly static List<Event> initialData = [
-            new Event("Весенняя ярмарка ремёсел", new DateTime(2025, 04, 15), new DateTime(2025, 04, 20), ""),
-            new Event("Международный кинофестиваль", new DateTime(2025, 06, 10), new DateTime(2025, 06, 17), ""),
-            new Event("Конференция по инновационным технологиям", new DateTime(2025, 08, 05), new DateTime(2025, 08, 07), ""),
-            new Event("Городской марафон", new DateTime(2025, 08, 06), new DateTime(2025, 08, 06), ""),
-            new Event("Выставка современного искусства", new DateTime(2025, 11, 01), new DateTime(2025, 11, 15), ""),
-            new Event("Фестиваль уличной еды", new DateTime(2026, 03, 10), new DateTime(2026, 03, 12), ""),
-            new Event("Семинар по цифровой грамотности", new DateTime(2026, 05, 18), new DateTime(2026, 05, 19), ""),
-            new Event("Музыкальный open‑air", new DateTime(2026, 07, 25), new DateTime(2026, 07, 27), ""),
-            new Event("Городская книжная ярмарка", new DateTime(2026, 10, 05), new DateTime(2026, 10, 10), ""),
-            new Event("Новогодний благотворительный концерт", new DateTime(2026, 12, 20), new DateTime(2026, 12, 20), "")];
+        private readonly static List<Event> initialData = EventCollection.GetCollection();
 
         public class FilterByTitleTestData : IEnumerable<object?[]>
         {
@@ -64,6 +54,7 @@ namespace BestEventsTest
                 yield return new object[] { initialData, new DateTime(2026, 07, 25), new List<Event>() { initialData[7], initialData[8], initialData[9] } };
                 yield return new object[] { initialData, new DateTime(2026, 07, 26), new List<Event>() { initialData[8], initialData[9] } };
                 yield return new object[] { initialData, new DateTime(2025, 04, 15), initialData };
+                yield return new object[] { initialData, new DateTime(2027, 01, 01), new List<Event>() };
                 yield return new object?[] { initialData, null, initialData };
             }
 
@@ -88,6 +79,7 @@ namespace BestEventsTest
                 yield return new object[] { initialData, new DateTime(2025, 08, 07), new List<Event>() { initialData[0], initialData[1], initialData[2], initialData[3] } };
                 yield return new object[] { initialData, new DateTime(2025, 04, 20), new List<Event>() { initialData[0] } };
                 yield return new object[] { initialData, new DateTime(2025, 04, 15), new List<Event>() };
+                yield return new object[] { initialData, new DateTime(2027, 01, 01), initialData };
                 yield return new object?[] {initialData, null, initialData };
             }
 

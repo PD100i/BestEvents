@@ -12,7 +12,7 @@
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Опсание (необязательное поле)</param>
-        Event CreateEvent(string title, DateTime? startAt, DateTime? endAt, string? description);
+        Event AddEvent(string title, DateTime? startAt, DateTime? endAt, string? description);
 
         /// <summary>
         /// Удаление события из хранилища по его идентификатору.

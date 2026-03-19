@@ -10,7 +10,7 @@ namespace BestEvents
     /// <summary>
     /// Хранилище для событий Event. Реализация интерфейса IEventRepository
     /// </summary>
-    public class EventRepository(EventsFilters filters, Pagination<Event> pagination) : IEventRepository
+    public class EventRepository(EventFilters filters, Pagination<Event> pagination) : IEventRepository
     {
 
         static readonly ConcurrentDictionary<Guid, Event> events = new();
@@ -22,7 +22,7 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Опсание (необязательное поле)</param>
-        public Event CreateEvent(string title, DateTime? startAt, DateTime? endAt, string? description)
+        public Event AddEvent(string title, DateTime? startAt, DateTime? endAt, string? description)
         {
             Guid id = Guid.NewGuid();
             Event newEvent = new(id, title, startAt, endAt, description);

@@ -16,7 +16,7 @@ namespace BestEvents
         /// <returns></returns>
         public IEnumerable<Event> FilterEventsByTitle(IEnumerable<Event> events, string? title)
         {
-            if (title == null)
+            if (title == null || title == "")
                 return events;
             return events.Where(e => e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
         }

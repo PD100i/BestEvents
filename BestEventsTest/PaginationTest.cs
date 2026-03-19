@@ -33,9 +33,9 @@ namespace BestEventsTest
 
         [Theory]
         [ClassData(typeof(CorrectPaginationTestData))]
-        public void GetResult_CorrectData_CorrectResult(IEnumerable<int> data, int page, int size, PaginatedResult<int> paginatedResult)
+        public void GetResult_CorrectData_CorrectResult(IEnumerable<int> data, int page, int size, PaginatedResult<int> expectedResult)
         {
-            Assert.Equal(pagination.GetResult(data, page, size), paginatedResult);
+            Assert.Equal(pagination.GetResult(data, page, size), expectedResult);
         }
 
         public class WrongPaginationTestData : IEnumerable<object[]>

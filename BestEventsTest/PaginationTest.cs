@@ -7,12 +7,21 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BestEventsTest
 {
-    public class PaginationTest
+    public class PaginationFixture
+    {
+        public Pagination<int> Pagination { get; set; }
+        public PaginationFixture() 
+        { 
+            Pagination = new Pagination<int>();
+        }
+    }
+
+    public class PaginationTest(PaginationFixture fixture) : IClassFixture<PaginationFixture>
     {
 
         private static readonly List<int> inputData = [.. Enumerable.Range(1, 98)];
 
-        private static readonly Pagination<int> pagination = new Pagination<int>();
+        private readonly Pagination<int> pagination = fixture.Pagination;
 
         public class CorrectPaginationTestData : IEnumerable<object[]>
         {
@@ -55,7 +64,7 @@ namespace BestEventsTest
         [ClassData(typeof(WrongPaginationTestData))]
         public void GetResult_WrongInputData_ThrowException(IEnumerable<int> data, int page, int size)
         {
-            Assert.Throws<PaginationWromgParameterException>(() => pagination.GetResult(data, page, size));
+            Assert.Throws<RequestWrongParameterException>(() => pagination.GetResult(data, page, size));
         }
 
         

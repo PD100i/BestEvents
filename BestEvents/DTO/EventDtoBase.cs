@@ -20,7 +20,7 @@ namespace BestEvents
         /// <summary>
         /// Описание события
         /// </summary>
-        public string? Description { get; set; } = description;
+        public string? Description { get; set; } = description ?? "";
 
         /// <summary>
         /// Дата начала события

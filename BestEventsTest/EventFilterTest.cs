@@ -9,13 +9,17 @@ using BestEvents;
 
 namespace BestEventsTest
 {
-
-    public class EventFilterTest
+    public class EventFiltersFixture
     {
-        private static readonly EventFilters filters = new EventFilters();
+        public EventFilters EventFilters { get; set; } = new EventFilters();
+        
+    }
 
-
+    public class EventFilterTest(EventFiltersFixture fixture) : IClassFixture<EventFiltersFixture>
+    {
         private readonly static List<Event> initialData = EventCollection.GetCollection();
+
+        private readonly EventFilters filters = fixture.EventFilters;
 
         public class FilterByTitleTestData : IEnumerable<object?[]>
         {

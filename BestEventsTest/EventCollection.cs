@@ -26,5 +26,11 @@ namespace BestEventsTest
         {
             return [.. initialData];
         }
+
+        internal static Event GetEvent(int index)
+        {
+            return initialData[index];
+        }
+
     }
 }

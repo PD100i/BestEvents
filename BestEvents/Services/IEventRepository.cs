@@ -6,13 +6,10 @@
     public interface IEventRepository
     {
         /// <summary>
-        /// Создает новое событие и сохраняет его в хранилище. Принимает название, дату начала, дату завершения и описание события в качестве параметров.
+        /// Добавляет event в хранилище
         /// </summary>
-        /// <param name="title">Название события</param>
-        /// <param name="startAt">Дата начала</param>
-        /// <param name="endAt">Дата завершения</param>
-        /// <param name="description">Опсание (необязательное поле)</param>
-        Event AddEvent(string title, DateTime? startAt, DateTime? endAt, string? description);
+        /// <param name="_event">Событие</param>
+        public Event AddEvent(Event _event);
 
         /// <summary>
         /// Удаление события из хранилища по его идентификатору.
@@ -37,8 +34,9 @@
         /// Получает все события из хранилища и возвращает их в виде списка.
         /// </summary>
         /// <returns></returns>
-        PaginatedResult<Event> GetEvents(string? name, DateTime? from, DateTime? to, int page = 1, int size = 10);
+        public IEnumerable<Event> GetEvents();
 
-        
+
+
     }
 }

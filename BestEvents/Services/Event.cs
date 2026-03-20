@@ -20,14 +20,14 @@ namespace BestEvents
         {
             Id = id;
             if (string.IsNullOrEmpty(title))
-                throw new EventWrongParameterException("Название события не может быть пустым");
+                throw new RequestWrongParameterException("Название события не может быть пустым");
             Title = title;
             if (startAt == null || startAt == default)
-                throw new EventWrongParameterException("Дата начала события не может быть пустой");
+                throw new RequestWrongParameterException("Дата начала события не может быть пустой");
             if (endAt == null || endAt == default)
-                throw new EventWrongParameterException("Дата завершения события не может быть пустой");
+                throw new RequestWrongParameterException("Дата завершения события не может быть пустой");
             if (startAt > endAt)
-                throw new EventWrongParameterException("Дата начала события не может быть позже даты завершения");
+                throw new RequestWrongParameterException("Дата начала события не может быть позже даты завершения");
             StartAt = startAt;
             EndAt = endAt;
             Description = description;
@@ -40,7 +40,8 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Описание (необязательный параметр)</param>
-        public Event(string title, DateTime startAt, DateTime endAt, string? description) : this(Guid.NewGuid(), title, startAt, endAt, description)
+        public Event(string title, DateTime? startAt, DateTime? endAt, string? description) : 
+            this(Guid.NewGuid(), title, startAt, endAt, description)
         {   
         }
 

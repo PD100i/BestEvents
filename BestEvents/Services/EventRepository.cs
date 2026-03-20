@@ -8,26 +8,21 @@ using System.ComponentModel;
 namespace BestEvents
 {
     /// <summary>
-    /// Хранилище для событий Event. Реализация интерфейса IEventRepository
+    /// Репозиторий для событий Event. Реализация интерфейса IEventRepository
     /// </summary>
-    public class EventRepository(EventFilters filters, Pagination<Event> pagination) : IEventRepository
+    public class EventRepository() : IEventRepository
     {
 
         static readonly ConcurrentDictionary<Guid, Event> events = new();
 
         /// <summary>
-        /// Создает новый объект Event и добавляет в хранилище
+        /// Добавляет event в хранилище
         /// </summary>
-        /// <param name="title">Название события</param>
-        /// <param name="startAt">Дата начала</param>
-        /// <param name="endAt">Дата завершения</param>
-        /// <param name="description">Опсание (необязательное поле)</param>
-        public Event AddEvent(string title, DateTime? startAt, DateTime? endAt, string? description)
+        /// <param name="_event">Событие</param>
+        public Event AddEvent(Event _event)
         {
-            Guid id = Guid.NewGuid();
-            Event newEvent = new(id, title, startAt, endAt, description);
-            events.TryAdd(id, newEvent);
-            return newEvent;
+            events.TryAdd(_event.Id, _event);
+            return _event;
         }
 
         /// <summary>
@@ -66,19 +61,13 @@ namespace BestEvents
         }
 
         /// <summary>
-        /// Возвращает спиок всех событий в хранилище
+        /// Возвращает коллекцию всех событий в хранилище
         /// </summary>
         /// <returns></returns>
         
-        public PaginatedResult<Event> GetEvents(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
+        public IEnumerable<Event> GetEvents()
         {
-            if (from != null && to != null && from > to)
-                throw new FilterWrongParameterException("Дата начала события не может быть позже даты завершения");
-            var result = filters.FilterEventsByTitle(events.Values, title);
-            result = filters.FilterEventsByDateFrom(result, from);
-            result = filters.FilterEventsByDateTo(result, to);
-
-            return pagination.GetResult(result, page, size);
+            return events.Values;
         }
 
     }

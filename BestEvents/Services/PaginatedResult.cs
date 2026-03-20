@@ -4,11 +4,11 @@
     /// Результаты поиска в репозитории c фильтрацией и пагинацией 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// /// <param name="resultsPerPage"></param>
+    /// <param name="resultsOnPage"></param>
     /// <param name="currentPage"></param>
     /// <param name="totalResultsNumber"></param>
 
-    public class PaginatedResult<T>(List<T> resultsPerPage, int currentPage, int totalResultsNumber): IEquatable<PaginatedResult<T>>
+    public class PaginatedResult<T>(IEnumerable<T> resultsOnPage, int currentPage, int totalResultsNumber): IEquatable<PaginatedResult<T>>
     {
         /// <summary>
         /// Общее количество записей
@@ -18,7 +18,7 @@
         /// <summary>
         /// Содержание
         /// </summary>
-        public List<T> ResultsPerPage { get; } = resultsPerPage;
+        public IEnumerable<T> ResultsOnPage { get; } = resultsOnPage;
 
         /// <summary>
         /// Текущая страница
@@ -28,7 +28,7 @@
         /// <summary>
         /// Количество записей на странице
         /// </summary>
-        public int ResultsNumberPerPage { get; } = resultsPerPage.Count;
+        public int ResultsNumberOnPage { get; } = resultsOnPage.Count();
 
         
 
@@ -49,11 +49,11 @@
                 return false;
             if (CurrentPage != other.CurrentPage)
                 return false;
-            if (ResultsNumberPerPage != other.ResultsNumberPerPage)
+            if (ResultsNumberOnPage != other.ResultsNumberOnPage)
                 return false;
-            if (ResultsPerPage.Count != other.ResultsPerPage.Count)
+            if (ResultsOnPage.Count() != other.ResultsOnPage.Count())
                 return false;
-            if (!ResultsPerPage.SequenceEqual(other.ResultsPerPage))
+            if (!ResultsOnPage.SequenceEqual(other.ResultsOnPage))
                 return false;
             return true;
         }
@@ -61,7 +61,7 @@
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(TotalResultsNumber, CurrentPage, ResultsNumberPerPage, ResultsPerPage);
+            return HashCode.Combine(TotalResultsNumber, CurrentPage, ResultsNumberOnPage, ResultsOnPage);
 
         }
     }

@@ -1,4 +1,5 @@
-﻿using BestEvents.Exceptions;
+﻿using BestEvents.ErrorHandler;
+using BestEvents.Exceptions;
 
 namespace BestEvents
 {
@@ -32,23 +33,48 @@ namespace BestEvents
             {
                 await _next(context);
             }
-            catch(EventsNotFoundException ex)
+            catch (EventsNotFoundException ex)
             {
+                _logger.LogInformation(ex.Message, [context.Request.Path]);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 404;
-                await context.Response.WriteAsync(ex.Message);
+                ErrorDetails details = new()
+                {
+                    Title = "Событие не найдено",
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
             }
-            catch(EventWrongParameterException ex)
+            catch (RequestWrongParameterException ex)
             {
+                _logger.LogInformation(ex.Message, [context.Request.Path]);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(ex.Message);
+                ErrorDetails details = new()
+                {
+                    Title = "Недопустимые параметры в запросе",
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
             }
-            catch (FilterWrongParameterException ex)
+           
+            catch (Exception ex)
             {
+                _logger.LogError(ex.Message, [context.Request.Path, ex, ex.InnerException]);
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(ex.Message);
+                context.Response.StatusCode = 500;
+                ErrorDetails details = new()
+                {
+                    Title = "Неизвестный тип ошибки",
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
             }
         }
     }

@@ -40,9 +40,9 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Описание (необязательный параметр)</param>
-        public Event(string title, DateTime? startAt, DateTime? endAt, string? description) : 
+        public Event(string title, DateTime? startAt, DateTime? endAt, string? description) :
             this(Guid.NewGuid(), title, startAt, endAt, description)
-        {   
+        {
         }
 
 
@@ -60,7 +60,7 @@ namespace BestEvents
         /// Описание события
         /// </summary>
         public string? Description { get; } = "";
-        
+
         /// <summary>
         /// Время начала
         /// </summary>
@@ -71,7 +71,25 @@ namespace BestEvents
         /// </summary>
         public DateTime? EndAt { get; }
 
-    }
 
-    
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            Event other = (Event)obj;
+            return Id == other.Id &&
+                   Title == other.Title &&
+                   Description == other.Description &&
+                   StartAt == other.StartAt &&
+                   EndAt == other.EndAt;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Title, Description, StartAt, EndAt);
+        }
+
+    }
 }

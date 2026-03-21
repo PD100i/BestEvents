@@ -11,13 +11,29 @@ namespace BestEvents
     /// <param name="endAt">Дата завершения</param>
     /// <param name="description">Описание (необязательный параметр)</param>
     public class EventDto(string id, string title, DateTime? startAt, DateTime? endAt, string? description) :
-        EventDtoBase( title, startAt, endAt, description)    
+        EventDtoBase(title, startAt, endAt, description)
     {
         /// <summary>
         /// Идентификатор
         /// </summary>
         [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо задать параметр Id")]
         public string Id { get; set; } = id;
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            EventDto other = (EventDto)obj;
+            return Id == other.Id && base.Equals(other);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, base.GetHashCode());
+
+        }
 
     }
 }

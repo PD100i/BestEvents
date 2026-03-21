@@ -19,7 +19,9 @@ namespace BestEventsTest
             new Event(Guid.Parse("8424113a-b4f7-4008-baad-a648c2c437e7"), "Семинар по цифровой грамотности", new DateTime(2026, 05, 18), new DateTime(2026, 05, 19), ""),
             new Event(Guid.Parse("835ccd17-31b3-419d-b114-e8e1e119121a"), "Музыкальный open‑air", new DateTime(2026, 07, 25), new DateTime(2026, 07, 27), ""),
             new Event(Guid.Parse("e07d69d8-11a1-400d-8dab-c1691c5b4c97"), "Городская книжная ярмарка", new DateTime(2026, 10, 05), new DateTime(2026, 10, 10), ""),
-            new Event(Guid.Parse("3c427551-9817-4055-a49a-fbc4f3a8d89e"), "Новогодний благотворительный концерт", new DateTime(2026, 12, 20), new DateTime(2026, 12, 20), "")];
+            new Event(Guid.Parse("3c427551-9817-4055-a49a-fbc4f3a8d89e"), "Новогодний благотворительный концерт", new DateTime(2026, 12, 20), new DateTime(2026, 12, 20), ""),
+            new Event(Guid.Parse("8425b848-2d84-45d5-bb18-5566d5b7a5da"), "Event1", new DateTime(2026, 12, 21), new DateTime(2026, 12, 21), ""),
+            new Event(Guid.Parse("b844ef01-1db7-4d53-8933-4401cfccabeb"), "Event2", new DateTime(2026, 12, 22), new DateTime(2026, 12, 22), "")];
 
 
         internal static List<Event> GetCollection()
@@ -32,5 +34,17 @@ namespace BestEventsTest
             return initialData[index];
         }
 
+        internal static EventDto GetEventDto(int index)
+        {
+            Event _event = initialData[index];
+            return new EventDto(_event.Id.ToString(), _event.Title, _event.StartAt, _event.EndAt, _event.Description);
+        }
+
+        internal static List<EventDto> GetDtoCollection()
+        {
+            List<EventDto> eventsDto = [];
+            initialData.ForEach(e => eventsDto.Add(new EventDto(e.Id.ToString(), e.Title, e.StartAt, e.EndAt, e.Description)));
+            return eventsDto;
+        }
     }
 }

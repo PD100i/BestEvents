@@ -55,8 +55,8 @@ namespace BestEventsTest
         {
             public IEnumerator<object?[]> GetEnumerator()
             {
-                yield return new object[] { initialData, new DateTime(2026, 07, 25), new List<Event>() { initialData[7], initialData[8], initialData[9] } };
-                yield return new object[] { initialData, new DateTime(2026, 07, 26), new List<Event>() { initialData[8], initialData[9] } };
+                yield return new object[] { initialData, new DateTime(2026, 07, 25), initialData.GetRange(7, 5) };
+                yield return new object[] { initialData, new DateTime(2026, 07, 26), initialData.GetRange(8, 4) };
                 yield return new object[] { initialData, new DateTime(2025, 04, 15), initialData };
                 yield return new object[] { initialData, new DateTime(2027, 01, 01), new List<Event>() };
                 yield return new object?[] { initialData, null, initialData };
@@ -80,7 +80,7 @@ namespace BestEventsTest
         {
             public IEnumerator<object?[]> GetEnumerator()
             {
-                yield return new object[] { initialData, new DateTime(2025, 08, 07), new List<Event>() { initialData[0], initialData[1], initialData[2], initialData[3] } };
+                yield return new object[] { initialData, new DateTime(2025, 08, 07), initialData.GetRange(0, 4) };
                 yield return new object[] { initialData, new DateTime(2025, 04, 20), new List<Event>() { initialData[0] } };
                 yield return new object[] { initialData, new DateTime(2025, 04, 15), new List<Event>() };
                 yield return new object[] { initialData, new DateTime(2027, 01, 01), initialData };

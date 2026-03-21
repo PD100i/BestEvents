@@ -47,6 +47,10 @@ namespace BestEvents
         {
             if (from != null && to != null && from > to)
                 throw new RequestWrongParameterException("Дата начала события не может быть позже даты завершения");
+            if (page <= 0)
+                throw new RequestWrongParameterException($"Попытка пагинации с недопустимым значением номера страницы (page={page})");
+            if (size <= 0)
+                throw new RequestWrongParameterException($"Попытка пагинации с недопустимым значением размера выборки на странице (size={size})");
 
             IEnumerable<Event> events = repository.GetEvents();
             
@@ -62,9 +66,9 @@ namespace BestEvents
             return new PaginatedResultDto()
             {
                 CurrentPage = result.CurrentPage,
-                EventsNumber = result.TotalResultsNumber,
-                Events = eventsDto,
-                EventsNumberPerPage = result.ResultsNumberOnPage
+                TotalResultsNumber = result.TotalResultsNumber,
+                ResultsOnPage = eventsDto,
+                ResultsNumberOnPage = result.ResultsNumberOnPage
             };
            
         }
@@ -78,7 +82,8 @@ namespace BestEvents
         {
             if(id != eventDto.Id)
                 throw new RequestWrongParameterException("Параметр id в строке запроса не совпадает с параметром id в теле запроса");
-            repository.ReplaceEvent(new Event(ParseStringId(eventDto.Id), eventDto.Title, eventDto.StartAt, eventDto.EndAt, eventDto.Description));
+            var _event = new Event(ParseStringId(eventDto.Id), eventDto.Title, eventDto.StartAt, eventDto.EndAt, eventDto.Description);
+            repository.ReplaceEvent(_event);
         }
 
 

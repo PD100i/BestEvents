@@ -19,13 +19,13 @@ namespace BestEvents.Controllers
         /// <param name="from">Дата для поиска событий, которые начинаются не раньше этой даты (необязательный) </param>
         /// <param name="to">Дата для поиска событий, которые заканчиваются не позже этой даты</param>
         /// <param name="page">Номер страницы для вывода</param>
-        /// <param name="size">Количество страниц для вывода</param>
+        /// <param name="pageSize">Количество элементов на странице</param>
         /// <response code="200">Возвращается JSON-структура EventDto[] с деталями ответа
         /// и HTTP статус-кодом 200 Ok в случае успеха</response>
         [HttpGet]
-        public IActionResult GetEvents([FromQuery] string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
+        public IActionResult GetEvents([FromQuery] string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
         {
-            return Ok(eventService.GetEvents(title, from, to, page, size));
+            return Ok(eventService.GetEvents(title, from, to, page, pageSize));
         }
 
         /// <summary>

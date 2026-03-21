@@ -35,7 +35,7 @@ namespace BestEvents
             }
             catch (EventsNotFoundException ex)
             {
-                _logger.LogInformation(ex.Message, [context.Request.Path]);
+                _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 404;
                 ErrorDetails details = new()
@@ -49,7 +49,7 @@ namespace BestEvents
             }
             catch (RequestWrongParameterException ex)
             {
-                _logger.LogInformation(ex.Message, [context.Request.Path]);
+                _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;
                 ErrorDetails details = new()
@@ -64,7 +64,7 @@ namespace BestEvents
            
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, [context.Request.Path, ex, ex.InnerException]);
+                _logger.LogError($"Запрос: {context.Request.Path}. {ex.Message}", ex);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 500;
                 ErrorDetails details = new()

@@ -1,4 +1,4 @@
-using BestEvents;
+п»їusing BestEvents;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +13,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 
 builder.Services.AddSwaggerGen(options =>
 {
-    // Путь к XML-файлу с документацией
+    // РџСѓС‚СЊ Рє XML-С„Р°Р№Р»Сѓ СЃ РґРѕРєСѓРјРµРЅС‚Р°С†РёРµР№
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     options.IncludeXmlComments(xmlPath);
@@ -28,11 +28,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseErrorHandler();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
-app.UseErrorHandler();
 
 app.MapControllers();
 

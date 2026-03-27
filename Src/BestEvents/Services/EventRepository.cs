@@ -8,26 +8,21 @@ using System.ComponentModel;
 namespace BestEvents
 {
     /// <summary>
-    /// Хранилище для событий Event. Реализация интерфейса IEventRepository
+    /// Репозиторий для событий Event. Реализация интерфейса IEventRepository
     /// </summary>
-    public class EventRepository : IEventRepository
+    public class EventRepository() : IEventRepository
     {
 
         static readonly ConcurrentDictionary<Guid, Event> events = new();
 
         /// <summary>
-        /// Создает новый объект Event и добавляет в хранилище
+        /// Добавляет event в хранилище
         /// </summary>
-        /// <param name="title">Название события</param>
-        /// <param name="startAt">Дата начала</param>
-        /// <param name="endAt">Дата завершения</param>
-        /// <param name="description">Опсание (необязательное поле)</param>
-        public Event CreateEvent(string title, DateTime? startAt, DateTime? endAt, string? description)
+        /// <param name="_event">Событие</param>
+        public Event AddEvent(Event _event)
         {
-            Guid id = Guid.NewGuid();
-            Event newEvent = new(id, title, startAt, endAt, description);
-            events.TryAdd(id, newEvent);
-            return newEvent;
+            events.TryAdd(_event.Id, _event);
+            return _event;
         }
 
         /// <summary>
@@ -54,17 +49,6 @@ namespace BestEvents
         }
 
         /// <summary>
-        /// Возвращает спиок всех событий в хранилище
-        /// </summary>
-        /// <returns></returns>
-        [Produces("List<Event>")]
-        public List<Event> GetAll()
-        {
-            List<Event> result = [..events.Values];
-                return result;
-        }
-
-        /// <summary>
         /// Перезаписывает событие в хранилище,
         /// если событие с таким идентификатором существует
         /// </summary>
@@ -74,6 +58,17 @@ namespace BestEvents
             if (!events.ContainsKey(_event.Id))
                 throw new EventsNotFoundException($"Событие с идентификатором {_event.Id} не найдено. Обновление не произведено");
             events[_event.Id] = _event;
-        }        
+        }
+
+        /// <summary>
+        /// Возвращает коллекцию всех событий в хранилище
+        /// </summary>
+        /// <returns></returns>
+        
+        public IEnumerable<Event> GetEvents()
+        {
+            return events.Values;
+        }
+
     }
 }

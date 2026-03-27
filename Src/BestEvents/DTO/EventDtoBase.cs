@@ -20,7 +20,7 @@ namespace BestEvents
         /// <summary>
         /// Описание события
         /// </summary>
-        public string? Description { get; set; } = description;
+        public string? Description { get; set; } = description ?? "";
 
         /// <summary>
         /// Дата начала события
@@ -35,5 +35,24 @@ namespace BestEvents
         [Required(ErrorMessage = "Не указана дата завершения мероприятия")]
         [DataType(DataType.Date, ErrorMessage = "Неверный формат даты завершения события")]
         public DateTime? EndAt { get; set; } = endAt;
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            EventDtoBase other = (EventDtoBase)obj;
+            return Title == other.Title &&
+                   Description == other.Description &&
+                   StartAt == other.StartAt &&
+                   EndAt == other.EndAt;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Title, Description, StartAt, EndAt);
+
+        }
     }
 }

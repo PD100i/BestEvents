@@ -16,18 +16,18 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Описание (необязательный параметр)</param>
-        public Event(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description)
+        public Event(Guid id, string title, DateTime startAt, DateTime endAt, string? description)
         {
             Id = id;
             if (string.IsNullOrEmpty(title))
-                throw new RequestWrongParameterException("Название события не может быть пустым");
+                throw new EventWrongParameterException("Название события не может быть пустым");
             Title = title;
-            if (startAt == null || startAt == default)
-                throw new RequestWrongParameterException("Дата начала события не может быть пустой");
-            if (endAt == null || endAt == default)
-                throw new RequestWrongParameterException("Дата завершения события не может быть пустой");
+            if (startAt == default)
+                throw new EventWrongParameterException("Дата начала события не может быть пустой");
+            if (endAt == default)
+                throw new EventWrongParameterException("Дата завершения события не может быть пустой");
             if (startAt > endAt)
-                throw new RequestWrongParameterException("Дата начала события не может быть позже даты завершения");
+                throw new EventWrongParameterException("Дата начала события не может быть позже даты завершения");
             StartAt = startAt;
             EndAt = endAt;
             Description = description;
@@ -40,7 +40,7 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Описание (необязательный параметр)</param>
-        public Event(string title, DateTime? startAt, DateTime? endAt, string? description) :
+        public Event(string title, DateTime startAt, DateTime endAt, string? description) :
             this(Guid.NewGuid(), title, startAt, endAt, description)
         {
         }
@@ -64,12 +64,12 @@ namespace BestEvents
         /// <summary>
         /// Время начала
         /// </summary>
-        public DateTime? StartAt { get; }
+        public DateTime StartAt { get; }
 
         /// <summary>
         /// Время завершения
         /// </summary>
-        public DateTime? EndAt { get; }
+        public DateTime EndAt { get; }
 
 
         /// <inheritdoc/>

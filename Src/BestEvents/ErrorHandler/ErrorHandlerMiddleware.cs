@@ -33,7 +33,7 @@ namespace BestEvents
             {
                 await _next(context);
             }
-            catch (EventsNotFoundException ex)
+            catch (DataNotFoundException ex)
             {
                 _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
                 context.Response.ContentType = "application/json";
@@ -47,7 +47,7 @@ namespace BestEvents
                 };
                 await context.Response.WriteAsJsonAsync(details);
             }
-            catch (RequestWrongParameterException ex)
+            catch (EventWrongParameterException ex)
             {
                 _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
                 context.Response.ContentType = "application/json";

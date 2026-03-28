@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using BestEvents.BookingService;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BestEvents.Controllers
@@ -7,11 +8,12 @@ namespace BestEvents.Controllers
     /// Контроллер событий
     /// </summary>
     /// <param name="eventService"></param>
+    /// <param name="bookingService"></param>
     [ApiController]
     [Route("events")]
-    public class EventsController(IEventService eventService) : ControllerBase
+    public class EventsController(IEventService eventService, IBookingService bookingService) : ControllerBase
     {
-        
+
         /// <summary>
         /// Возвращает события, фильтруя их по параметрам name, from, to. Возвращает HTTP статус-код 200 Ok в случае успеха
         /// </summary>

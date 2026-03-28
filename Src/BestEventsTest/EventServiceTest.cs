@@ -81,7 +81,7 @@ namespace BestEventsTest
         [MemberData(nameof(Get_CreateEvent_WrongArguments))]
         public void CreateEvent_CallWithWrongArguments_Exception(string title, DateTime? startAt, DateTime? endAt)
         {
-            Assert.Throws<RequestWrongParameterException>(() => eventService.CreateEvent(new EventDtoBase(title, startAt, endAt, "")));
+            Assert.Throws<EventWrongParameterException>(() => eventService.CreateEvent(new EventDtoBase(title, startAt, endAt, "")));
             mockRepository.Verify(mock => mock.AddEvent(It.IsAny<Event>()), Times.Never);
         }
 
@@ -99,7 +99,7 @@ namespace BestEventsTest
         public void DeleteEvent_CallWithWrongId_Exception()
         {
             string id = "123";  
-            Assert.Throws<RequestWrongParameterException>(() => eventService.DeleteEvent(id));
+            Assert.Throws<EventWrongParameterException>(() => eventService.DeleteEvent(id));
             mockRepository.Verify(mock => mock.RemoveEvent(new Guid()), Times.Never);
         }
 
@@ -122,7 +122,7 @@ namespace BestEventsTest
         public void GetEvent_WrongId_Exception()
         {
             string id = "123";
-            Assert.Throws<RequestWrongParameterException>(() => eventService.GetEvent(id));
+            Assert.Throws<EventWrongParameterException>(() => eventService.GetEvent(id));
             mockRepository.Verify(mock => mock.GetEvent(new Guid()), Times.Never);
         }
 
@@ -131,8 +131,8 @@ namespace BestEventsTest
         {
             Event _event = EventCollection.GetEvent(0);
             string id = _event.Id.ToString();
-            mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Throws(new EventsNotFoundException(""));
-            Assert.Throws<EventsNotFoundException>(() => eventService.GetEvent(id));
+            mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Throws(new DataNotFoundException(""));
+            Assert.Throws<DataNotFoundException>(() => eventService.GetEvent(id));
         }
 
         [Theory]
@@ -167,7 +167,7 @@ namespace BestEventsTest
         [MemberData(nameof(Get_ReplaceEvent_WrongArguments))]
         public void ReplaceEvent_CallWithWrongArguments_Exception(string idFromRout, string id, string title, DateTime? startAt, DateTime? endAt)
         {            
-            Assert.Throws<RequestWrongParameterException>(() => eventService.ReplaceEvent(idFromRout, new EventDto(id, title, startAt, endAt, "")));
+            Assert.Throws<EventWrongParameterException>(() => eventService.ReplaceEvent(idFromRout, new EventDto(id, title, startAt, endAt, "")));
             mockRepository.Verify(mock => mock.ReplaceEvent(It.IsAny<Event>()), Times.Never);
         }
 
@@ -215,7 +215,7 @@ namespace BestEventsTest
         [MemberData(nameof(Get_GetEvents_WrongArguments))]
         public void GetEvents_WrongArguments_Exception(string? title, DateTime? from, DateTime? to, int page, int size)
         {
-            Assert.Throws<RequestWrongParameterException>(() => eventService.GetEvents(title, from, to, page, size));
+            Assert.Throws<EventWrongParameterException>(() => eventService.GetEvents(title, from, to, page, size));
             mockRepository.Verify(mock => mock.GetEvents(), Times.Never);
         }
     }

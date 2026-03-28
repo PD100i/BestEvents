@@ -62,7 +62,7 @@ namespace BestEventsTest
         [ClassData(typeof(WrongPaginationTestData))]
         public void GetResult_WrongInputData_ThrowException(IEnumerable<int> data, int page, int size)
         {
-            Assert.Throws<RequestWrongParameterException>(() => pagination.GetResult(data, page, size));
+            Assert.Throws<EventWrongParameterException>(() => pagination.GetResult(data, page, size));
         }
 
         

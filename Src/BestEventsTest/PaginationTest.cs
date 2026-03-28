@@ -1,4 +1,4 @@
-using BestEvents;
+﻿using BestEvents;
 using BestEvents.Exceptions;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections;
@@ -23,25 +23,23 @@ namespace BestEventsTest
 
         private readonly Pagination<int> pagination = fixture.Pagination;
 
-        public class CorrectPaginationTestData : IEnumerable<object[]>
+        public static IEnumerable<object[]> GetCorrectPaginationTestData()
         {
-            public IEnumerator<object[]> GetEnumerator()
+            return new List<object[]>
             {
-                yield return new object[] { inputData, 1, 10, new PaginatedResult<int>([.. Enumerable.Range(1, 10)], 1, 98) };
-                yield return new object[] { inputData, 2, 10, new PaginatedResult<int>([.. Enumerable.Range(11, 10)], 2, 98) };
-                yield return new object[] { inputData, 10, 10, new PaginatedResult<int>([.. Enumerable.Range(91, 8)], 10, 98) };
-                yield return new object[] { inputData, 11, 10, new PaginatedResult<int>([], 11, 98) };
-                yield return new object[] { inputData, 1, 20, new PaginatedResult<int>([.. Enumerable.Range(1, 20)], 1, 98) };
-                yield return new object[] { inputData, 5, 20, new PaginatedResult<int>([.. Enumerable.Range(81, 18)], 5, 98) };
-                yield return new object[] { inputData, 6, 20, new PaginatedResult<int>([], 6, 98) };
-                yield return new object[] { new List<int>(), 2, 10, new PaginatedResult<int>([], 2, 0) };
-            }
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+                new object[] { inputData, 1, 10, new PaginatedResult<int>([.. Enumerable.Range(1, 10)], 1, 98) },
+                new object[] { inputData, 2, 10, new PaginatedResult<int>([.. Enumerable.Range(11, 10)], 2, 98) },
+                new object[] { inputData, 10, 10, new PaginatedResult<int>([.. Enumerable.Range(91, 8)], 10, 98) },
+                new object[] { inputData, 11, 10, new PaginatedResult<int>([], 11, 98) },
+                new object[] { inputData, 1, 20, new PaginatedResult<int>([.. Enumerable.Range(1, 20)], 1, 98) },
+                new object[] { inputData, 5, 20, new PaginatedResult<int>([.. Enumerable.Range(81, 18)], 5, 98) },
+                new object[] { inputData, 6, 20, new PaginatedResult<int>([], 6, 98) },
+                new object[] { new List<int>(), 2, 10, new PaginatedResult<int>([], 2, 0) }
+            };
         }
 
-
         [Theory]
-        [ClassData(typeof(CorrectPaginationTestData))]
+        [MemberData(nameof(GetCorrectPaginationTestData))]
         public void GetResult_CorrectData_CorrectResult(IEnumerable<int> data, int page, int size, PaginatedResult<int> expectedResult)
         {
             Assert.Equal(pagination.GetResult(data, page, size), expectedResult);

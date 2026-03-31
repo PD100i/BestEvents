@@ -14,7 +14,6 @@ namespace BestEvents
     {
 
         static readonly ConcurrentDictionary<Guid, Event> events = new();
-        static readonly ConcurrentDictionary<Guid, Booking> bookingRepo = new();
 
         /// <inheritdoc/>
         public Event AddEvent(Event _event)
@@ -62,28 +61,6 @@ namespace BestEvents
             return events.Values;
         }
 
-        /// <inheritdoc/>
-        public async Task<Booking> AddBooking(Booking booking, CancellationToken ct)
-        {
-            ct.ThrowIfCancellationRequested();
-            
-            return await Task.Run(() =>
-            {
-                bookingRepo.TryAdd(booking.Id, booking);
-                return booking;
-            });
-        }
-
-        /// <inheritdoc/>
-        public async Task<Booking> GetBookingAsync(Guid id, CancellationToken ct)
-        {
-            ct.ThrowIfCancellationRequested();
-            return await Task.Run(() =>
-            {
-                if (!bookingRepo.TryGetValue(id, out Booking? value))
-                    throw new DataNotFoundException($"Бронеирование с идентификатором {id} не найдено");
-                return value;
-            });
-        }
+        
     }
 }

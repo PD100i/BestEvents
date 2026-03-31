@@ -6,7 +6,7 @@ namespace BestEvents
     /// <summary>
     /// Реализация сервиса бронирования
     /// </summary>
-    public class BookingService(IEventRepository repository) : IBookingService
+    public class BookingService(IEventRepository eventsRepo, IBookingRepository bookingRepo) : IBookingService
     {
         /// <inheritdoc/>
         public static TimeSpan AllowedTimeUntilEventEnd { get; set; } = TimeSpan.FromHours(2);
@@ -15,7 +15,7 @@ namespace BestEvents
         public async Task<BookingResultDto> CreateBookingAsync(string eventId, CancellationToken ct)
         {
             Guid id = ParseStringId(eventId);
-            Event _event = await (repository.GetEventAsync(id, ct));
+            Event _event = await (eventsRepo.GetEventAsync(id, ct));
             CheckEndAt(_event.EndAt);
             Booking booking = new(id);
             return new BookingResultDto
@@ -32,7 +32,7 @@ namespace BestEvents
         public async Task<BookingResultDto> GetBookingByIdAsync(string bookingId, CancellationToken ct)
         {
             Guid id = ParseStringId(bookingId);
-            Booking booking = await (repository.GetBookingAsync(id, ct));
+            Booking booking = await (bookingRepo.GetBookingAsync(id, ct));
             return new BookingResultDto
             {
                 Id = booking.Id.ToString(),

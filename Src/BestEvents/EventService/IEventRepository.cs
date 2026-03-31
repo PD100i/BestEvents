@@ -47,20 +47,6 @@ namespace BestEvents
         /// <returns></returns>
         public IEnumerable<Event> GetEvents();
 
-        /// <summary>
-        /// Асинхронно добавляет бронирование в репозиторий.
-        /// </summary>
-        /// <param name="_booking"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<Booking> AddBooking(Booking _booking, CancellationToken ct);
-
-        /// <summary>
-        /// Получает бронирование по его идентификатору. Если бронирование с таким идентификатором не найдено, бросает исключение.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<Booking> GetBookingAsync(Guid id, CancellationToken ct);
+        
     }
 }

@@ -19,7 +19,7 @@ namespace BestEvents
                 {
                     using var scope = scopeFactory.CreateScope();
                     var repository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
-                    var tasks = await repository.GetPendingBooking(stoppingToken);
+                    var tasks = await repository.GetPendingBookingAsync(stoppingToken);
                     if (tasks.Count > 0)
                         tasks.ForEach(async task => await BookingProcessing(repository, task, stoppingToken));  
                 }
@@ -34,9 +34,8 @@ namespace BestEvents
         private async Task BookingProcessing(IBookingRepository bookingRepository, Booking booking, CancellationToken stoppingToken)
         {
             await Task.Delay(2000, stoppingToken);
-            booking.Status = BookingStatus.Confirmed;
-            booking.ProcessedAt = DateTime.Now;
-            await bookingRepository.ReplaceBooking(booking, stoppingToken);
+            booking.Confirm();
+            await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace BestEvents
         /// Создание брони для события с идентификатором eventId. Статус брони по умолчанию - Pending, дата создания - текущая дата и время
         /// </summary>
         /// <param name="eventId"></param>
-        public Booking(Guid eventId): this(Guid.NewGuid(), eventId, BookingStatus.Pending, DateTime.Now)
+        public Booking(Guid eventId) : this(Guid.NewGuid(), eventId, BookingStatus.Pending, DateTime.Now)
         {
         }
 
@@ -54,7 +54,7 @@ namespace BestEvents
         /// <summary>
         /// Идентификатор брони
         /// </summary>
-        public Guid Id { get;  }
+        public Guid Id { get; }
 
         /// <summary>
         /// Идентификатор события, на которое было сделано бронирование
@@ -64,7 +64,7 @@ namespace BestEvents
         /// <summary>
         /// Статус брони
         /// </summary>
-        public BookingStatus Status { get; set; }
+        public BookingStatus Status { get; private set; }
 
         /// <summary>
         /// Дата и время создания брони
@@ -74,7 +74,25 @@ namespace BestEvents
         /// <summary>
         /// Дата и время обработки брони
         /// </summary>
-        public DateTime? ProcessedAt { get; set; }
+        public DateTime? ProcessedAt { get; private set; }
+
+        /// <summary>
+        /// Подтверждение бронирования
+        /// </summary>
+        public void Confirm()
+        {
+            Status = BookingStatus.Confirmed;
+            ProcessedAt = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Отклонение бронирования
+        /// </summary>
+        public void Reject()
+        {
+            Status = BookingStatus.Rejected;
+            ProcessedAt = DateTime.Now;
+        }
     }
 
     /// <summary>

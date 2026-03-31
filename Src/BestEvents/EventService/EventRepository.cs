@@ -37,16 +37,6 @@ namespace BestEvents
             return value;
         }
 
-
-        /// <inheritdoc/>
-        public async Task<Event> GetEventAsync(Guid id, CancellationToken ct)
-        {
-            ct.ThrowIfCancellationRequested();
-            if (!events.TryGetValue(id, out Event? value))
-                throw new DataNotFoundException($"Событие с идентификатором {id} не найдено");
-            return await Task.FromResult(value);
-        }
-
         /// <inheritdoc/>
         public void ReplaceEvent(Event _event)
         {

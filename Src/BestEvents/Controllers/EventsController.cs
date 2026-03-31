@@ -1,4 +1,4 @@
-﻿using BestEvents.BookingService;
+﻿
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +8,9 @@ namespace BestEvents.Controllers
     /// Контроллер событий
     /// </summary>
     /// <param name="eventService"></param>
-    /// <param name="bookingService"></param>
     [ApiController]
     [Route("events")]
-    public class EventsController(IEventService eventService, IBookingService bookingService) : ControllerBase
+    public class EventsController(IEventService eventService) : ControllerBase
     {
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace BestEvents
         static readonly ConcurrentDictionary<Guid, Booking> bookingRepo = new();
 
         /// <inheritdoc/>
-        public async Task<Booking> AddBooking(Booking booking, CancellationToken ct)
+        public async Task<Booking> CreateBookingAsync(Booking booking, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
 
@@ -34,7 +34,7 @@ namespace BestEvents
         }
 
         /// <inheritdoc/>
-        public async Task<List<Booking>> GetPendingBooking(CancellationToken ct)
+        public async Task<List<Booking>> GetPendingBookingAsync(CancellationToken ct)
         {
            return await Task.FromResult(bookingRepo.Values.Where(b => b.Status == BookingStatus.Pending)
                                                           .OrderBy(b => b.ProcessedAt) 
@@ -42,7 +42,7 @@ namespace BestEvents
         }
 
         /// <inheritdoc/>
-        public async Task ReplaceBooking(Booking booking, CancellationToken ct)
+        public async Task ReplaceBookingAsync(Booking booking, CancellationToken ct)
         {
             if (!bookingRepo.ContainsKey(booking.Id))
                 throw new DataNotFoundException($"Бронирование с идентификатором {booking.Id} не найдено. Обновление не произведено");

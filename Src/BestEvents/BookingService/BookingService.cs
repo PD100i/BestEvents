@@ -6,7 +6,7 @@ namespace BestEvents
     /// <summary>
     /// Реализация сервиса бронирования
     /// </summary>
-    public class BookingService(IEventRepository eventsRepo, IBookingRepository bookingRepo) : IBookingService
+    public class BookingService(IEventRepository eventRepo, IBookingRepository bookingRepo) : IBookingService
     {
         /// <inheritdoc/>
         public static TimeSpan AllowedTimeUntilEventEnd { get; set; } = TimeSpan.FromHours(2);
@@ -15,9 +15,8 @@ namespace BestEvents
         public async Task<BookingResultDto> CreateBookingAsync(string eventId, CancellationToken ct)
         {
             Guid id = ParseStringId(eventId);
-            Event _event = await (eventsRepo.GetEventAsync(id, ct));
-            CheckEndAt(_event.EndAt);
-            Booking booking = new(id);
+            Event _ = eventRepo.GetEvent(id);          
+            Booking booking = await bookingRepo.CreateBookingAsync(new Booking(id), ct);
             return new BookingResultDto
             {
                 Id = booking.Id.ToString(),
@@ -51,10 +50,6 @@ namespace BestEvents
             return result;
         }
 
-        private void CheckEndAt(DateTime endAt)
-        {
-            if (DateTime.Now > endAt - AllowedTimeUntilEventEnd)
-                throw new BookingWrongParameterException($"Бронирование недоступно, так как до окончания события осталось меньше {AllowedTimeUntilEventEnd}");
-        }
+        
     }
 }

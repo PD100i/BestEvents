@@ -11,7 +11,7 @@
         /// <param name="booking"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Booking> AddBooking(Booking booking, CancellationToken ct);
+        Task<Booking> CreateBookingAsync(Booking booking, CancellationToken ct);
 
         /// <summary>
         /// Получает бронирование по его идентификатору. Если бронирование с таким идентификатором не найдено, бросает исключение.
@@ -26,7 +26,7 @@
         /// </summary>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<List<Booking>> GetPendingBooking(CancellationToken ct);
+        Task<List<Booking>> GetPendingBookingAsync(CancellationToken ct);
 
         /// <summary>
         /// Перезаписывает асинхронно бронирование с таким же ID 
@@ -34,6 +34,6 @@
         /// <param name="booking"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task ReplaceBooking(Booking booking, CancellationToken ct);
+        Task ReplaceBookingAsync(Booking booking, CancellationToken ct);
     }
 }

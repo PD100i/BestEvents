@@ -33,15 +33,6 @@ namespace BestEvents
         Event GetEvent(Guid id);
 
         /// <summary>
-        /// Асинхронно получает событие по его иденификатору. Если событие с таким идентификатором не найдено, бросает исключение.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        /// <exception cref="DataNotFoundException"></exception>
-        public Task<Event> GetEventAsync(Guid id, CancellationToken ct);
-
-        /// <summary>
         /// Получает все события из хранилища и возвращает их в виде списка.
         /// </summary>
         /// <returns></returns>

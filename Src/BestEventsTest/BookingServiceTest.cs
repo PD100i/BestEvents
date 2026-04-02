@@ -26,7 +26,7 @@ namespace BestEventsTest
     public class BookingServiceTest
     {
         [Fact]
-        public async Task CreateBookingAsync_EventExists_ShouldReturnBookingResultDto()
+        public async Task CreateBookingAsync_EventExists_ReturnBookingResultDto()
         {
             // Arrange
             var fixture = new BookingServiceFixture();
@@ -51,15 +51,59 @@ namespace BestEventsTest
         }
 
         [Fact]
+        public async Task CreateBookingAsync_MultipleRequestes_CreateSomeBooking()
+        {
+            // Arrange
+            var fixture = new BookingServiceFixture();
+            var eventId = Guid.NewGuid();
+            Booking[] booking = [new Booking(eventId), new Booking(eventId), new Booking(eventId)];
+
+            fixture.MockBookingRepository.Setup(repo =>  repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(booking[0]);
+            fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(booking[1]);
+            fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(booking[2]);
+
+            List<Task<BookingResultDto>> t = [
+                fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None),
+                fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None),
+                fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None)];
+
+            // Act
+            var result = await Task.WhenAll(t);
+
+            // Assert
+            Assert.Equal(eventId.ToString(), result[0].EventId);
+            Assert.Null(result[0].ProcessedAt);
+            Assert.Equal(BookingStatus.Pending, result[0].Status);
+
+            Assert.Equal(eventId.ToString(), result[1].EventId);
+            Assert.Null(result[1].ProcessedAt);
+            Assert.Equal(BookingStatus.Pending, result[1].Status);
+
+            Assert.Equal(eventId.ToString(), result[2].EventId);
+            Assert.Null(result[2].ProcessedAt);
+            Assert.Equal(BookingStatus.Pending, result[2].Status);
+
+
+            //Assert.Equal(result[0].EventId, result[1].EventId);
+            //Assert.Equal(result[1].EventId, result[2].EventId);
+            Assert.NotEqual(result[0].Id, result[1].Id);
+            Assert.NotEqual(result[1].Id, result[2].Id);
+
+        }
+
+        [Fact]
         public async Task CreateBookingAsync_EventDoesNotExist_ShouldThrowDataNotFoundException()
         {
             // Arrange
             var fixture = new BookingServiceFixture();
             var eventId = Guid.NewGuid();
-            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Throws(new BestEvents.Exceptions.DataNotFoundException("Событие не найдено"));
+            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Throws(new BestEvents.Exceptions.EventNotFoundException("Событие не найдено"));
 
             // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.DataNotFoundException>(() => fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None));
+            await Assert.ThrowsAsync<BestEvents.Exceptions.EventNotFoundException>(() => fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None));
             fixture.MockEventRepository.Verify(repo => repo.GetEvent(eventId), Times.Once);
             fixture.MockBookingRepository.Verify(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -78,21 +122,36 @@ namespace BestEventsTest
         }
 
         [Fact]
+        public async Task CreateBookingAsync_Cancel_Cancelled()
+        {
+            // Arrange
+            var fixture = new BookingServiceFixture();
+            var eventId = Guid.NewGuid();
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<OperationCanceledException>(() => fixture.BookingService.CreateBookingAsync(eventId.ToString(), cts.Token));
+            fixture.MockEventRepository.Verify(repo => repo.GetEvent(It.IsAny<Guid>()), Times.Never);
+            fixture.MockBookingRepository.Verify(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+
+        [Fact]
         public async Task GetBookingByIdAsync_BookingExists_ShouldReturnBookingResultDto()
         {
             // Arrange
             var fixture = new BookingServiceFixture();
-            var bookingId = Guid.NewGuid();
             var eventId = Guid.NewGuid();
-            var booking = new Booking(bookingId, eventId, BookingStatus.Pending, DateTime.Now);
-            fixture.MockBookingRepository.Setup(repo => repo.GetBookingAsync(bookingId, It.IsAny<CancellationToken>()))
+            var booking = new Booking(eventId);
+            fixture.MockBookingRepository.Setup(repo => repo.GetBookingAsync(booking.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(booking);
 
             // Act
-            var result = await fixture.BookingService.GetBookingByIdAsync(bookingId.ToString(), CancellationToken.None);
+            var result = await fixture.BookingService.GetBookingByIdAsync(booking.Id.ToString(), CancellationToken.None);
 
             // Assert
-            fixture.MockBookingRepository.Verify(repo => repo.GetBookingAsync(bookingId, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockBookingRepository.Verify(repo => repo.GetBookingAsync(booking.Id, It.IsAny<CancellationToken>()), Times.Once);
             Assert.NotNull(result);
             Assert.Equal(booking.Id.ToString(), result.Id);
             Assert.Equal(booking.EventId.ToString(), result.EventId);
@@ -107,10 +166,10 @@ namespace BestEventsTest
             var fixture = new BookingServiceFixture();
             var bookingId = Guid.NewGuid();
             fixture.MockBookingRepository.Setup(repo => repo.GetBookingAsync(bookingId, It.IsAny<CancellationToken>()))
-                .Throws(new BestEvents.Exceptions.DataNotFoundException("Бронирование не найдено"));
+                .Throws(new BestEvents.Exceptions.EventNotFoundException("Бронирование не найдено"));
 
             // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.DataNotFoundException>(() => fixture.BookingService.GetBookingByIdAsync(bookingId.ToString(), CancellationToken.None));
+            await Assert.ThrowsAsync<BestEvents.Exceptions.EventNotFoundException>(() => fixture.BookingService.GetBookingByIdAsync(bookingId.ToString(), CancellationToken.None));
             fixture.MockBookingRepository.Verify(repo => repo.GetBookingAsync(bookingId, It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -122,6 +181,20 @@ namespace BestEventsTest
             string invalidBookingId = "123";
             // Act & Assert
             await Assert.ThrowsAsync<BestEvents.Exceptions.BookingWrongParameterException>(() => fixture.BookingService.GetBookingByIdAsync(invalidBookingId, CancellationToken.None));
+            fixture.MockBookingRepository.Verify(repo => repo.GetBookingAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetBookingByIdAsync_Cancel_Cancelled()
+        {
+            // Arrange
+            var fixture = new BookingServiceFixture();
+            var bookingId = Guid.NewGuid();
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<OperationCanceledException>(() => fixture.BookingService.GetBookingByIdAsync(bookingId.ToString(), cts.Token));
             fixture.MockBookingRepository.Verify(repo => repo.GetBookingAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }

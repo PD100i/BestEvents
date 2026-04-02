@@ -26,14 +26,14 @@ namespace BestEvents
         public void RemoveEvent(Guid id)
         {
             if (!events.TryRemove(id, out _))
-                throw new DataNotFoundException($"Событие с идентификатором {id} не найдено. Удаление не произведено");
+                throw new EventNotFoundException($"Событие с идентификатором {id} не найдено. Удаление не произведено");
         }
 
         /// <inheritdoc/>
         public Event GetEvent(Guid id)
         {
             if (!events.TryGetValue(id, out Event? value))
-                throw new DataNotFoundException($"Событие с идентификатором {id} не найдено");
+                throw new EventNotFoundException($"Событие с идентификатором {id} не найдено");
             return value;
         }
 
@@ -41,7 +41,7 @@ namespace BestEvents
         public void ReplaceEvent(Event _event)
         {
             if (!events.ContainsKey(_event.Id))
-                throw new DataNotFoundException($"Событие с идентификатором {_event.Id} не найдено. Обновление не произведено");
+                throw new EventNotFoundException($"Событие с идентификатором {_event.Id} не найдено. Обновление не произведено");
             events[_event.Id] = _event;
         }
 

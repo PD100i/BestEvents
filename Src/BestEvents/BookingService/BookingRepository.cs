@@ -28,7 +28,7 @@ namespace BestEvents
             return await Task.Run(() =>
             {
                 if (!bookingRepo.TryGetValue(id, out Booking? value))
-                    throw new DataNotFoundException($"Бронеирование с идентификатором {id} не найдено");
+                    throw new BookingNotFoundException($"Бронеирование с идентификатором {id} не найдено");
                 return value;
             });
         }
@@ -45,7 +45,7 @@ namespace BestEvents
         public async Task ReplaceBookingAsync(Booking booking, CancellationToken ct)
         {
             if (!bookingRepo.ContainsKey(booking.Id))
-                throw new DataNotFoundException($"Бронирование с идентификатором {booking.Id} не найдено. Обновление не произведено");
+                throw new BookingNotFoundException($"Бронирование с идентификатором {booking.Id} не найдено. Обновление не произведено");
             await Task.Run(() => bookingRepo[booking.Id] = booking);
         }
     }

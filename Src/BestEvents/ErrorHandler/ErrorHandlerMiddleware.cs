@@ -33,7 +33,7 @@ namespace BestEvents
             {
                 await _next(context);
             }
-            catch (DataNotFoundException ex)
+            catch (EventNotFoundException ex)
             {
                 _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
                 context.Response.ContentType = "application/json";
@@ -41,6 +41,20 @@ namespace BestEvents
                 ErrorDetails details = new()
                 {
                     Title = "Событие не найдено",
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
+            catch (BookingNotFoundException ex)
+            {
+                _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 404;
+                ErrorDetails details = new()
+                {
+                    Title = "Бронирование не найдено",
                     StatusCode = context.Response.StatusCode,
                     Detail = ex.Message,
                     Instance = context.Request.Path
@@ -61,8 +75,35 @@ namespace BestEvents
                 };
                 await context.Response.WriteAsJsonAsync(details);
             }
-           
-            catch (Exception ex)
+            catch (BookingWrongParameterException ex)
+            {
+                _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 400;
+                ErrorDetails details = new()
+                {
+                    Title = "Недопустимые параметры в запросе",
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
+            catch (ServiceInvalidOperationException ex)
+            {
+                _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 500;
+                ErrorDetails details = new()
+                {
+                    Title = "Неизвестный тип ошибки",
+                    StatusCode = context.Response.StatusCode,
+                    Detail = "",
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
+            catch ( Exception ex)
             {
                 _logger.LogError($"Запрос: {context.Request.Path}. {ex.Message}", ex);
                 context.Response.ContentType = "application/json";
@@ -71,7 +112,7 @@ namespace BestEvents
                 {
                     Title = "Неизвестный тип ошибки",
                     StatusCode = context.Response.StatusCode,
-                    Detail = ex.Message,
+                    Detail = "",
                     Instance = context.Request.Path
                 };
                 await context.Response.WriteAsJsonAsync(details);

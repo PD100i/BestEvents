@@ -1,4 +1,6 @@
-﻿
+﻿using BestEvents.ErrorHandler;
+using BestEvents.Exceptions;
+
 namespace BestEvents
 {
     /// <summary>
@@ -18,24 +20,59 @@ namespace BestEvents
                 try
                 {
                     using var scope = scopeFactory.CreateScope();
-                    var repository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
-                    var tasks = await repository.GetPendingBookingAsync(stoppingToken);
-                    if (tasks.Count > 0)
-                        tasks.ForEach(async task => await BookingProcessing(repository, task, stoppingToken));  
+                    var eventRepo = scope.ServiceProvider.GetRequiredService<IEventRepository>();
+                    var bookingRepo = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
+
+                    List<Booking> tasks = await bookingRepo.GetPendingBookingAsync(stoppingToken);
+
+                    tasks.ForEach(async task => await BookingProcessing(bookingRepo, eventRepo, task, stoppingToken));
                 }
-                catch (OperationCanceledException) { }
+                catch (OperationCanceledException) { throw; }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex.Message, ex);
+                    logger.LogError($"Непредвиденная ошибка при работе сервиса бронирования: {ex.Message}");
                 }
             }
         }
 
-        private async Task BookingProcessing(IBookingRepository bookingRepository, Booking booking, CancellationToken stoppingToken)
+        private async Task BookingProcessing(IBookingRepository bookingRepository, IEventRepository eventRepository, Booking booking, CancellationToken stoppingToken)
         {
-            await Task.Delay(2000, stoppingToken);
-            booking.Confirm();
-            await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
+            try
+            {
+                stoppingToken.ThrowIfCancellationRequested();
+                await Task.Delay(2000, stoppingToken);
+
+                var _event = eventRepository.GetEvent(booking.EventId);
+                if (_event.EndAt < DateTime.Now)
+                    {
+                    booking.Reject();
+                    await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
+                    logger.LogInformation($"Бронирование {booking.Id} отклонено, так как событие {booking.EventId} уже завершилось");
+                    return;
+                }
+               
+                booking.Confirm();
+                await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
+            }
+            catch (OperationCanceledException) { throw; }
+            catch (EventNotFoundException)
+            {
+                booking.Reject();
+                await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
+                logger.LogInformation($"Бронирование {booking.Id} отклонено, так как событие {booking.EventId} не существует или оно было удалено");
+            }
+            catch (ServiceInvalidOperationException ex)
+            {
+                logger.LogError($"Ошибка при обработке бронирования {booking.Id}: {ex.Message}");
+            }
+            
+            catch (Exception ex)
+            {
+                logger.LogError($"Непредвиденная ошибка при обработке бронирования {booking.Id}: {ex.Message}");
+            }
+
         }
+
+        
     }
 }

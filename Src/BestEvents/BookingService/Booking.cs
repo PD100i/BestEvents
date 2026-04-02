@@ -1,4 +1,6 @@
-﻿using BestEvents.Exceptions;
+﻿using BestEvents.ErrorHandler;
+using BestEvents.Exceptions;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BestEvents
 {
@@ -11,44 +13,15 @@ namespace BestEvents
         /// Создание брони для события с идентификатором eventId. Статус брони по умолчанию - Pending, дата создания - текущая дата и время
         /// </summary>
         /// <param name="eventId"></param>
-        public Booking(Guid eventId) : this(Guid.NewGuid(), eventId, BookingStatus.Pending, DateTime.Now)
+        public Booking(Guid eventId)
         {
-        }
-
-
-        /// <summary>
-        /// Создание брони для события с идентификатором eventId, статусом status и датой создания createdAt.
-        /// </summary>
-        /// <param name="eventId"></param>
-        /// <param name="status"></param>
-        /// <param name="createdAt"></param>
-        public Booking(Guid eventId, BookingStatus status, DateTime? createdAt) : this(Guid.NewGuid(), eventId, status, createdAt)
-        {
-        }
-
-        /// <summary>
-        /// Создание брони для события с идентификатором eventId, статусом status и датой создания createdAt. 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="eventId"></param>
-        /// <param name="status"></param>
-        /// <param name="createdAt"></param>
-        /// <exception cref="BookingWrongParameterException"></exception>
-        public Booking(Guid id, Guid eventId, BookingStatus status, DateTime? createdAt)
-        {
-            if (id == Guid.Empty)
-                throw new ArgumentException("При создании брони не передан идентификатор брони");
             if (eventId == Guid.Empty)
-                throw new ArgumentException("При создании брони не передан идентификатор события");
-            if (createdAt == null)
-                throw new ArgumentException("При создании брони не передана дата создания брони");
-            if (createdAt > DateTime.Now)
-                throw new ArgumentException("Дата создания брони не может быть в будущем");
+                throw new BookingWrongParameterException("При создании брони не передан идентификатор события");
 
-            Id = id;
+            Id = Guid.NewGuid();
             EventId = eventId;
-            Status = status;
-            CreatedAt = createdAt.Value;
+            Status = BookingStatus.Pending;
+            CreatedAt = DateTime.Now;
         }
 
         /// <summary>
@@ -81,6 +54,10 @@ namespace BestEvents
         /// </summary>
         public void Confirm()
         {
+            if (Status == BookingStatus.Confirmed)
+                throw new ServiceInvalidOperationException($"Попытка подтверждения брони {Id}, которая уже подтверждена");
+            if (Status == BookingStatus.Rejected)
+                throw new ServiceInvalidOperationException($"Попытка подтверждения уже отклоненной брони {Id}");
             Status = BookingStatus.Confirmed;
             ProcessedAt = DateTime.Now;
         }
@@ -90,6 +67,10 @@ namespace BestEvents
         /// </summary>
         public void Reject()
         {
+            if (Status == BookingStatus.Confirmed)
+                throw new ServiceInvalidOperationException($"Повторная отклонения уже подтвержденной брони {Id}");
+            if (Status == BookingStatus.Rejected)
+                throw new ServiceInvalidOperationException($"Попытка отклонения брони {Id}, которая уже отклонена");
             Status = BookingStatus.Rejected;
             ProcessedAt = DateTime.Now;
         }

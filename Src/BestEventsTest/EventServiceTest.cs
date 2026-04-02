@@ -131,8 +131,8 @@ namespace BestEventsTest
         {
             Event _event = EventCollection.GetEvent(0);
             string id = _event.Id.ToString();
-            mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Throws(new DataNotFoundException(""));
-            Assert.Throws<DataNotFoundException>(() => eventService.GetEvent(id));
+            mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Throws(new EventNotFoundException(""));
+            Assert.Throws<EventNotFoundException>(() => eventService.GetEvent(id));
         }
 
         [Theory]

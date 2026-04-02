@@ -14,6 +14,7 @@ namespace BestEvents
         /// <inheritdoc/>
         public async Task<BookingResultDto> CreateBookingAsync(string eventId, CancellationToken ct)
         {
+            ct.ThrowIfCancellationRequested();
             Guid id = ParseStringId(eventId);
             Event _ = eventRepo.GetEvent(id);          
             Booking booking = await bookingRepo.CreateBookingAsync(new Booking(id), ct);
@@ -31,6 +32,7 @@ namespace BestEvents
         public async Task<BookingResultDto> GetBookingByIdAsync(string bookingId, CancellationToken ct)
         {
             Guid id = ParseStringId(bookingId);
+            ct.ThrowIfCancellationRequested();
             Booking booking = await (bookingRepo.GetBookingAsync(id, ct));
             return new BookingResultDto
             {
@@ -42,7 +44,6 @@ namespace BestEvents
             };
         }
 
-
         private Guid ParseStringId(string id)
         {
             if (!Guid.TryParse(id, out Guid result))
@@ -50,6 +51,5 @@ namespace BestEvents
             return result;
         }
 
-        
     }
 }

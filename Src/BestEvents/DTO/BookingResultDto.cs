@@ -19,7 +19,7 @@ namespace BestEvents
         /// <summary>
         /// Статус брони
         /// </summary>
-        public required BookingStatus Status { get; set; }
+        public required string Status { get; set; }
 
         /// <summary>
         /// Дата и время создания брони

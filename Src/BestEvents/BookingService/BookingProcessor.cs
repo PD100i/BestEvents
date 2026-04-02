@@ -6,7 +6,7 @@ namespace BestEvents
     /// <summary>
     /// Фоновый сервис для обработки бронирований
     /// </summary>
-    public class BookingProcessor(IServiceScopeFactory scopeFactory, ILogger logger) : BackgroundService
+    public class BookingProcessor(IServiceScopeFactory scopeFactory, ILogger<BookingProcessor> logger) : BackgroundService
     {
         /// <summary>
         /// Фоновый процесс обработки бронирования
@@ -22,10 +22,18 @@ namespace BestEvents
                     using var scope = scopeFactory.CreateScope();
                     var eventRepo = scope.ServiceProvider.GetRequiredService<IEventRepository>();
                     var bookingRepo = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
+                    // var logger = scope.ServiceProvider.GetRequiredService<ILogger<BookingProcessor>>();
 
-                    List<Booking> tasks = await bookingRepo.GetPendingBookingAsync(stoppingToken);
-
-                    tasks.ForEach(async task => await BookingProcessing(bookingRepo, eventRepo, task, stoppingToken));
+                    List<Booking> queue = await bookingRepo.GetPendingBookingAsync(stoppingToken);
+                    if (queue.Count == 0)
+                    {
+                        await Task.Delay(100, stoppingToken);
+                        continue;
+                    }
+                    foreach(var task in queue)
+                    {
+                        await BookingProcessing(bookingRepo, eventRepo, task, stoppingToken);
+                    }
                 }
                 catch (OperationCanceledException) { throw; }
                 catch (Exception ex)

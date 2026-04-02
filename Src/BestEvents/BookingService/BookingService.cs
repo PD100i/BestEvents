@@ -22,7 +22,7 @@ namespace BestEvents
             {
                 Id = booking.Id.ToString(),
                 EventId = booking.EventId.ToString(),
-                Status = booking.Status,
+                Status = booking.Status.ToString(),
                 CreatedAt = booking.CreatedAt,
                 ProcessedAt = booking.ProcessedAt
             };
@@ -38,7 +38,7 @@ namespace BestEvents
             {
                 Id = booking.Id.ToString(),
                 EventId = booking.EventId.ToString(),
-                Status = booking.Status,
+                Status = booking.Status.ToString(),
                 CreatedAt = booking.CreatedAt,
                 ProcessedAt = booking.ProcessedAt
             };

@@ -43,10 +43,10 @@ namespace BestEventsTest
             Assert.NotNull(result);
             Assert.Equal(booking.Id.ToString(), result.Id);
             Assert.Equal(booking.EventId.ToString(), result.EventId);
-            Assert.Equal(booking.Status, result.Status);
+            Assert.Equal(booking.Status.ToString(), result.Status);
             Assert.Equal(booking.CreatedAt, result.CreatedAt);
             Assert.Equal(eventId.ToString(), result.EventId);
-            Assert.Equal(BookingStatus.Pending, result.Status);
+            Assert.Equal(BookingStatus.Pending.ToString(), result.Status);
             Assert.Null(result.ProcessedAt);
         }
 
@@ -76,15 +76,15 @@ namespace BestEventsTest
             // Assert
             Assert.Equal(eventId.ToString(), result[0].EventId);
             Assert.Null(result[0].ProcessedAt);
-            Assert.Equal(BookingStatus.Pending, result[0].Status);
+            Assert.Equal(BookingStatus.Pending.ToString(), result[0].Status);
 
             Assert.Equal(eventId.ToString(), result[1].EventId);
             Assert.Null(result[1].ProcessedAt);
-            Assert.Equal(BookingStatus.Pending, result[1].Status);
+            Assert.Equal(BookingStatus.Pending.ToString(), result[1].Status);
 
             Assert.Equal(eventId.ToString(), result[2].EventId);
             Assert.Null(result[2].ProcessedAt);
-            Assert.Equal(BookingStatus.Pending, result[2].Status);
+            Assert.Equal(BookingStatus.Pending.ToString(), result[2].Status);
 
 
             //Assert.Equal(result[0].EventId, result[1].EventId);
@@ -155,7 +155,7 @@ namespace BestEventsTest
             Assert.NotNull(result);
             Assert.Equal(booking.Id.ToString(), result.Id);
             Assert.Equal(booking.EventId.ToString(), result.EventId);
-            Assert.Equal(booking.Status, result.Status);
+            Assert.Equal(booking.Status.ToString(), result.Status);
             Assert.Equal(booking.CreatedAt, result.CreatedAt);
         }
 

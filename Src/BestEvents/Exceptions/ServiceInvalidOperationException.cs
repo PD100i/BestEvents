@@ -1,4 +1,4 @@
-﻿namespace BestEvents.ErrorHandler
+﻿namespace BestEvents.Exceptions
 {
     /// <summary>
     /// Исключение, которое выбрасывается при возникновение логических ошибок в сервисах

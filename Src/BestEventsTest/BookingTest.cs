@@ -58,14 +58,11 @@ namespace BestEventsTest
             var eventId = Guid.NewGuid();
             var booking = new Booking(eventId);
 
-            // Act
+            // Act & Assert
             booking.Confirm();
-            var firstProcessedAt = booking.ProcessedAt;
-            booking.Confirm();
-
-            // Assert
-            Assert.Equal(BookingStatus.Confirmed, booking.Status);
-            Assert.Equal(firstProcessedAt, booking.ProcessedAt);
+            var firstProcessedAt = booking.ProcessedAt;            
+            Assert.Throws<BestEvents.Exceptions.ServiceInvalidOperationException>(() => booking.Confirm());
+            Assert.Equal(firstProcessedAt, booking.ProcessedAt ); 
         }
 
         [Fact]
@@ -90,13 +87,10 @@ namespace BestEventsTest
             var eventId = Guid.NewGuid();
             var booking = new Booking(eventId);
 
-            // Act
+            // Act & Assert
             booking.Reject();
             var firstProcessedAt = booking.ProcessedAt;
-            booking.Reject();
-
-            // Assert
-            Assert.Equal(BookingStatus.Rejected, booking.Status);
+            Assert.Throws<BestEvents.Exceptions.ServiceInvalidOperationException>(() => booking.Reject());
             Assert.Equal(firstProcessedAt, booking.ProcessedAt);
         }
     }

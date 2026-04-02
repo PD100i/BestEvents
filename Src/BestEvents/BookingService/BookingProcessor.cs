@@ -1,5 +1,4 @@
-﻿using BestEvents.ErrorHandler;
-using BestEvents.Exceptions;
+﻿using BestEvents.Exceptions;
 
 namespace BestEvents
 {

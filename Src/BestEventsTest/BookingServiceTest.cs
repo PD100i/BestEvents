@@ -56,14 +56,9 @@ namespace BestEventsTest
             // Arrange
             var fixture = new BookingServiceFixture();
             var eventId = Guid.NewGuid();
-            Booking[] booking = [new Booking(eventId), new Booking(eventId), new Booking(eventId)];
-
-            fixture.MockBookingRepository.Setup(repo =>  repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(booking[0]);
-            fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(booking[1]);
-            fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(booking[2]);
+            
+            fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), CancellationToken.None))
+               .ReturnsAsync((Booking booking, CancellationToken ct) => booking);
 
             List<Task<BookingResultDto>> t = [
                 fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None),
@@ -86,9 +81,6 @@ namespace BestEventsTest
             Assert.Null(result[2].ProcessedAt);
             Assert.Equal(BookingStatus.Pending.ToString(), result[2].Status);
 
-
-            //Assert.Equal(result[0].EventId, result[1].EventId);
-            //Assert.Equal(result[1].EventId, result[2].EventId);
             Assert.NotEqual(result[0].Id, result[1].Id);
             Assert.NotEqual(result[1].Id, result[2].Id);
 

@@ -21,12 +21,11 @@ namespace BestEvents
                     using var scope = scopeFactory.CreateScope();
                     var eventRepo = scope.ServiceProvider.GetRequiredService<IEventRepository>();
                     var bookingRepo = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
-                    // var logger = scope.ServiceProvider.GetRequiredService<ILogger<BookingProcessor>>();
 
                     List<Booking> queue = await bookingRepo.GetPendingBookingAsync(stoppingToken);
-                    if (queue.Count == 0)
+                    if (queue == null || queue.Count == 0)
                     {
-                        await Task.Delay(100, stoppingToken);
+                        await Task.Delay(500, stoppingToken);
                         continue;
                     }
                     foreach(var task in queue)
@@ -37,7 +36,8 @@ namespace BestEvents
                 catch (OperationCanceledException) { throw; }
                 catch (Exception ex)
                 {
-                    logger.LogError($"Непредвиденная ошибка при работе сервиса бронирования: {ex.Message}");
+                    logger.LogError(ex,"Непредвиденная ошибка при работе сервиса бронирования");
+                    await Task.Delay(1000, stoppingToken);
                 }
             }
         }
@@ -61,7 +61,8 @@ namespace BestEvents
                 booking.Confirm();
                 await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
             }
-            catch (OperationCanceledException) { throw; }
+            catch (OperationCanceledException) 
+                { throw; }
             catch (EventNotFoundException)
             {
                 booking.Reject();

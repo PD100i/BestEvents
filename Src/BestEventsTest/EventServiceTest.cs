@@ -44,6 +44,7 @@ namespace BestEventsTest
         [MemberData(nameof(GetEventCorrectArguments))]
         public void CreateEvent_CallWithCorrectArguments_CallRepoMethodReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, string expectedDescription)
         {
+            // Arrange
             var _event = new Event(id, title, startAt, endAt, description);
 
 
@@ -52,9 +53,10 @@ namespace BestEventsTest
                                                                               e.EndAt == endAt &&
                                                                               e.Description == expectedDescription)))
                                                                               .Returns(_event);
-
+            // Act
             EventDto result = eventService.CreateEvent(new EventDtoBase(title, startAt, endAt, description));
 
+            // Assert
             Assert.NotNull(result);
             Assert.Equal(result.Id, id.ToString());
             Assert.Equal(result.Title, title);
@@ -89,16 +91,22 @@ namespace BestEventsTest
         [Fact]
         public void DeleteEvent_CallWithCorrectId_CallRepoRemoveMethode()
         {
+            // Arrange
             Guid id = Guid.NewGuid();
             string _id = id.ToString();
             mockRepository.Setup(mock => mock.RemoveEvent(id));
+            // Act 
             eventService.DeleteEvent(_id);
+            // Assert
+            mockRepository.Verify(mock => mock.RemoveEvent(id), Times.Once);
         }
 
         [Fact]
         public void DeleteEvent_CallWithWrongId_Exception()
         {
+            // Arrange
             string id = "123";  
+            // Act & Assert
             Assert.Throws<EventWrongParameterException>(() => eventService.DeleteEvent(id));
             mockRepository.Verify(mock => mock.RemoveEvent(new Guid()), Times.Never);
         }
@@ -106,10 +114,13 @@ namespace BestEventsTest
         [Fact]
         public void GetEvent_CorrectId_ReturnEvent()
         {
+            // Arrange
             Event _event = EventCollection.GetEvent(0);
             string id = _event.Id.ToString();
             mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Returns(_event);
+            // Act
             EventDto dto = eventService.GetEvent(id);
+            // Assert
             Assert.NotNull(dto);
             Assert.Equal(id, dto.Id);
             Assert.Equal(_event.Title, dto.Title);
@@ -121,7 +132,9 @@ namespace BestEventsTest
         [Fact]
         public void GetEvent_WrongId_Exception()
         {
+            // Arrange
             string id = "123";
+            // Act & Assert
             Assert.Throws<EventWrongParameterException>(() => eventService.GetEvent(id));
             mockRepository.Verify(mock => mock.GetEvent(new Guid()), Times.Never);
         }
@@ -129,9 +142,11 @@ namespace BestEventsTest
         [Fact]
         public void GetEvent_NotExistedId_NotFoundExceotion()
         {
+            // Arrange
             Event _event = EventCollection.GetEvent(0);
             string id = _event.Id.ToString();
             mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Throws(new EventNotFoundException(""));
+            // Act & Assert
             Assert.Throws<EventNotFoundException>(() => eventService.GetEvent(id));
         }
 
@@ -139,14 +154,17 @@ namespace BestEventsTest
         [MemberData(nameof(GetEventCorrectArguments))]
         public void ReplaceEvent_CorrectArguments_ReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, string expectedDescription)
         {
+            // Arrange
             EventDto dto = new (id.ToString(), title, startAt, endAt, description);
             mockRepository.Setup(mock => mock.ReplaceEvent(It.Is<Event>(e => e.Id == id &&
                                                                               e.Title == title &&
                                                                               e.StartAt == startAt &&
                                                                               e.EndAt == endAt &&
                                                                               e.Description == expectedDescription)));
+            // Act
             eventService.ReplaceEvent(dto.Id, dto);
-            
+            // Assert
+            mockRepository.Verify(mock => mock.ReplaceEvent(It.IsAny<Event>()), Times.AtMost(3));
         }
 
         public static IEnumerable<object?[]> Get_ReplaceEvent_WrongArguments()
@@ -193,7 +211,9 @@ namespace BestEventsTest
         public void GetEvents_CorrectArguments_ReturnPaginatedResult(string? title, DateTime? from, DateTime? to, int page, int size, List<Event> events, 
             PaginatedResultDto expectedResult)
         {
+            // Arrange
             mockRepository.Setup(mock => mock.GetEvents()).Returns(events);
+            // Act && Assert
             var result = eventService.GetEvents(title, from, to, page, size);
             Assert.Equal(result, expectedResult);
         }

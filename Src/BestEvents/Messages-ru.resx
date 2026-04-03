@@ -159,4 +159,19 @@
   <data name="EventNotReplaced" xml:space="preserve">
     <value>Событие с идентификатором {0} не найдено. Обновление не произведено</value>
   </data>
+  <data name="CreateBooking_No_EventId" xml:space="preserve">
+    <value>При создании брони не передан идентификатор события</value>
+  </data>
+  <data name="DoubleBookingConfirm" xml:space="preserve">
+    <value>Попытка подтверждения брони {0}, которая уже подтверждена</value>
+  </data>
+  <data name="DoubleBookingReject" xml:space="preserve">
+    <value>Попытка отклонения брони {0}, которая уже отклонена</value>
+  </data>
+  <data name="TryConfirmRejectedBooking" xml:space="preserve">
+    <value>"Попытка подтверждения уже отклоненной брони {0}</value>
+  </data>
+  <data name="TryRedjectConfirmedBooking" xml:space="preserve">
+    <value>Повторная отклонения уже подтвержденной брони {0}</value>
+  </data>
 </root>

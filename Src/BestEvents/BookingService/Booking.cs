@@ -16,7 +16,7 @@ namespace BestEvents
         public Booking(Guid eventId)
         {
             if (eventId == Guid.Empty)
-                throw new BookingWrongParameterException("При создании брони не передан идентификатор события");
+                throw new BookingWrongParameterException(Messages_ru.CreateBooking_No_EventId);
 
             Id = Guid.NewGuid();
             EventId = eventId;
@@ -55,9 +55,9 @@ namespace BestEvents
         public void Confirm()
         {
             if (Status == BookingStatus.Confirmed)
-                throw new ServiceInvalidOperationException($"Попытка подтверждения брони {Id}, которая уже подтверждена");
+                throw new ServiceInvalidOperationException(string.Format(Messages_ru.DoubleBookingConfirm, Id));
             if (Status == BookingStatus.Rejected)
-                throw new ServiceInvalidOperationException($"Попытка подтверждения уже отклоненной брони {Id}");
+                throw new ServiceInvalidOperationException(string.Format(Messages_ru.TryConfirmRejectedBooking, Id));
             Status = BookingStatus.Confirmed;
             ProcessedAt = DateTime.Now;
         }
@@ -68,9 +68,9 @@ namespace BestEvents
         public void Reject()
         {
             if (Status == BookingStatus.Confirmed)
-                throw new ServiceInvalidOperationException($"Повторная отклонения уже подтвержденной брони {Id}");
+                throw new ServiceInvalidOperationException(string.Format(Messages_ru.TryRedjectConfirmedBooking, Id));
             if (Status == BookingStatus.Rejected)
-                throw new ServiceInvalidOperationException($"Попытка отклонения брони {Id}, которая уже отклонена");
+                throw new ServiceInvalidOperationException(string.Format(Messages_ru.DoubleBookingReject, Id));
             Status = BookingStatus.Rejected;
             ProcessedAt = DateTime.Now;
         }

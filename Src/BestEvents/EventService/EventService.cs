@@ -1,5 +1,6 @@
 ﻿
 using BestEvents.Exceptions;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BestEvents
 {
@@ -46,11 +47,11 @@ namespace BestEvents
         public PaginatedResultDto GetEvents(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
         {
             if (from != null && to != null && from > to)
-                throw new EventWrongParameterException("Дата начала события не может быть позже даты завершения");
+                throw new EventWrongParameterException(Messages_ru.EndAt_Less_StartAt);
             if (page <= 0)
-                throw new EventWrongParameterException($"Попытка пагинации с недопустимым значением номера страницы (page={page})");
+                throw new EventWrongParameterException(string.Format(Messages_ru.WrongPageForPagination, page));
             if (size <= 0)
-                throw new EventWrongParameterException($"Попытка пагинации с недопустимым значением размера выборки на странице (size={size})");
+                throw new EventWrongParameterException(string.Format(Messages_ru.WrongSizeForPagination, size));
 
             IEnumerable<Event> events = repository.GetEvents();
             
@@ -81,11 +82,11 @@ namespace BestEvents
         public void ReplaceEvent(string id, EventDto eventDto)
         {
             if(id != eventDto.Id)
-                throw new EventWrongParameterException("Параметр id в строке запроса не совпадает с параметром id в теле запроса");
+                throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, eventDto.Id));
             if (eventDto.StartAt == null)
-                throw new EventWrongParameterException("Дата начала события не может быть пустой");
+                throw new EventWrongParameterException(Messages_ru.No_StartAt);
             if (eventDto.EndAt == null)
-                throw new EventWrongParameterException("Дата завершения события не может быть пустой");
+                throw new EventWrongParameterException(Messages_ru.No_EndAt);
             var _event = new Event(ParseStringId(eventDto.Id), eventDto.Title, eventDto.StartAt.Value, eventDto.EndAt.Value, eventDto.Description);
             repository.ReplaceEvent(_event);
         }
@@ -99,7 +100,7 @@ namespace BestEvents
         private Guid ParseStringId(string id)
         {
             if (!Guid.TryParse(id, out Guid result))
-                throw new EventWrongParameterException("Строка Id не соответствует формату GUID");
+                throw new EventWrongParameterException(Messages_ru.Wrong_Id_Format);
             return result;
         }
     }

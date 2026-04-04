@@ -13,24 +13,17 @@ namespace BestEvents
         public async Task<Booking> CreateBookingAsync(Booking booking, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-
-            return await Task.Run(() =>
-            {
-                bookingRepo.TryAdd(booking.Id, booking);
-                return booking;
-            });
+            bookingRepo.TryAdd(booking.Id, booking);
+            return await Task.FromResult(booking);
         }
 
         /// <inheritdoc/>
         public async Task<Booking> GetBookingAsync(Guid id, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-            return await Task.Run(() =>
-            {
-                if (!bookingRepo.TryGetValue(id, out Booking? value))
-                    throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, id));
-                return value;
-            });
+            if (!bookingRepo.TryGetValue(id, out Booking? value))
+                throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, id));
+            return await Task.FromResult(value);
         }
 
         /// <inheritdoc/>
@@ -42,11 +35,12 @@ namespace BestEvents
         }
 
         /// <inheritdoc/>
-        public async Task ReplaceBookingAsync(Booking booking, CancellationToken ct)
+        public Task ReplaceBookingAsync(Booking booking, CancellationToken ct)
         {
             if (!bookingRepo.ContainsKey(booking.Id))
                 throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotReplaced, booking.Id));
-            await Task.Run(() => bookingRepo[booking.Id] = booking);
+            bookingRepo[booking.Id] = booking;
+            return Task.CompletedTask; 
         }
     }
 }

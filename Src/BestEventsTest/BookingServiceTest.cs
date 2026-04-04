@@ -32,6 +32,7 @@ namespace BestEventsTest
             var fixture = new BookingServiceFixture();
             var eventId = Guid.NewGuid();
             var booking = new Booking(eventId);
+            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(new Event(eventId.ToString(), DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), ""));
             fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(booking);
 
@@ -56,7 +57,8 @@ namespace BestEventsTest
             // Arrange
             var fixture = new BookingServiceFixture();
             var eventId = Guid.NewGuid();
-            
+
+            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(new Event(eventId.ToString(), DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), ""));
             fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), CancellationToken.None))
                .ReturnsAsync((Booking booking, CancellationToken ct) => booking);
 
@@ -87,7 +89,7 @@ namespace BestEventsTest
         }
 
         [Fact]
-        public async Task CreateBookingAsync_EventDoesNotExist_ShouldThrowDataNotFoundException()
+        public async Task CreateBookingAsync_EventDoesNotExist_ShouldThrowBookingNotFoundException()
         {
             // Arrange
             var fixture = new BookingServiceFixture();
@@ -95,7 +97,21 @@ namespace BestEventsTest
             fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Throws(new BestEvents.Exceptions.EventNotFoundException("Событие не найдено"));
 
             // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.EventNotFoundException>(() => fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None));
+            await Assert.ThrowsAsync<BestEvents.Exceptions.BookingWrongParameterException>(() => fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None));
+            fixture.MockEventRepository.Verify(repo => repo.GetEvent(eventId), Times.Once);
+            fixture.MockBookingRepository.Verify(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task CreateBookingAsync_EventCompleted_ShouldThrowDataNotFoundException()
+        {
+            // Arrange
+            var fixture = new BookingServiceFixture();
+            var eventId = Guid.NewGuid();
+            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(new Event(eventId.ToString(), DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), ""));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<BestEvents.Exceptions.CreateBookingException>(() => fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None));
             fixture.MockEventRepository.Verify(repo => repo.GetEvent(eventId), Times.Once);
             fixture.MockBookingRepository.Verify(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()), Times.Never);
         }

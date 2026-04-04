@@ -61,11 +61,92 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Бронирование с идентификатором {0} не найдено.
+        /// </summary>
+        public static string BookingNotFound {
+            get {
+                return ResourceManager.GetString("BookingNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование не найдено.
+        /// </summary>
+        public static string BookingNotFoundShort {
+            get {
+                return ResourceManager.GetString("BookingNotFoundShort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование с идентификатором {0} не найдено. Обновление не произведено.
+        /// </summary>
+        public static string BookingNotReplaced {
+            get {
+                return ResourceManager.GetString("BookingNotReplaced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка при обработке бронирования {0}: {1}.
+        /// </summary>
+        public static string BookingProcessingError {
+            get {
+                return ResourceManager.GetString("BookingProcessingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование {0} отклонено, так как событие {1} уже завершилось.
+        /// </summary>
+        public static string BookingRejectedEventCompleted {
+            get {
+                return ResourceManager.GetString("BookingRejectedEventCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование {0} отклонено, так как событие {1} не существует или оно было удалено.
+        /// </summary>
+        public static string BookingRejectedEventNoExist {
+            get {
+                return ResourceManager.GetString("BookingRejectedEventNoExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to При создании брони не передан идентификатор события.
         /// </summary>
         public static string CreateBooking_No_EventId {
             get {
                 return ResourceManager.GetString("CreateBooking_No_EventId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование не создано.
+        /// </summary>
+        public static string CreateBookingError {
+            get {
+                return ResourceManager.GetString("CreateBookingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование не создано, так как события с идентификатором {0} уже завершилось.
+        /// </summary>
+        public static string CreateBookingEventCompleted {
+            get {
+                return ResourceManager.GetString("CreateBookingEventCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование не создано, так как события с идентификатором {0} не существует.
+        /// </summary>
+        public static string CreateBookingEventNotFound {
+            get {
+                return ResourceManager.GetString("CreateBookingEventNotFound", resourceCulture);
             }
         }
         
@@ -111,6 +192,15 @@ namespace BestEvents {
         public static string EventNotFound {
             get {
                 return ResourceManager.GetString("EventNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Событие не найдено.
+        /// </summary>
+        public static string EventNotFoundShort {
+            get {
+                return ResourceManager.GetString("EventNotFoundShort", resourceCulture);
             }
         }
         
@@ -169,6 +259,15 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Недопустимые параметры в запросе.
+        /// </summary>
+        public static string RequestWrongParameters {
+            get {
+                return ResourceManager.GetString("RequestWrongParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &quot;Попытка подтверждения уже отклоненной брони {0}.
         /// </summary>
         public static string TryConfirmRejectedBooking {
@@ -183,6 +282,24 @@ namespace BestEvents {
         public static string TryRedjectConfirmedBooking {
             get {
                 return ResourceManager.GetString("TryRedjectConfirmedBooking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Неизвестный тип ошибки.
+        /// </summary>
+        public static string UndefinedError {
+            get {
+                return ResourceManager.GetString("UndefinedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Непредвиденная ошибка при работе сервиса бронирования.
+        /// </summary>
+        public static string UnexpectedBookingError {
+            get {
+                return ResourceManager.GetString("UnexpectedBookingError", resourceCulture);
             }
         }
         

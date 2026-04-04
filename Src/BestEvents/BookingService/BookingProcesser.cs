@@ -5,7 +5,7 @@ namespace BestEvents
     /// <summary>
     /// Фоновый сервис для обработки бронирований
     /// </summary>
-    public class BookingProcessor(IServiceScopeFactory scopeFactory, ILogger<BookingProcessor> logger) : BackgroundService
+    public class BookingProcesser(IServiceScopeFactory scopeFactory, ILogger<BookingProcesser> logger) : BackgroundService
     {
         /// <summary>
         /// Фоновый процесс обработки бронирования
@@ -36,7 +36,7 @@ namespace BestEvents
                 catch (OperationCanceledException) { throw; }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex,"Непредвиденная ошибка при работе сервиса бронирования");
+                    logger.LogError(ex, Messages_ru.UnexpectedBookingError);
                     await Task.Delay(1000, stoppingToken);
                 }
             }
@@ -51,10 +51,10 @@ namespace BestEvents
 
                 var _event = eventRepository.GetEvent(booking.EventId);
                 if (_event.EndAt < DateTime.Now)
-                    {
+                {
                     booking.Reject();
                     await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
-                    logger.LogInformation($"Бронирование {booking.Id} отклонено, так как событие {booking.EventId} уже завершилось");
+                    logger.LogInformation(string.Format(Messages_ru.BookingRejectedEventCompleted, booking.Id, booking.EventId));
                     return;
                 }
                
@@ -67,20 +67,12 @@ namespace BestEvents
             {
                 booking.Reject();
                 await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
-                logger.LogInformation($"Бронирование {booking.Id} отклонено, так как событие {booking.EventId} не существует или оно было удалено");
+                logger.LogInformation(string.Format(Messages_ru.BookingRejectedEventNoExist, booking.Id, booking.EventId));
             }
-            catch (ServiceInvalidOperationException ex)
-            {
-                logger.LogError($"Ошибка при обработке бронирования {booking.Id}: {ex.Message}");
-            }
-            
             catch (Exception ex)
             {
-                logger.LogError($"Непредвиденная ошибка при обработке бронирования {booking.Id}: {ex.Message}");
+                logger.LogError(string.Format(Messages_ru.BookingProcessingError, booking.Id, ex.Message));
             }
-
         }
-
-        
     }
 }

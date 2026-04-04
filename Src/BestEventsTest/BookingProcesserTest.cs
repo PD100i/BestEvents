@@ -16,7 +16,7 @@ namespace BestEventsTest
     public class BookingProcessorFixture
     {
         public int OneCycleTime { get; set; } = 2200;
-        public BookingProcessor BookingProcessor {  get; set; }
+        public BookingProcesser BookingProcessor {  get; set; }
         public Mock<IEventRepository> MockEventRepository { get; set; }
         public Mock<IBookingRepository> MockBookingRepository {  get; set; }
        
@@ -25,7 +25,7 @@ namespace BestEventsTest
         {
             MockEventRepository = new Mock<IEventRepository>();
             MockBookingRepository = new Mock<IBookingRepository>();
-            var mockLogger = new Mock<ILogger<BookingProcessor>>();
+            var mockLogger = new Mock<ILogger<BookingProcesser>>();
             var mockServiceProvider = new Mock<IServiceProvider>();
             var mockScopeFactory = new Mock<IServiceScopeFactory>();
             var mockScope = new Mock<IServiceScope>();
@@ -35,11 +35,11 @@ namespace BestEventsTest
             mockServiceProvider.Setup(s => s.GetService(typeof(IBookingRepository))).Returns(MockBookingRepository.Object);
             mockServiceProvider.Setup(s => s.GetService(typeof(IEventRepository))).Returns(MockEventRepository.Object);
 
-            BookingProcessor = new BookingProcessor(mockScopeFactory.Object, mockLogger.Object);
+            BookingProcessor = new BookingProcesser(mockScopeFactory.Object, mockLogger.Object);
         }
     }
 
-    public class BookingProcessorTest
+    public class BookingProcesserTest
     {
         [Fact]
         public async Task ExecuteAsync_IsFoundOnePendingBookingAndEventExist_ConfirmBooking()

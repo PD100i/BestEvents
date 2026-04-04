@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddHostedService<BookingProcessor>();
+builder.Services.AddHostedService<BookingProcesser>();
 
 builder.Services.AddSingleton<EventFilters>();
 builder.Services.AddSingleton<Pagination<Event>>();

@@ -9,7 +9,7 @@ namespace BestEvents.Controllers
     public class BookingController(IBookingService bookingService) : ControllerBase
     {
         /// <summary>
-        /// Создает бронирование для события с идентификатором id. Возвращает HTTP статус-код 202 (Accepted) в случае успеха, 
+        /// Создает бронирование на событие с идентификатором id. Возвращает HTTP статус-код 202 (Accepted) в случае успеха, 
         /// или 404 (Not Found), если событие с таким идентификатором не найдено
         /// </summary>
         /// <param name="id"></param>

@@ -18,7 +18,8 @@ namespace BestEvents.Controllers
         [HttpPost("events/{id}/book")]
         public async Task<IActionResult> CreateBookingAsync([FromRoute] string id, CancellationToken ct)
         {
-            return Accepted(await bookingService.CreateBookingAsync(id, ct));
+            var booking = await bookingService.CreateBookingAsync(id, ct);
+            return Accepted($"booking/{booking.Id}");
         }
 
         /// <summary>

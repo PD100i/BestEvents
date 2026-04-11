@@ -169,7 +169,7 @@
     <value>Попытка отклонения брони {0}, которая уже отклонена</value>
   </data>
   <data name="TryConfirmRejectedBooking" xml:space="preserve">
-    <value>"Попытка подтверждения уже отклоненной брони {0}</value>
+    <value>Попытка подтверждения уже отклоненной брони {0}</value>
   </data>
   <data name="TryRedjectConfirmedBooking" xml:space="preserve">
     <value>Повторная отклонения уже подтвержденной брони {0}</value>
@@ -214,12 +214,24 @@
     <value>Неизвестный тип ошибки</value>
   </data>
   <data name="WrongEventTotalSeats" xml:space="preserve">
-    <value>Событие не создано. Общее количество мест должно быть больше нуля</value>
+    <value>Событие не создано. Общее количество мест должно быть меньше нуля</value>
   </data>
   <data name="WrongEventAvailableSeats" xml:space="preserve">
-    <value>Событие не создано. Количество доступных мест должно быть больше нуля и не превышать общее количество мест</value>
+    <value>Событие не создано. Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест</value>
   </data>
   <data name="RealiseBokingWrongCount" xml:space="preserve">
     <value>Ошибка при отмене бронирования. Предано неверное количество мест</value>
+  </data>
+  <data name="TotalSeatsRangeOut" xml:space="preserve">
+    <value>Общее число мест на мероприятии не должно быть меньше нуля</value>
+  </data>
+  <data name="No_TotalSeats" xml:space="preserve">
+    <value>Не передано общее количество мест для бронирования</value>
+  </data>
+  <data name="No_AvailableSeats" xml:space="preserve">
+    <value>Не передано количество доступных для бронирования мест </value>
+  </data>
+  <data name="AvailableSeatsRangeOut" xml:space="preserve">
+    <value>Количество зарезервированных мест не должно быть меньше нуля</value>
   </data>
 </root>

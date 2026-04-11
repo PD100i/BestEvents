@@ -8,9 +8,10 @@ namespace BestEvents.Controllers
     /// Контроллер событий
     /// </summary>
     /// <param name="eventService"></param>
+    /// <param name="bookingService"></param>
     [ApiController]
     [Route("events")]
-    public class EventsController(IEventService eventService) : ControllerBase
+    public class EventsController(IEventService eventService, IBookingService bookingService) : ControllerBase
     {
 
         /// <summary>
@@ -81,6 +82,18 @@ namespace BestEvents.Controllers
             return NoContent();
         }
 
-        
+        /// <summary>
+        /// Создает бронирование на событие с идентификатором id. Возвращает HTTP статус-код 202 (Accepted) в случае успеха, 
+        /// или 404 (Not Found), если событие с таким идентификатором не найдено
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        [HttpPost("{id}/book")]
+        public async Task<IActionResult> CreateBookingAsync([FromRoute] string id, CancellationToken ct)
+        {
+            var booking = await bookingService.CreateBookingAsync(id, ct);
+            return AcceptedAtRoute("GetBookingId", new { id = booking.Id });
+        }
     }
 }

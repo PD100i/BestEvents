@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BestEvents.Controllers
@@ -11,7 +12,7 @@ namespace BestEvents.Controllers
     [Route("events")]
     public class EventsController(IEventService eventService) : ControllerBase
     {
-        
+
         /// <summary>
         /// Возвращает события, фильтруя их по параметрам name, from, to. Возвращает HTTP статус-код 200 Ok в случае успеха
         /// </summary>

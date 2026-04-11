@@ -14,7 +14,7 @@ namespace BestEvents
         /// <summary>
         /// Название события
         /// </summary>
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо указать название события")]
+        [Required(AllowEmptyStrings = false, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "No_Title")]
         public string Title { get; set; } = title;
 
         /// <summary>
@@ -25,15 +25,15 @@ namespace BestEvents
         /// <summary>
         /// Дата начала события
         /// </summary>
-        [Required(ErrorMessage = "Не указана дата начала события")]
-        [DataType(DataType.Date, ErrorMessage = "Неверный формат даты начала события")]
+        [Required(ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "No_StartAt")]
+        [DataType(DataType.Date, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "WrongFormat_StartAt")]
         public DateTime? StartAt { get; set; } = startAt;
 
         /// <summary>
         /// Дата завершения события
         /// </summary>
-        [Required(ErrorMessage = "Не указана дата завершения мероприятия")]
-        [DataType(DataType.Date, ErrorMessage = "Неверный формат даты завершения события")]
+        [Required(ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "No_EndAt")]
+        [DataType(DataType.Date, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "WrongFormat_EndAt")]
         public DateTime? EndAt { get; set; } = endAt;
 
         /// <inheritdoc/>

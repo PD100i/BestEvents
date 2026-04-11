@@ -33,28 +33,72 @@ namespace BestEvents
             {
                 await _next(context);
             }
-            catch (EventsNotFoundException ex)
+            catch (EventNotFoundException ex)
             {
-                _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
+                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 404;
                 ErrorDetails details = new()
                 {
-                    Title = "Событие не найдено",
+                    Title = Messages_ru.EventNotFoundShort,
                     StatusCode = context.Response.StatusCode,
                     Detail = ex.Message,
                     Instance = context.Request.Path
                 };
                 await context.Response.WriteAsJsonAsync(details);
             }
-            catch (RequestWrongParameterException ex)
+            catch (BookingNotFoundException ex)
             {
-                _logger.LogInformation($"Запрос: {context.Request.Path}. {ex.Message}", ex);
+                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 404;
+                ErrorDetails details = new()
+                {
+                    Title = Messages_ru.BookingNotFoundShort,
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
+            catch (EventWrongParameterException ex)
+            {
+                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;
                 ErrorDetails details = new()
                 {
-                    Title = "Недопустимые параметры в запросе",
+                    Title = Messages_ru.RequestWrongParameters,
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
+
+            catch (CreateBookingException ex)
+            {
+                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 400;
+                ErrorDetails details = new()
+                {
+                    Title = Messages_ru.CreateBookingError,
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
+
+            catch (BookingWrongParameterException ex)
+            {
+                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 400;
+                ErrorDetails details = new()
+                {
+                    Title = Messages_ru.RequestWrongParameters,
                     StatusCode = context.Response.StatusCode,
                     Detail = ex.Message,
                     Instance = context.Request.Path
@@ -62,16 +106,16 @@ namespace BestEvents
                 await context.Response.WriteAsJsonAsync(details);
             }
            
-            catch (Exception ex)
+            catch ( Exception ex)
             {
-                _logger.LogError($"Запрос: {context.Request.Path}. {ex.Message}", ex);
+                _logger.LogError(ex, $"Request: {context.Request.Path}. {ex.Message}");
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 500;
                 ErrorDetails details = new()
                 {
-                    Title = "Неизвестный тип ошибки",
+                    Title = Messages_ru.UndefinedError,
                     StatusCode = context.Response.StatusCode,
-                    Detail = ex.Message,
+                    Detail = "",
                     Instance = context.Request.Path
                 };
                 await context.Response.WriteAsJsonAsync(details);

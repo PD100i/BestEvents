@@ -6,10 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<EventFilters>();
-builder.Services.AddScoped<Pagination<Event>>();
+builder.Services.AddHostedService<BookingProcesser>();
+
+builder.Services.AddSingleton<EventFilters>();
+builder.Services.AddSingleton<Pagination<Event>>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 builder.Services.AddSwaggerGen(options =>
 {

@@ -1,4 +1,6 @@
-﻿namespace BestEvents
+﻿using BestEvents.Exceptions;
+
+namespace BestEvents
 {
     /// <summary>
     /// Интерфейс репозитория для хранения и управления событиями Event.
@@ -24,7 +26,7 @@
         void ReplaceEvent(Event _event);
 
         /// <summary>
-        /// Получает событие по его иденификатору. Если событие с таким идентификатором не найдено, возвращает null.
+        /// Получает событие по его иденификатору. Если событие с таким идентификатором не найдено, бросает исключение.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -36,7 +38,6 @@
         /// <returns></returns>
         public IEnumerable<Event> GetEvents();
 
-
-
+        
     }
 }

@@ -16,7 +16,10 @@ namespace BestEvents
         /// <summary>
         /// Идентификатор
         /// </summary>
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо задать параметр Id")]
+        [Required(
+            AllowEmptyStrings = false,
+            ErrorMessageResourceType = typeof(Messages_ru),
+            ErrorMessageResourceName = "No_Id")]
         public string Id { get; set; } = id;
 
         /// <inheritdoc/>

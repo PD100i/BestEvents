@@ -20,14 +20,14 @@ namespace BestEvents
         {
             Id = id;
             if (string.IsNullOrEmpty(title))
-                throw new RequestWrongParameterException("Название события не может быть пустым");
+                throw new EventWrongParameterException(Messages_ru.No_Title);
             Title = title;
-            if (startAt == null || startAt == default)
-                throw new RequestWrongParameterException("Дата начала события не может быть пустой");
-            if (endAt == null || endAt == default)
-                throw new RequestWrongParameterException("Дата завершения события не может быть пустой");
+            if (startAt == default)
+                throw new EventWrongParameterException(Messages_ru.No_StartAt);
+            if (endAt == default)
+                throw new EventWrongParameterException(Messages_ru.No_EndAt);
             if (startAt > endAt)
-                throw new RequestWrongParameterException("Дата начала события не может быть позже даты завершения");
+                throw new EventWrongParameterException(Messages_ru.EndAt_Less_StartAt);
             StartAt = startAt;
             EndAt = endAt;
             Description = description;

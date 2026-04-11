@@ -9,7 +9,7 @@ namespace BestEvents
     /// <param name="startAt">Дата начала</param>
     /// <param name="endAt">Дата завершения</param>
     /// <param name="description">Описание (необязательный параметр)</param>
-    public class EventDtoBase(string title, DateTime? startAt, DateTime? endAt, string? description)
+    public class CreateEvent(string title, DateTime? startAt, DateTime? endAt, string? description)
     {
         /// <summary>
         /// Название события
@@ -41,7 +41,7 @@ namespace BestEvents
         {
             if (obj == null || GetType() != obj.GetType())
                 return false;
-            EventDtoBase other = (EventDtoBase)obj;
+            CreateEvent other = (CreateEvent)obj;
             return Title == other.Title &&
                    Description == other.Description &&
                    StartAt == other.StartAt &&

@@ -49,7 +49,7 @@ namespace BestEvents.Controllers
         /// <param name="eventDto">JSON структура с параметрами события</param>
         /// <response code="201"></response>
         [HttpPost]
-        public IActionResult CreateEvent([FromBody] EventDtoBase eventDto)
+        public IActionResult CreateEvent([FromBody] CreateEvent eventDto)
         {
             return Created(Request.Path.ToString(), eventService.CreateEvent(eventDto));
         }
@@ -63,7 +63,7 @@ namespace BestEvents.Controllers
         /// <param name="eventDto"></param>
         /// <response code="204"></response>
         [HttpPut("{id}")]
-        public IActionResult ReplaceEvent([FromRoute] string id, [FromBody] EventDto eventDto)
+        public IActionResult ReplaceEvent([FromRoute] string id, [FromBody] EventInfo eventDto)
         {
             eventService.ReplaceEvent(id, eventDto);
             return NoContent();

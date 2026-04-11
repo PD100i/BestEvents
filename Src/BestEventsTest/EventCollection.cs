@@ -34,16 +34,16 @@ namespace BestEventsTest
             return initialData[index];
         }
 
-        internal static EventDto GetEventDto(int index)
+        internal static EventInfo GetEventDto(int index)
         {
             Event _event = initialData[index];
-            return new EventDto(_event.Id.ToString(), _event.Title, _event.StartAt, _event.EndAt, _event.Description);
+            return new EventInfo(_event.Id.ToString(), _event.Title, _event.StartAt, _event.EndAt, _event.Description);
         }
 
-        internal static List<EventDto> GetDtoCollection()
+        internal static List<EventInfo> GetDtoCollection()
         {
-            List<EventDto> eventsDto = [];
-            initialData.ForEach(e => eventsDto.Add(new EventDto(e.Id.ToString(), e.Title, e.StartAt, e.EndAt, e.Description)));
+            List<EventInfo> eventsDto = [];
+            initialData.ForEach(e => eventsDto.Add(new EventInfo(e.Id.ToString(), e.Title, e.StartAt, e.EndAt, e.Description)));
             return eventsDto;
         }
     }

@@ -16,7 +16,9 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Описание (необязательный параметр)</param>
-        public Event(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description)
+        /// <param name="totalSeats">Общее количество мест на событии</param>
+        /// <param name="availableSeats">Доступное количество мест на событии</param>
+        public Event(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, int totalSeats, int availableSeats)
         {
             Id = id;
             if (string.IsNullOrEmpty(title))
@@ -28,6 +30,10 @@ namespace BestEvents
                 throw new EventWrongParameterException(Messages_ru.No_EndAt);
             if (startAt > endAt)
                 throw new EventWrongParameterException(Messages_ru.EndAt_Less_StartAt);
+            if (totalSeats <= 0)
+                throw new EventWrongParameterException(Messages_ru.WrongEventTotalSeats);
+            if (availableSeats <= 0 || availableSeats > totalSeats)
+                throw new EventWrongParameterException(Messages_ru.WrongEventAvailableSeats);
             StartAt = startAt;
             EndAt = endAt;
             Description = description;
@@ -40,8 +46,9 @@ namespace BestEvents
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Описание (необязательный параметр)</param>
-        public Event(string title, DateTime? startAt, DateTime? endAt, string? description) :
-            this(Guid.NewGuid(), title, startAt, endAt, description)
+        /// <param name="totalSeats">Общее количество мест на событии</param>
+        public Event(string title, DateTime? startAt, DateTime? endAt, string? description, int totalSeats) :
+            this(Guid.NewGuid(), title, startAt, endAt, description, totalSeats, totalSeats)
         {
         }
 
@@ -71,6 +78,39 @@ namespace BestEvents
         /// </summary>
         public DateTime? EndAt { get; }
 
+        /// <summary>
+        /// Общее количество мест на событии
+        /// </summary>
+        public int TotalSeats { get; }
+
+        /// <summary>
+        /// Текущее число свободных мест
+        /// </summary>
+        public int AvailableSeats { get; private set; }
+
+        /// <summary>
+        /// Возвращает false если свободных мест недостаточно, в противном случае, уменьшает AvailableSeats на count и возвращает true 
+        /// </summary>
+        /// <param name="count">Количество запрашиваемых для резервирования мест</param>
+        /// <returns></returns>
+        public bool TryReserveSeats(int count = 1)
+        {
+            if (AvailableSeats < count)
+                return false;
+            AvailableSeats -= count; 
+            return true;
+        }
+
+        /// <summary>
+        /// Освобождает count мест при освобождении брони, увеличивает AvalableSeats на count
+        /// </summary>
+        /// <param name="count"></param>
+        public void ReleaseSeats(int count = 1)
+        {
+            if ((AvailableSeats + count) > TotalSeats)
+                throw new ReleaseBookingException(Messages_ru.RealiseBokingWrongCount);
+            AvailableSeats += count;
+        }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)
@@ -82,13 +122,15 @@ namespace BestEvents
                    Title == other.Title &&
                    Description == other.Description &&
                    StartAt == other.StartAt &&
-                   EndAt == other.EndAt;
+                   EndAt == other.EndAt &&
+                   TotalSeats == other.TotalSeats &&
+                   AvailableSeats == other.AvailableSeats;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Title, Description, StartAt, EndAt);
+            return HashCode.Combine(Id, Title, Description, StartAt, EndAt, TotalSeats, AvailableSeats);
         }
 
     }

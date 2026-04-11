@@ -16,7 +16,7 @@ namespace BestEvents
         /// Создает новое событие, используя данные из Dto объекта и передает их в репозиторий для сохранения
         /// </summary>
         /// <param name="_event"></param>
-        public EventDto CreateEvent(EventDtoBase _event)
+        public EventInfo CreateEvent(CreateEvent _event)
         {
             return GetDtoFromEvent(repository.AddEvent(new Event(_event.Title, _event.StartAt, _event.EndAt, _event.Description)));
         }
@@ -35,7 +35,7 @@ namespace BestEvents
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public EventDto GetEvent(string id)
+        public EventInfo GetEvent(string id)
         {
             return GetDtoFromEvent(repository.GetEvent(ParseStringId(id)));
         }
@@ -60,7 +60,7 @@ namespace BestEvents
             filtredResult = filters.FilterEventsByDateTo(filtredResult, to);
             var result = pagination.GetResult(filtredResult, page, size);
 
-            List<EventDto> eventsDto = [];
+            List<EventInfo> eventsDto = [];
 
             result.ResultsOnPage.ToList().ForEach(e => eventsDto.Add(GetDtoFromEvent(e)));
 
@@ -79,7 +79,7 @@ namespace BestEvents
         /// </summary>
         /// <param name="eventDto"></param>
         /// /// <param name="id"></param>
-        public void ReplaceEvent(string id, EventDto eventDto)
+        public void ReplaceEvent(string id, EventInfo eventDto)
         {
             if(id != eventDto.Id)
                 throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, eventDto.Id));
@@ -92,9 +92,9 @@ namespace BestEvents
         }
 
 
-        private EventDto GetDtoFromEvent(Event _event)
+        private EventInfo GetDtoFromEvent(Event _event)
         {
-            return new EventDto(_event.Id.ToString(), _event.Title, _event.StartAt, _event.EndAt, _event.Description);
+            return new EventInfo(_event.Id.ToString(), _event.Title, _event.StartAt, _event.EndAt, _event.Description);
         }
 
         private Guid ParseStringId(string id)

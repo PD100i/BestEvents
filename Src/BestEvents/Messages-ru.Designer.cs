@@ -259,6 +259,15 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ошибка при отмене бронирования. Предано неверное количество мест.
+        /// </summary>
+        public static string RealiseBokingWrongCount {
+            get {
+                return ResourceManager.GetString("RealiseBokingWrongCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Недопустимые параметры в запросе.
         /// </summary>
         public static string RequestWrongParameters {
@@ -327,6 +336,24 @@ namespace BestEvents {
         public static string Wrong_Id_Format {
             get {
                 return ResourceManager.GetString("Wrong_Id_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Событие не создано. Количество доступных мест должно быть больше нуля и не превышать общее количество мест.
+        /// </summary>
+        public static string WrongEventAvailableSeats {
+            get {
+                return ResourceManager.GetString("WrongEventAvailableSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Событие не создано. Общее количество мест должно быть больше нуля.
+        /// </summary>
+        public static string WrongEventTotalSeats {
+            get {
+                return ResourceManager.GetString("WrongEventTotalSeats", resourceCulture);
             }
         }
         

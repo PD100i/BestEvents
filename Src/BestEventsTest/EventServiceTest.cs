@@ -56,7 +56,7 @@ namespace BestEventsTest
                                                                               e.Description == expectedDescription)))
                                                                               .Returns(_event);
             // Act
-            EventDto result = eventService.CreateEvent(new EventDtoBase(title, startAt, endAt, description));
+            EventInfo result = eventService.CreateEvent(new CreateEvent(title, startAt, endAt, description));
 
             // Assert
             Assert.NotNull(result);
@@ -90,7 +90,7 @@ namespace BestEventsTest
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             // Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.CreateEvent(new EventDtoBase(title, startAt, endAt, "")));
+            Assert.Throws<EventWrongParameterException>(() => eventService.CreateEvent(new CreateEvent(title, startAt, endAt, "")));
             mockRepository.Verify(mock => mock.AddEvent(It.IsAny<Event>()), Times.Never);
         }
 
@@ -136,7 +136,7 @@ namespace BestEventsTest
             string id = _event.Id.ToString();
             mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Returns(_event);
             // Act
-            EventDto dto = eventService.GetEvent(id);
+            EventInfo dto = eventService.GetEvent(id);
             // Assert
             Assert.NotNull(dto);
             Assert.Equal(id, dto.Id);
@@ -181,7 +181,7 @@ namespace BestEventsTest
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
-            EventDto dto = new (id.ToString(), title, startAt, endAt, description);
+            EventInfo dto = new (id.ToString(), title, startAt, endAt, description);
             mockRepository.Setup(mock => mock.ReplaceEvent(It.Is<Event>(e => e.Id == id &&
                                                                               e.Title == title &&
                                                                               e.StartAt == startAt &&
@@ -195,7 +195,7 @@ namespace BestEventsTest
 
         public static IEnumerable<object?[]> Get_ReplaceEvent_WrongArguments()
         {
-            EventDto dto = EventCollection.GetEventDto(0);
+            EventInfo dto = EventCollection.GetEventDto(0);
             return new List<object?[]>
             {
                 new object?[] { "349", "349", "", dto.StartAt, dto.EndAt },
@@ -217,14 +217,14 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
 
             //Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.ReplaceEvent(idFromRout, new EventDto(id, title, startAt, endAt, "")));
+            Assert.Throws<EventWrongParameterException>(() => eventService.ReplaceEvent(idFromRout, new EventInfo(id, title, startAt, endAt, "")));
             mockRepository.Verify(mock => mock.ReplaceEvent(It.IsAny<Event>()), Times.Never);
         }
 
         public static IEnumerable<object?[]> Get_GetEvents_CorrectArguments()
         {             
             List<Event> events = EventCollection.GetCollection();
-            List<EventDto> eventsDto = EventCollection.GetDtoCollection();
+            List<EventInfo> eventsDto = EventCollection.GetDtoCollection();
             return new List<object?[]>
             {
                 new object?[] { null, null, null, 1, 10, events,
@@ -257,7 +257,7 @@ namespace BestEventsTest
         public static IEnumerable<object?[]> Get_GetEvents_WrongArguments()
         {
             List<Event> events = EventCollection.GetCollection();
-            List<EventDto> eventsDto = EventCollection.GetDtoCollection();
+            List<EventInfo> eventsDto = EventCollection.GetDtoCollection();
             return new List<object?[]>
             {
                 new object?[] { null, new DateTime(2025, 06, 10), new DateTime(2024, 06, 10), 1, 10 },

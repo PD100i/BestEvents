@@ -213,4 +213,13 @@
   <data name="UndefinedError" xml:space="preserve">
     <value>Неизвестный тип ошибки</value>
   </data>
+  <data name="WrongEventTotalSeats" xml:space="preserve">
+    <value>Событие не создано. Общее количество мест должно быть больше нуля</value>
+  </data>
+  <data name="WrongEventAvailableSeats" xml:space="preserve">
+    <value>Событие не создано. Количество доступных мест должно быть больше нуля и не превышать общее количество мест</value>
+  </data>
+  <data name="RealiseBokingWrongCount" xml:space="preserve">
+    <value>Ошибка при отмене бронирования. Предано неверное количество мест</value>
+  </data>
 </root>

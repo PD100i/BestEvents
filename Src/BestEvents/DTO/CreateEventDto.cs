@@ -10,7 +10,7 @@ namespace BestEvents
     /// <param name="endAt">Дата завершения</param>
     /// <param name="description">Описание (необязательный параметр)</param>
     /// <param name="totalSeats">Общее количество мест на событии</param>
-    public class CreateEvent(string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats)
+    public class CreateEventDto(string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats)
     {
         /// <summary>
         /// Название события
@@ -42,7 +42,7 @@ namespace BestEvents
         /// Общее количество мест на событии
         /// </summary>
         [Required(ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "No_TotalSeats")]
-        [Range(0, int.MaxValue, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "TotalSeatsRangeOut")]
+        [Range(1, int.MaxValue, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "WrongEventTotalSeats")]
         public int? TotalSeats { get; } = totalSeats;
 
         

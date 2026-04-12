@@ -15,7 +15,7 @@ namespace BestEvents
         /// <summary>
         /// События
         /// </summary>
-        public required List<EventInfo> ResultsOnPage { get; set; } = [];
+        public required List<EventInfoDto> ResultsOnPage { get; set; } = [];
 
         /// <summary>
         /// Текущая страница

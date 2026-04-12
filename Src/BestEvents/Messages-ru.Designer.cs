@@ -61,15 +61,6 @@ namespace BestEvents {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Количество зарезервированных мест не должно быть меньше нуля.
-        /// </summary>
-        public static string AvailableSeatsRangeOut {
-            get {
-                return ResourceManager.GetString("AvailableSeatsRangeOut", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Бронирование с идентификатором {0} не найдено.
         /// </summary>
         public static string BookingNotFound {
@@ -286,6 +277,15 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Нет доступных мест для этого события.
+        /// </summary>
+        public static string NoAvailableSeats {
+            get {
+                return ResourceManager.GetString("NoAvailableSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка при отмене бронирования. Предано неверное количество мест.
         /// </summary>
         public static string RealiseBokingWrongCount {
@@ -300,15 +300,6 @@ namespace BestEvents {
         public static string RequestWrongParameters {
             get {
                 return ResourceManager.GetString("RequestWrongParameters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Общее число мест на мероприятии не должно быть меньше нуля.
-        /// </summary>
-        public static string TotalSeatsRangeOut {
-            get {
-                return ResourceManager.GetString("TotalSeatsRangeOut", resourceCulture);
             }
         }
         
@@ -376,7 +367,7 @@ namespace BestEvents {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Событие не создано. Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест.
+        ///   Looks up a localized string similar to Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест.
         /// </summary>
         public static string WrongEventAvailableSeats {
             get {
@@ -385,7 +376,7 @@ namespace BestEvents {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Событие не создано. Общее количество мест должно быть меньше нуля.
+        ///   Looks up a localized string similar to Общее количество мест должно быть больше нуля.
         /// </summary>
         public static string WrongEventTotalSeats {
             get {

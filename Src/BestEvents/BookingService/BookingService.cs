@@ -16,17 +16,26 @@ namespace BestEvents
         {
             ct.ThrowIfCancellationRequested();
             Guid id = ParseStringId(eventId);
-            Event _event = GetEvent(id);
-            ValidateEvent(_event);
-            Booking booking = await bookingRepo.CreateBookingAsync(new Booking(id), ct);
-            return new BookingResultDto
+            SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+            try
             {
-                Id = booking.Id.ToString(),
-                EventId = booking.EventId.ToString(),
-                Status = booking.Status.ToString(),
-                CreatedAt = booking.CreatedAt,
-                ProcessedAt = booking.ProcessedAt
-            };
+                await semaphore.WaitAsync();
+                Event _event = GetEvent(id);
+                UpdateEvent(_event);
+                Booking booking = await bookingRepo.CreateBookingAsync(new Booking(id), ct);
+                return new BookingResultDto
+                {
+                    Id = booking.Id.ToString(),
+                    EventId = booking.EventId.ToString(),
+                    Status = booking.Status.ToString(),
+                    CreatedAt = booking.CreatedAt,
+                    ProcessedAt = booking.ProcessedAt
+                };
+            }
+            finally 
+            { 
+                semaphore.Release();
+            }
         }
 
         /// <inheritdoc/>
@@ -45,16 +54,20 @@ namespace BestEvents
             };
         }
 
-        private Guid ParseStringId(string id)
+        private static Guid ParseStringId(string id)
         {
             if (!Guid.TryParse(id, out Guid result))
                 throw new BookingWrongParameterException(Messages_ru.Wrong_Id_Format);
             return result;
         }
-        private void ValidateEvent(Event _event)
+
+        private static void UpdateEvent(Event _event)
         {
             if (_event.EndAt < DateTime.Now)
                 throw new CreateBookingException(string.Format(Messages_ru.CreateBookingEventCompleted, _event.Id));
+            if (!_event.TryReserveSeats())
+                throw new NoAvailableSeatsException();
+            return;
         }
 
         private Event GetEvent(Guid id)

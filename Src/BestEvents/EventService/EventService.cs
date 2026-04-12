@@ -16,9 +16,9 @@ namespace BestEvents
         /// Создает новое событие, используя данные из Dto объекта и передает их в репозиторий для сохранения
         /// </summary>
         /// <param name="_event"></param>
-        public EventInfo CreateEvent(CreateEvent _event)
+        public EventInfoDto CreateEvent(CreateEventDto _event)
         {
-            return GetDtoFromEvent(repository.AddEvent(new Event(_event.Title, _event.StartAt, _event.EndAt, _event.Description)));
+            return GetDtoFromEvent(repository.AddEvent(Event.CreateNewEvent(_event.Title, _event.StartAt, _event.EndAt, _event.Description, _event.TotalSeats)));
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace BestEvents
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public EventInfo GetEvent(string id)
+        public EventInfoDto GetEvent(string id)
         {
             return GetDtoFromEvent(repository.GetEvent(ParseStringId(id)));
         }
@@ -60,7 +60,7 @@ namespace BestEvents
             filtredResult = filters.FilterEventsByDateTo(filtredResult, to);
             var result = pagination.GetResult(filtredResult, page, size);
 
-            List<EventInfo> eventsDto = [];
+            List<EventInfoDto> eventsDto = [];
 
             result.ResultsOnPage.ToList().ForEach(e => eventsDto.Add(GetDtoFromEvent(e)));
 
@@ -79,7 +79,7 @@ namespace BestEvents
         /// </summary>
         /// <param name="eventDto"></param>
         /// /// <param name="id"></param>
-        public void ReplaceEvent(string id, EventInfo eventDto)
+        public void ReplaceEvent(string id, EventInfoDto eventDto)
         {
             if(id != eventDto.Id)
                 throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, eventDto.Id));
@@ -87,14 +87,15 @@ namespace BestEvents
                 throw new EventWrongParameterException(Messages_ru.No_StartAt);
             if (eventDto.EndAt == null)
                 throw new EventWrongParameterException(Messages_ru.No_EndAt);
-            var _event = new Event(ParseStringId(eventDto.Id), eventDto.Title, eventDto.StartAt.Value, eventDto.EndAt.Value, eventDto.Description);
+            var _event = Event.CreateEvent(ParseStringId(eventDto.Id), eventDto.Title, eventDto.StartAt.Value, eventDto.EndAt.Value, eventDto.Description, 
+                eventDto.TotalSeats, eventDto.AvailableSeats);
             repository.ReplaceEvent(_event);
         }
 
 
-        private EventInfo GetDtoFromEvent(Event _event)
+        private EventInfoDto GetDtoFromEvent(Event _event)
         {
-            return new EventInfo(_event.Id.ToString(), _event.Title, _event.StartAt, _event.EndAt, _event.Description);
+            return new EventInfoDto(_event.Id.ToString(), _event.Title, _event.StartAt, _event.EndAt, _event.Description, _event.TotalSeats, _event.AvailableSeats);
         }
 
         private Guid ParseStringId(string id)

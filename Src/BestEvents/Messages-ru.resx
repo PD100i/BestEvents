@@ -214,16 +214,13 @@
     <value>Неизвестный тип ошибки</value>
   </data>
   <data name="WrongEventTotalSeats" xml:space="preserve">
-    <value>Событие не создано. Общее количество мест должно быть меньше нуля</value>
+    <value>Общее количество мест должно быть больше нуля</value>
   </data>
   <data name="WrongEventAvailableSeats" xml:space="preserve">
-    <value>Событие не создано. Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест</value>
+    <value>Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест</value>
   </data>
   <data name="RealiseBokingWrongCount" xml:space="preserve">
     <value>Ошибка при отмене бронирования. Предано неверное количество мест</value>
-  </data>
-  <data name="TotalSeatsRangeOut" xml:space="preserve">
-    <value>Общее число мест на мероприятии не должно быть меньше нуля</value>
   </data>
   <data name="No_TotalSeats" xml:space="preserve">
     <value>Не передано общее количество мест для бронирования</value>
@@ -231,7 +228,7 @@
   <data name="No_AvailableSeats" xml:space="preserve">
     <value>Не передано количество доступных для бронирования мест </value>
   </data>
-  <data name="AvailableSeatsRangeOut" xml:space="preserve">
-    <value>Количество зарезервированных мест не должно быть меньше нуля</value>
+  <data name="NoAvailableSeats" xml:space="preserve">
+    <value>Нет доступных мест для этого события</value>
   </data>
 </root>

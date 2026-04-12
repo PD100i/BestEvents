@@ -17,20 +17,20 @@ namespace BestEvents
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        EventInfo GetEvent(string id);
+        EventInfoDto GetEvent(string id);
 
         /// <summary>
         /// Создает новое событие, используя данные из Dto объекта
         /// </summary>
         /// <param name="eventDto"></param>
-        EventInfo CreateEvent(CreateEvent eventDto);
+        EventInfoDto CreateEvent(CreateEventDto eventDto);
 
         /// <summary>
         /// Перезаписывает событие, используя данные из Dto объекта
         /// </summary>
         /// <param name="eventDto"></param>
         /// /// <param name="id"></param>
-        void ReplaceEvent(string id, EventInfo eventDto);
+        void ReplaceEvent(string id, EventInfoDto eventDto);
 
         /// <summary>
         /// Удаляет событие по его идентификатору

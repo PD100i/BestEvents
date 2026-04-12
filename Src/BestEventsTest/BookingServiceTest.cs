@@ -32,7 +32,7 @@ namespace BestEventsTest
             var fixture = new BookingServiceFixture();
             var eventId = Guid.NewGuid();
             var booking = new Booking(eventId);
-            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(new Event(eventId.ToString(), DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), ""));
+            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(Event.CreateEvent(eventId, "Title", DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "", 10, 8));
             fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(booking);
 
@@ -58,7 +58,7 @@ namespace BestEventsTest
             var fixture = new BookingServiceFixture();
             var eventId = Guid.NewGuid();
 
-            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(new Event(eventId.ToString(), DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), ""));
+            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(Event.CreateEvent(eventId, "Title", DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "", 10, 8));
             fixture.MockBookingRepository.Setup(repo => repo.CreateBookingAsync(It.IsAny<Booking>(), CancellationToken.None))
                .ReturnsAsync((Booking booking, CancellationToken ct) => booking);
 
@@ -108,7 +108,7 @@ namespace BestEventsTest
             // Arrange
             var fixture = new BookingServiceFixture();
             var eventId = Guid.NewGuid();
-            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(new Event(eventId.ToString(), DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), ""));
+            fixture.MockEventRepository.Setup(repo => repo.GetEvent(eventId)).Returns(Event.CreateEvent(eventId, "Title", DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), "", 10, 8));
 
             // Act & Assert
             await Assert.ThrowsAsync<BestEvents.Exceptions.CreateBookingException>(() => fixture.BookingService.CreateBookingAsync(eventId.ToString(), CancellationToken.None));

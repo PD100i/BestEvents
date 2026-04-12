@@ -12,7 +12,7 @@ namespace BestEvents
     /// <param name="description">Описание (необязательный параметр)</param>
     /// <param name="totalSeats">Общее количество мест на событии</param>
     /// <param name="availableSeats">Доступное количество мест на событии</param>
-    public class EventInfo(string id, string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats, int? availableSeats) 
+    public class EventInfoDto(string id, string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats, int? availableSeats) 
     {
         /// <summary>
         /// Идентификатор
@@ -50,7 +50,7 @@ namespace BestEvents
         /// Общее количество мест на событии
         /// </summary>
         [Required(ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "No_TotalSeats")]
-        [Range(0, int.MaxValue, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "TotalSeatsRangeOut")]
+        [Range(1, int.MaxValue, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "WrongEventTotalSeats")]
         public int? TotalSeats { get; } = totalSeats;
 
 
@@ -58,10 +58,29 @@ namespace BestEvents
         /// Доступное количество мест
         /// </summary>
         [Required(ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "No_AvailableSeats")]
-        [Range(0, int.MaxValue, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "AvailableSeatsRangeOut")]
+        [Range(0, int.MaxValue, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "WrongEventAvailableSeats")]
         public int? AvailableSeats { get; } = availableSeats;
 
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            EventInfoDto other = (EventInfoDto)obj;
+            return Id == other.Id &&
+                   Title == other.Title &&
+                   Description == other.Description &&
+                   StartAt == other.StartAt &&
+                   EndAt == other.EndAt &&
+                   TotalSeats == other.TotalSeats &&
+                   AvailableSeats == other.AvailableSeats;
+        }
 
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Title, Description, StartAt, EndAt, TotalSeats, AvailableSeats);
+        }
 
     }
 }

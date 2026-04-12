@@ -33,30 +33,32 @@ namespace BestEventsTest
             Event _event = EventCollection.GetEvent(0);
             return new List<object?[]>
             {
-                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, "Some description", "Some description" },
-                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, "", "" },
-                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, null, "" }
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, "Some description", "Some description" },
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, "", "" },
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, null, "" }
             };
         }
 
         [Theory]
         [MemberData(nameof(GetEventCorrectArguments))]
-        public void CreateEvent_CallWithCorrectArguments_CallRepoMethodReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, string expectedDescription)
+        public void CreateEvent_CallWithCorrectArguments_CallRepoMethodReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, int? totalSeats, string? description, string expectedDescription)
         {
             // Arrange
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
-            var _event = new Event(id, title, startAt, endAt, description);
+            var _event = Event.CreateEvent(id, title, startAt, endAt, description, totalSeats, totalSeats);
 
 
             mockRepository.Setup(mock => mock.AddEvent(It.Is<Event>(e => e.Title == title &&
                                                                               e.StartAt == startAt &&
                                                                               e.EndAt == endAt &&
+                                                                              e.TotalSeats == totalSeats &&
+                                                                              e.AvailableSeats == totalSeats &&
                                                                               e.Description == expectedDescription)))
                                                                               .Returns(_event);
             // Act
-            EventInfo result = eventService.CreateEvent(new CreateEvent(title, startAt, endAt, description));
+            EventInfoDto result = eventService.CreateEvent(new CreateEventDto(title, startAt, endAt, description, totalSeats));
 
             // Assert
             Assert.NotNull(result);
@@ -65,6 +67,8 @@ namespace BestEventsTest
             Assert.Equal(result.StartAt, startAt);
             Assert.Equal(result.EndAt, endAt);
             Assert.Equal(result.Description, expectedDescription);
+            Assert.Equal(result.TotalSeats, totalSeats!.Value);
+            Assert.Equal(result.AvailableSeats, totalSeats!.Value);
         }
 
 
@@ -73,24 +77,26 @@ namespace BestEventsTest
             Event _event = EventCollection.GetEvent(0);
             return new List<object?[]>
             {
-                 //new object?[] { "", _event.StartAt, _event.EndAt },
-                 //new object?[] { _event.Title, null, _event.EndAt },
-                 //new object?[] { _event.Title, _event.StartAt, null },
-                 new object?[] { "", null, null }
+                 new object?[] { "", _event.StartAt, _event.EndAt, _event.TotalSeats },
+                 new object?[] { _event.Title, null, _event.EndAt, _event.TotalSeats },
+                 new object?[] { _event.Title, _event.StartAt, null, _event.TotalSeats },
+                 new object?[] { _event.Title, _event.StartAt, _event.EndAt, null },
+                 new object?[] { _event.Title, _event.StartAt, _event.EndAt, 0 },
+                 new object?[] { "", null, null, null }
             };
     
         }
 
         [Theory]
         [MemberData(nameof(Get_CreateEvent_WrongArguments))]
-        public void CreateEvent_CallWithWrongArguments_Exception(string title, DateTime? startAt, DateTime? endAt)
+        public void CreateEvent_CallWithWrongArguments_Exception(string title, DateTime? startAt, DateTime? endAt, int totalSeats)
         {
             //Arrange
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             // Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.CreateEvent(new CreateEvent(title, startAt, endAt, "")));
+            Assert.Throws<EventWrongParameterException>(() => eventService.CreateEvent(new CreateEventDto(title, startAt, endAt, "", totalSeats)));
             mockRepository.Verify(mock => mock.AddEvent(It.IsAny<Event>()), Times.Never);
         }
 
@@ -136,7 +142,7 @@ namespace BestEventsTest
             string id = _event.Id.ToString();
             mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Returns(_event);
             // Act
-            EventInfo dto = eventService.GetEvent(id);
+            EventInfoDto dto = eventService.GetEvent(id);
             // Assert
             Assert.NotNull(dto);
             Assert.Equal(id, dto.Id);
@@ -173,19 +179,31 @@ namespace BestEventsTest
             Assert.Throws<EventNotFoundException>(() => eventService.GetEvent(id));
         }
 
+        public static IEnumerable<object?[]> ReplaceEventCorrectArguments()
+        {
+            Event _event = EventCollection.GetEvent(0);
+            return new List<object?[]>
+            {
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, _event.AvailableSeats, "Some description", "Some description" },
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, _event.AvailableSeats, "", "" },
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, _event.AvailableSeats, null, "" }
+            };
+        }
         [Theory]
-        [MemberData(nameof(GetEventCorrectArguments))]
-        public void ReplaceEvent_CorrectArguments_ReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, string expectedDescription)
+        [MemberData(nameof(ReplaceEventCorrectArguments))]
+        public void ReplaceEvent_CorrectArguments_ReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, int? totalSeats, int? availableSeats, string? description, string expectedDescription)
         {
             // Arrange
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
-            EventInfo dto = new (id.ToString(), title, startAt, endAt, description);
-            mockRepository.Setup(mock => mock.ReplaceEvent(It.Is<Event>(e => e.Id == id &&
+            EventInfoDto dto = new (id.ToString(), title, startAt, endAt, description, totalSeats, availableSeats);
+            mockRepository.Setup(mock => mock.ReplaceEvent(It.Is<Event>(e =>  e.Id == id &&
                                                                               e.Title == title &&
                                                                               e.StartAt == startAt &&
                                                                               e.EndAt == endAt &&
+                                                                              e.TotalSeats == totalSeats &&
+                                                                              e.AvailableSeats == availableSeats &&
                                                                               e.Description == expectedDescription)));
             // Act
             eventService.ReplaceEvent(dto.Id, dto);
@@ -195,21 +213,27 @@ namespace BestEventsTest
 
         public static IEnumerable<object?[]> Get_ReplaceEvent_WrongArguments()
         {
-            EventInfo dto = EventCollection.GetEventDto(0);
+            EventInfoDto dto = EventCollection.GetEventDto(0);
+            string unequalId = "349b6818-0d33-43ed-94e4-84824b09eeee";
+            string wrongFormatId = "349";
             return new List<object?[]>
             {
-                new object?[] { "349", "349", "", dto.StartAt, dto.EndAt },
-                new object?[] { "349b6818-0d33-43ed-94e4-84824b09eeee", dto.Id, "", dto.StartAt, dto.EndAt },
-                new object?[] { dto.Id, dto.Id, "", dto.StartAt, dto.EndAt },
-                new object?[] { dto.Id, dto.Id, dto.Title, null, dto.EndAt },
-                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, null },
-                new object?[] { dto.Id, dto.Id, "", null, null }
+                new object?[] { wrongFormatId, wrongFormatId, "", dto.StartAt, dto.EndAt, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { unequalId, dto.Id, "", dto.StartAt, dto.EndAt, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { dto.Id, dto.Id, "", dto.StartAt, dto.EndAt, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { dto.Id, dto.Id, dto.Title, null, dto.EndAt, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, null, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, dto.EndAt, 0, 0 },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, dto.EndAt, null, 0 },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, dto.EndAt, dto.TotalSeats, null },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, dto.EndAt, dto.TotalSeats, -1 },
+                new object?[] { dto.Id, dto.Id, "", null, null, null, null }
             };
         }
 
         [Theory]
         [MemberData(nameof(Get_ReplaceEvent_WrongArguments))]
-        public void ReplaceEvent_CallWithWrongArguments_Exception(string idFromRout, string id, string title, DateTime? startAt, DateTime? endAt)
+        public void ReplaceEvent_CallWithWrongArguments_Exception(string idFromRout, string id, string title, DateTime? startAt, DateTime? endAt, int? totalSeats, int? availableSeats)
         {
             //Arrange
             var fixture = new EventServiceFixture();
@@ -217,14 +241,14 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
 
             //Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.ReplaceEvent(idFromRout, new EventInfo(id, title, startAt, endAt, "")));
+            Assert.Throws<EventWrongParameterException>(() => eventService.ReplaceEvent(idFromRout, new EventInfoDto(id, title, startAt, endAt, "", totalSeats, availableSeats)));
             mockRepository.Verify(mock => mock.ReplaceEvent(It.IsAny<Event>()), Times.Never);
         }
 
         public static IEnumerable<object?[]> Get_GetEvents_CorrectArguments()
         {             
             List<Event> events = EventCollection.GetCollection();
-            List<EventInfo> eventsDto = EventCollection.GetDtoCollection();
+            List<EventInfoDto> eventsDto = EventCollection.GetDtoCollection();
             return new List<object?[]>
             {
                 new object?[] { null, null, null, 1, 10, events,
@@ -257,7 +281,7 @@ namespace BestEventsTest
         public static IEnumerable<object?[]> Get_GetEvents_WrongArguments()
         {
             List<Event> events = EventCollection.GetCollection();
-            List<EventInfo> eventsDto = EventCollection.GetDtoCollection();
+            List<EventInfoDto> eventsDto = EventCollection.GetDtoCollection();
             return new List<object?[]>
             {
                 new object?[] { null, new DateTime(2025, 06, 10), new DateTime(2024, 06, 10), 1, 10 },

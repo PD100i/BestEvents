@@ -23,26 +23,27 @@ namespace BestEvents
         }
 
         /// <inheritdoc/>
-        public void RemoveEvent(Guid id)
+        public bool RemoveEvent(Guid id)
         {
-            if (!events.TryRemove(id, out _))
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotDeleted, id));
+            return events.TryRemove(id, out _);
+                
         }
 
         /// <inheritdoc/>
-        public Event GetEvent(Guid id)
+        public Event? GetEvent(Guid id)
         {
             if (!events.TryGetValue(id, out Event? value))
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
+                return null;
             return value;
         }
 
         /// <inheritdoc/>
-        public void ReplaceEvent(Event _event)
+        public bool ReplaceEvent(Event _event)
         {
             if (!events.ContainsKey(_event.Id))
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotReplaced, _event.Id));
+                return false;
             events[_event.Id] = _event;
+            return true;
         }
 
         /// <inheritdoc/>

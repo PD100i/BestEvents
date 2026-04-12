@@ -72,14 +72,10 @@ namespace BestEvents
 
         private Event GetEvent(Guid id)
         {
-            try
-            {
-                return eventRepo.GetEvent(id);
-            }
-            catch (EventNotFoundException)
-            {
+            var _event = eventRepo.GetEvent(id);
+            if (_event == null)
                 throw new BookingWrongParameterException(string.Format(Messages_ru.CreateBookingEventNotFound, id));
-            }
+            return _event;
         }
     }
 }

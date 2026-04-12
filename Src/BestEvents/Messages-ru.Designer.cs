@@ -97,6 +97,15 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to В бронировании отказано. Свободных мест нет.
+        /// </summary>
+        public static string BookingRejected_NoVacantSeats {
+            get {
+                return ResourceManager.GetString("BookingRejected_NoVacantSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Бронирование {0} отклонено, так как событие {1} уже завершилось.
         /// </summary>
         public static string BookingRejectedEventCompleted {

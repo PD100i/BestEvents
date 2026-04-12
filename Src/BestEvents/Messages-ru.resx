@@ -231,4 +231,7 @@
   <data name="NoAvailableSeats" xml:space="preserve">
     <value>Нет доступных мест для этого события</value>
   </data>
+  <data name="BookingRejected_NoVacantSeats" xml:space="preserve">
+    <value>В бронировании отказано. Свободных мест нет</value>
+  </data>
 </root>

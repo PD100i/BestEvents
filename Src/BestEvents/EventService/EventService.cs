@@ -27,7 +27,8 @@ namespace BestEvents
         /// <param name="id"></param>
         public void DeleteEvent(string id)
         {
-            repository.RemoveEvent(ParseStringId(id));
+            if (!repository.RemoveEvent(ParseStringId(id)))
+                throw new EventNotFoundException(string.Format(Messages_ru.EventNotDeleted, id));
         }
 
         /// <summary>
@@ -37,7 +38,10 @@ namespace BestEvents
         /// <returns></returns>
         public EventInfoDto GetEvent(string id)
         {
-            return GetDtoFromEvent(repository.GetEvent(ParseStringId(id)));
+            var _event = repository.GetEvent(ParseStringId(id));
+            if (_event == null)
+                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
+            return GetDtoFromEvent(_event);
         }
 
         /// <summary>
@@ -89,7 +93,8 @@ namespace BestEvents
                 throw new EventWrongParameterException(Messages_ru.No_EndAt);
             var _event = Event.CreateEvent(ParseStringId(eventDto.Id), eventDto.Title, eventDto.StartAt.Value, eventDto.EndAt.Value, eventDto.Description, 
                 eventDto.TotalSeats, eventDto.AvailableSeats);
-            repository.ReplaceEvent(_event);
+            if(!repository.ReplaceEvent(_event))
+                throw new EventNotFoundException(string.Format(Messages_ru.EventNotReplaced, _event.Id));
         }
 
 

@@ -14,23 +14,23 @@ namespace BestEvents
         public Event AddEvent(Event _event);
 
         /// <summary>
-        /// Удаление события из хранилища по его идентификатору.
+        /// Удаление события из хранилища по его идентификатору. Возвращает false, если не найдено
         /// </summary>
         /// <param name="id"></param>
-        void RemoveEvent(Guid id);
+        bool RemoveEvent(Guid id);
 
         /// <summary>
-        /// Перезапиывает событие
+        /// Перезапиывает событие. Возвращает false, если не найдено
         /// </summary>
         /// <param name="_event"></param>
-        void ReplaceEvent(Event _event);
+        bool ReplaceEvent(Event _event);
 
         /// <summary>
-        /// Получает событие по его иденификатору. Если событие с таким идентификатором не найдено, бросает исключение.
+        /// Получает событие по его иденификатору. Если событие с таким идентификатором не найдено, возвращает null.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Event GetEvent(Guid id);
+        Event? GetEvent(Guid id);
 
         /// <summary>
         /// Получает все события из хранилища и возвращает их в виде списка.

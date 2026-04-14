@@ -9,47 +9,38 @@ namespace BestEvents
     /// Использует репозиторий для получения данных и преобразования их 
     /// в Dto объекты для передачи в контроллеры и обратно
     /// </summary>
-  
     public class EventService(IEventRepository repository, EventFilters filters, Pagination<Event> pagination) : IEventService
     {
-        /// <summary>
-        /// Создает новое событие, используя данные из Dto объекта и передает их в репозиторий для сохранения
-        /// </summary>
-        /// <param name="_event"></param>
-        public EventInfoDto CreateEvent(CreateEventDto _event)
+        /// <inheritdoc/>
+        public async Task<EventInfoDto> CreateEventAsync(CreateEventDto _event, CancellationToken ct = default)
         {
-            return GetDtoFromEvent(repository.AddEvent(Event.CreateNewEvent(_event.Title, _event.StartAt, _event.EndAt, _event.Description, _event.TotalSeats)));
+            ct.ThrowIfCancellationRequested();
+            var newEvent = await repository.AddEventAsync(Event.CreateNewEvent(_event.Title, _event.StartAt, _event.EndAt, _event.Description, _event.TotalSeats));
+            return GetDtoFromEvent(newEvent);
         }
 
-        /// <summary>
-        /// Удаляет событие из репозитория по идентификатору 
-        /// </summary>
-        /// <param name="id"></param>
-        public void DeleteEvent(string id)
+        /// <inheritdoc/>
+        public async Task DeleteEventAsync(string id, CancellationToken ct = default)
         {
-            if (!repository.RemoveEvent(ParseStringId(id)))
+            ct.ThrowIfCancellationRequested();
+            if (! await repository.RemoveEventAsync(ParseStringId(id)))
                 throw new EventNotFoundException(string.Format(Messages_ru.EventNotDeleted, id));
         }
 
-        /// <summary>
-        /// Получает событие из репозитория по идентификатору, преобразует его в Dto объект и возвращает.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public EventInfoDto GetEvent(string id)
+        /// <inheritdoc/>
+        public async Task<EventInfoDto> GetEventAsync(string id, CancellationToken ct = default)
         {
-            var _event = repository.GetEvent(ParseStringId(id));
+            ct.ThrowIfCancellationRequested();
+            var _event = await repository.GetEventAsync(ParseStringId(id));
             if (_event == null)
                 throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
             return GetDtoFromEvent(_event);
         }
 
-        /// <summary>
-        /// Получает все события из репозитория, преобразует их в Dto объекты и возвращает в виде списка.
-        /// </summary>
-        /// <returns></returns>
-        public PaginatedResultDto GetEvents(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10)
+        /// <inheritdoc/>
+        public async Task<PaginatedResultDto> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
             if (from != null && to != null && from > to)
                 throw new EventWrongParameterException(Messages_ru.EndAt_Less_StartAt);
             if (page <= 0)
@@ -57,7 +48,7 @@ namespace BestEvents
             if (size <= 0)
                 throw new EventWrongParameterException(string.Format(Messages_ru.WrongSizeForPagination, size));
 
-            IEnumerable<Event> events = repository.GetEvents();
+            IQueryable<Event> events = await repository.GetEventsAsync();
             
             var filtredResult = filters.FilterEventsByTitle(events, title);
             filtredResult = filters.FilterEventsByDateFrom(filtredResult, from);
@@ -78,14 +69,11 @@ namespace BestEvents
            
         }
 
-        /// <summary>
-        /// Перезаписывает событие в репозитории, используя данные из Dto объекта.
-        /// </summary>
-        /// <param name="eventDto"></param>
-        /// /// <param name="id"></param>
-        public void ReplaceEvent(string id, EventInfoDto eventDto)
+        /// <inheritdoc/>
+        public async Task ReplaceEventAsync(string id, EventInfoDto eventDto, CancellationToken ct = default)
         {
-            if(id != eventDto.Id)
+            ct.ThrowIfCancellationRequested();
+            if (id != eventDto.Id)
                 throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, eventDto.Id));
             if (eventDto.StartAt == null)
                 throw new EventWrongParameterException(Messages_ru.No_StartAt);
@@ -93,7 +81,7 @@ namespace BestEvents
                 throw new EventWrongParameterException(Messages_ru.No_EndAt);
             var _event = Event.CreateEvent(ParseStringId(eventDto.Id), eventDto.Title, eventDto.StartAt.Value, eventDto.EndAt.Value, eventDto.Description, 
                 eventDto.TotalSeats, eventDto.AvailableSeats);
-            if(!repository.ReplaceEvent(_event))
+            if( !await repository.ReplaceEventAsync(_event))
                 throw new EventNotFoundException(string.Format(Messages_ru.EventNotReplaced, _event.Id));
         }
 

@@ -57,7 +57,6 @@ namespace BestEvents
 
         private async Task ProcessBookingAsync(IBookingRepository bookingRepository, IEventRepository eventRepository, Booking booking, CancellationToken stoppingToken)
         {
-            bool eventWasUpdated = false;
             Event? _event = null;
             try
             {
@@ -66,18 +65,12 @@ namespace BestEvents
 
                 await semaphore.WaitAsync();
 
-                _event = eventRepository.GetEvent(booking.EventId);
+                _event = await eventRepository.GetEventAsync(booking.EventId);
                 if (_event == null)
-                    throw new BookingProcessException(Messages_ru.EventNotFound);
+                    throw new EventNotFoundException(Messages_ru.EventNotFound);
 
                 if (_event.EndAt < DateTime.Now)
-                    throw new BookingProcessException(Messages_ru.BookingRejectedEventCompleted);
-
-                if (!_event.TryReserveSeats())
-                    throw new BookingProcessException(Messages_ru.BookingRejected_NoVacantSeats);
-
-                eventRepository.ReplaceEvent(_event);
-                eventWasUpdated = true;
+                    throw new EventCompletedException();
 
                 booking.Confirm();
                 await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
@@ -88,13 +81,14 @@ namespace BestEvents
             }
             catch
             {
-                if (_event!= null && eventWasUpdated)
+                if (_event!= null)
                 {
                     _event.ReleaseSeats();
-                    eventRepository.ReplaceEvent(_event);
+                    await eventRepository.ReplaceEventAsync(_event);
                 }
                 booking.Reject();
                 await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
+                throw;
             }
             finally
             { 

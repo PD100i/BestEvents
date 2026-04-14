@@ -53,7 +53,7 @@ namespace BestEventsTest
             fixture.MockBookingRepository.Setup(r => r.GetPendingBookingAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookings.Where(i => i.Status == BookingStatus.Pending).ToList());
 
-            fixture.MockEventRepository.Setup(r => r.GetEvent(eventId)).Returns(_event);
+            fixture.MockEventRepository.Setup(r => r.GetEventAsync(eventId)).Returns(_event);
             var cts = new CancellationTokenSource();
             var ct = cts.Token;
 
@@ -77,7 +77,7 @@ namespace BestEventsTest
             fixture.MockBookingRepository.Setup(r => r.GetPendingBookingAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookings.Where(i => i.Status == BookingStatus.Pending).ToList());
 
-            fixture.MockEventRepository.Setup(r => r.GetEvent(eventId)).Throws(new EventNotFoundException("Событие не найдено"));
+            fixture.MockEventRepository.Setup(r => r.GetEventAsync(eventId)).Throws(new EventNotFoundException("Событие не найдено"));
             var cts = new CancellationTokenSource();
             var ct = cts.Token;
 
@@ -102,7 +102,7 @@ namespace BestEventsTest
             fixture.MockBookingRepository.Setup(r => r.GetPendingBookingAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookings.Where(i => i.Status == BookingStatus.Pending).ToList());
 
-            fixture.MockEventRepository.Setup(r => r.GetEvent(eventId)).Returns(_event);
+            fixture.MockEventRepository.Setup(r => r.GetEventAsync(eventId)).Returns(_event);
             var cts = new CancellationTokenSource();
             var ct = cts.Token;
 

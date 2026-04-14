@@ -50,7 +50,7 @@ namespace BestEventsTest
             var _event = Event.CreateEvent(id, title, startAt, endAt, description, totalSeats, totalSeats);
 
 
-            mockRepository.Setup(mock => mock.AddEvent(It.Is<Event>(e => e.Title == title &&
+            mockRepository.Setup(mock => mock.AddEventAsync(It.Is<Event>(e => e.Title == title &&
                                                                               e.StartAt == startAt &&
                                                                               e.EndAt == endAt &&
                                                                               e.TotalSeats == totalSeats &&
@@ -58,7 +58,7 @@ namespace BestEventsTest
                                                                               e.Description == expectedDescription)))
                                                                               .Returns(_event);
             // Act
-            EventInfoDto result = eventService.CreateEvent(new CreateEventDto(title, startAt, endAt, description, totalSeats));
+            EventInfoDto result = eventService.CreateEventAsync(new CreateEventDto(title, startAt, endAt, description, totalSeats));
 
             // Assert
             Assert.NotNull(result);
@@ -96,8 +96,8 @@ namespace BestEventsTest
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             // Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.CreateEvent(new CreateEventDto(title, startAt, endAt, "", totalSeats)));
-            mockRepository.Verify(mock => mock.AddEvent(It.IsAny<Event>()), Times.Never);
+            Assert.Throws<EventWrongParameterException>(() => eventService.CreateEventAsync(new CreateEventDto(title, startAt, endAt, "", totalSeats)));
+            mockRepository.Verify(mock => mock.AddEventAsync(It.IsAny<Event>()), Times.Never);
         }
 
 
@@ -110,11 +110,11 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             Guid id = Guid.NewGuid();
             string _id = id.ToString();
-            mockRepository.Setup(mock => mock.RemoveEvent(id));
+            mockRepository.Setup(mock => mock.RemoveEventAsync(id));
             // Act 
-            eventService.DeleteEvent(_id);
+            eventService.DeleteEventAsync(_id);
             // Assert
-            mockRepository.Verify(mock => mock.RemoveEvent(id), Times.Once);
+            mockRepository.Verify(mock => mock.RemoveEventAsync(id), Times.Once);
         }
 
         [Fact]
@@ -127,8 +127,8 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             string id = "123";  
             // Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.DeleteEvent(id));
-            mockRepository.Verify(mock => mock.RemoveEvent(new Guid()), Times.Never);
+            Assert.Throws<EventWrongParameterException>(() => eventService.DeleteEventAsync(id));
+            mockRepository.Verify(mock => mock.RemoveEventAsync(new Guid()), Times.Never);
         }
 
         [Fact]
@@ -140,9 +140,9 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             Event _event = EventCollection.GetEvent(0);
             string id = _event.Id.ToString();
-            mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Returns(_event);
+            mockRepository.Setup(mock => mock.GetEventAsync(_event.Id)).Returns(_event);
             // Act
-            EventInfoDto dto = eventService.GetEvent(id);
+            EventInfoDto dto = eventService.GetEventAsync(id);
             // Assert
             Assert.NotNull(dto);
             Assert.Equal(id, dto.Id);
@@ -161,8 +161,8 @@ namespace BestEventsTest
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             // Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.GetEvent(id));
-            mockRepository.Verify(mock => mock.GetEvent(new Guid()), Times.Never);
+            Assert.Throws<EventWrongParameterException>(() => eventService.GetEventAsync(id));
+            mockRepository.Verify(mock => mock.GetEventAsync(new Guid()), Times.Never);
         }
 
         [Fact]
@@ -174,9 +174,9 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             Event _event = EventCollection.GetEvent(0);
             string id = _event.Id.ToString();
-            mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Throws(new EventNotFoundException(""));
+            mockRepository.Setup(mock => mock.GetEventAsync(_event.Id)).Throws(new EventNotFoundException(""));
             // Act & Assert
-            Assert.Throws<EventNotFoundException>(() => eventService.GetEvent(id));
+            Assert.Throws<EventNotFoundException>(() => eventService.GetEventAsync(id));
         }
 
         public static IEnumerable<object?[]> ReplaceEventCorrectArguments()
@@ -198,7 +198,7 @@ namespace BestEventsTest
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             EventInfoDto dto = new (id.ToString(), title, startAt, endAt, description, totalSeats, availableSeats);
-            mockRepository.Setup(mock => mock.ReplaceEvent(It.Is<Event>(e =>  e.Id == id &&
+            mockRepository.Setup(mock => mock.ReplaceEventAsync(It.Is<Event>(e =>  e.Id == id &&
                                                                               e.Title == title &&
                                                                               e.StartAt == startAt &&
                                                                               e.EndAt == endAt &&
@@ -206,9 +206,9 @@ namespace BestEventsTest
                                                                               e.AvailableSeats == availableSeats &&
                                                                               e.Description == expectedDescription)));
             // Act
-            eventService.ReplaceEvent(dto.Id, dto);
+            eventService.ReplaceEventAsync(dto.Id, dto);
             // Assert
-            mockRepository.Verify(mock => mock.ReplaceEvent(It.IsAny<Event>()), Times.AtMost(3));
+            mockRepository.Verify(mock => mock.ReplaceEventAsync(It.IsAny<Event>()), Times.AtMost(3));
         }
 
         public static IEnumerable<object?[]> Get_ReplaceEvent_WrongArguments()
@@ -241,8 +241,8 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
 
             //Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.ReplaceEvent(idFromRout, new EventInfoDto(id, title, startAt, endAt, "", totalSeats, availableSeats)));
-            mockRepository.Verify(mock => mock.ReplaceEvent(It.IsAny<Event>()), Times.Never);
+            Assert.Throws<EventWrongParameterException>(() => eventService.ReplaceEventAsync(idFromRout, new EventInfoDto(id, title, startAt, endAt, "", totalSeats, availableSeats)));
+            mockRepository.Verify(mock => mock.ReplaceEventAsync(It.IsAny<Event>()), Times.Never);
         }
 
         public static IEnumerable<object?[]> Get_GetEvents_CorrectArguments()
@@ -271,9 +271,9 @@ namespace BestEventsTest
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
-            mockRepository.Setup(mock => mock.GetEvents()).Returns(events);
+            mockRepository.Setup(mock => mock.GetEventsAsync()).Returns(events);
             // Act && Assert
-            var result = eventService.GetEvents(title, from, to, page, size);
+            var result = eventService.GetEventsAsync(title, from, to, page, size);
             Assert.Equal(result, expectedResult);
         }
 
@@ -299,8 +299,8 @@ namespace BestEventsTest
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             // Act & Assert 
-            Assert.Throws<EventWrongParameterException>(() => eventService.GetEvents(title, from, to, page, size));
-            mockRepository.Verify(mock => mock.GetEvents(), Times.Never);
+            Assert.Throws<EventWrongParameterException>(() => eventService.GetEventsAsync(title, from, to, page, size));
+            mockRepository.Verify(mock => mock.GetEventsAsync(), Times.Never);
         }
     }
 }

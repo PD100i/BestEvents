@@ -16,40 +16,40 @@ namespace BestEvents
         static readonly ConcurrentDictionary<Guid, Event> events = new();
 
         /// <inheritdoc/>
-        public Event AddEvent(Event _event)
+        public async Task<Event> AddEventAsync(Event _event)
         {
             events.TryAdd(_event.Id, _event);
-            return _event;
+            return await Task.FromResult(_event);
         }
 
         /// <inheritdoc/>
-        public bool RemoveEvent(Guid id)
+        public async Task<bool> RemoveEventAsync(Guid id)
         {
-            return events.TryRemove(id, out _);
+            return await Task.FromResult(events.TryRemove(id, out _));
                 
         }
 
         /// <inheritdoc/>
-        public Event? GetEvent(Guid id)
+        public async Task<Event?> GetEventAsync(Guid id)
         {
             if (!events.TryGetValue(id, out Event? value))
                 return null;
-            return value;
+            return await Task.FromResult(value);
         }
 
         /// <inheritdoc/>
-        public bool ReplaceEvent(Event _event)
+        public async Task<bool> ReplaceEventAsync(Event _event)
         {
             if (!events.ContainsKey(_event.Id))
-                return false;
+                return await Task.FromResult(false);
             events[_event.Id] = _event;
-            return true;
+            return await Task.FromResult(true);
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Event> GetEvents()
+        public async Task<IQueryable<Event>> GetEventsAsync()
         {
-            return events.Values;
+            return await Task.FromResult(events.Values.AsQueryable());
         }
 
         

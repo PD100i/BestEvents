@@ -20,22 +20,22 @@ namespace BestEvents
             try
             {
                 await semaphore.WaitAsync();
-                Event _event = GetEvent(id);
-                UpdateEvent(_event);
-                Booking booking = await bookingRepo.CreateBookingAsync(new Booking(id), ct);
-                return new BookingResultDto
-                {
-                    Id = booking.Id.ToString(),
-                    EventId = booking.EventId.ToString(),
-                    Status = booking.Status.ToString(),
-                    CreatedAt = booking.CreatedAt,
-                    ProcessedAt = booking.ProcessedAt
-                };
+                Event _event = await GetEventAsync(id);
+                await TryBookingAndUpdateEventAsync(_event);            
             }
             finally 
             { 
                 semaphore.Release();
             }
+            Booking booking = await bookingRepo.CreateBookingAsync(new Booking(id), ct);
+            return new BookingResultDto
+            {
+                Id = booking.Id.ToString(),
+                EventId = booking.EventId.ToString(),
+                Status = booking.Status.ToString(),
+                CreatedAt = booking.CreatedAt,
+                ProcessedAt = booking.ProcessedAt
+            };
         }
 
         /// <inheritdoc/>
@@ -61,20 +61,21 @@ namespace BestEvents
             return result;
         }
 
-        private static void UpdateEvent(Event _event)
+        private async Task TryBookingAndUpdateEventAsync(Event _event)
         {
             if (_event.EndAt < DateTime.Now)
                 throw new CreateBookingException(string.Format(Messages_ru.CreateBookingEventCompleted, _event.Id));
             if (!_event.TryReserveSeats())
                 throw new NoAvailableSeatsException();
+            await eventRepo.ReplaceEventAsync(_event);
             return;
         }
 
-        private Event GetEvent(Guid id)
+        private async Task<Event> GetEventAsync(Guid id)
         {
-            var _event = eventRepo.GetEvent(id);
+            var _event = await eventRepo.GetEventAsync(id);
             if (_event == null)
-                throw new BookingWrongParameterException(string.Format(Messages_ru.CreateBookingEventNotFound, id));
+                throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, id));
             return _event;
         }
     }

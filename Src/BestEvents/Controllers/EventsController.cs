@@ -116,13 +116,13 @@ namespace BestEvents.Controllers
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <param name="ct">Токен отмены</param>
-        /// <response code="202">В случае успешного бронирования вместе с id бронирования</response>
+        /// <response code="202">В случае успешного бронирования возвращает URL для получения статуса бронирования</response>
         /// <response code="400">Если id некорректен</response>
         /// <response code="404">Если событие с таким идентификатором не найдено</response>
         /// <response code="409">В случае отклонения бронирования, например, если нет свободных мест или событие уже завершилось</response>
         [HttpPost("{id}/book")]
         [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(BookingResultDto))]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorDetails))]

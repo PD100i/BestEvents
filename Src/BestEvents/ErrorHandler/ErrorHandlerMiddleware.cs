@@ -1,5 +1,6 @@
 ﻿
 using BestEvents.Exceptions;
+using System.ComponentModel.DataAnnotations;
 
 namespace BestEvents
 {

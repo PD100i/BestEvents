@@ -21,6 +21,7 @@ namespace BestEvents.Controllers
         /// <response code="400">Если id некорректен</response>
         /// <response code="404">Если бронирования с таким идентификатором не найдено</response>
         [HttpGet("{id}", Name = "GetBookingId")]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingResultDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]

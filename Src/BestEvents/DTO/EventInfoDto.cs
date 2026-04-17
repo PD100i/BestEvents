@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BestEvents
 {
@@ -11,7 +12,7 @@ namespace BestEvents
     /// <param name="endAt">Дата завершения</param>
     /// <param name="description">Описание (необязательный параметр)</param>
     /// <param name="totalSeats">Общее количество мест на событии</param>
-    /// <param name="availableSeats">Доступное количество мест на событии</param>
+    /// <param name="availableSeats">Доступное количество мест на событии</param>   
     public class EventInfoDto(string id, string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats, int? availableSeats) 
     {
         /// <summary>

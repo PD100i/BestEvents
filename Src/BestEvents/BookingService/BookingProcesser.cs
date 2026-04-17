@@ -10,6 +10,9 @@ namespace BestEvents
     {
         private readonly SemaphoreSlim semaphore = new (1, 1);
 
+        private int pollingDelay = 100;
+        private int processingDelay = 2000;
+
         /// <summary>
         /// Фоновый процесс обработки бронирования
         /// </summary>
@@ -29,7 +32,7 @@ namespace BestEvents
                     List<Booking> pendingBookings = await bookingRepo.GetPendingBookingAsync(stoppingToken);
                     if (pendingBookings == null || pendingBookings.Count == 0)
                     {
-                        await Task.Delay(100, stoppingToken);
+                        await Task.Delay(pollingDelay, stoppingToken);
                         continue;
                     }
                     var tasks = pendingBookings.Select(booking => ProcessBookingAsync(bookingRepo, eventRepo, booking, stoppingToken));
@@ -50,7 +53,7 @@ namespace BestEvents
                     {
                         logger.LogError(ex, Messages_ru.UnexpectedBookingError);
                     }
-                    await Task.Delay(100, stoppingToken);
+                    await Task.Delay(pollingDelay, stoppingToken);
                 }
             }
         }
@@ -61,7 +64,7 @@ namespace BestEvents
             try
             {
                 stoppingToken.ThrowIfCancellationRequested();
-                await Task.Delay(2000, stoppingToken);
+                await Task.Delay(processingDelay, stoppingToken);
 
                 await semaphore.WaitAsync();
 

@@ -76,14 +76,29 @@ namespace BestEvents
                 await context.Response.WriteAsJsonAsync(details);
             }
 
-            catch (CreateBookingException ex)
+            catch (EventCompletedException ex)
             {
-                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogWarning($"Request: {context.Request.Path}. {ex.Message}");
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = 409;
                 ErrorDetails details = new()
                 {
-                    Title = Messages_ru.CreateBookingError,
+                    Title = Messages_ru.BookingNotConfirmed,
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
+
+            catch (NoAvailableSeatsException ex)
+            {
+                _logger.LogWarning($"Request: {context.Request.Path}. {ex.Message}");
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 409;
+                ErrorDetails details = new()
+                {
+                    Title = Messages_ru.BookingNotConfirmed,
                     StatusCode = context.Response.StatusCode,
                     Detail = ex.Message,
                     Instance = context.Request.Path

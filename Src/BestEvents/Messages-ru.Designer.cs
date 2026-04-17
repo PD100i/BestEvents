@@ -61,6 +61,15 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Бронирование не подтверждено.
+        /// </summary>
+        public static string BookingNotConfirmed {
+            get {
+                return ResourceManager.GetString("BookingNotConfirmed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Бронирование с идентификатором {0} не найдено.
         /// </summary>
         public static string BookingNotFound {
@@ -70,7 +79,7 @@ namespace BestEvents {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Бронирование не найдено.
+        ///   Looks up a localized string similar to Бронирование не подтверждено.
         /// </summary>
         public static string BookingNotFoundShort {
             get {

@@ -202,7 +202,7 @@
     <value>Событие не найдено</value>
   </data>
   <data name="BookingNotFoundShort" xml:space="preserve">
-    <value>Бронирование не найдено</value>
+    <value>Бронирование не подтверждено</value>
   </data>
   <data name="RequestWrongParameters" xml:space="preserve">
     <value>Недопустимые параметры в запросе</value>
@@ -233,5 +233,8 @@
   </data>
   <data name="BookingRejected_NoVacantSeats" xml:space="preserve">
     <value>В бронировании отказано. Свободных мест нет</value>
+  </data>
+  <data name="BookingNotConfirmed" xml:space="preserve">
+    <value>Бронирование не подтверждено</value>
   </data>
 </root>

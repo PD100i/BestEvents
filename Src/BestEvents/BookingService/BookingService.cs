@@ -64,7 +64,7 @@ namespace BestEvents
         private async Task TryBookingAndUpdateEventAsync(Event _event)
         {
             if (_event.EndAt < DateTime.Now)
-                throw new CreateBookingException(string.Format(Messages_ru.CreateBookingEventCompleted, _event.Id));
+                throw new EventCompletedException();
             if (!_event.TryReserveSeats())
                 throw new NoAvailableSeatsException();
             await eventRepo.ReplaceEventAsync(_event);

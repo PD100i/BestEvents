@@ -73,6 +73,25 @@ namespace BestEvents
             Status = BookingStatus.Rejected;
             ProcessedAt = DateTime.Now;
         }
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            Booking other = (Booking)obj;
+            return Id == other.Id &&
+                   EventId == other.EventId &&
+                   CreatedAt == other.CreatedAt &&
+                   ProcessedAt == other.ProcessedAt &&
+                   Status == other.Status;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, EventId, CreatedAt, ProcessedAt, Status);
+        }
     }
 
     /// <summary>

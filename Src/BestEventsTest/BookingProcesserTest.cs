@@ -48,7 +48,7 @@ namespace BestEventsTest
             var eventId = Guid.NewGuid();
             var booking = new Booking(eventId);
             List<Booking> bookings = [booking];
-            var _event = Event.CreateEvent(eventId, "AvailableEvent", DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "", 10, 10);
+            var _event = Event.CreateEvent(eventId, "AvailableEvent", DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "", 10, 9);
             var fixture = new BookingProcessorFixture();
             fixture.MockBookingRepository.Setup(r => r.GetPendingBookingAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookings.Where(i => i.Status == BookingStatus.Pending).ToList());

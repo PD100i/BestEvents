@@ -169,7 +169,7 @@
     <value>Попытка отклонения брони {0}, которая уже отклонена</value>
   </data>
   <data name="TryConfirmRejectedBooking" xml:space="preserve">
-    <value>"Попытка подтверждения уже отклоненной брони {0}</value>
+    <value>Попытка подтверждения уже отклоненной брони {0}</value>
   </data>
   <data name="TryRedjectConfirmedBooking" xml:space="preserve">
     <value>Повторная отклонения уже подтвержденной брони {0}</value>
@@ -202,7 +202,7 @@
     <value>Событие не найдено</value>
   </data>
   <data name="BookingNotFoundShort" xml:space="preserve">
-    <value>Бронирование не найдено</value>
+    <value>Бронирование не подтверждено</value>
   </data>
   <data name="RequestWrongParameters" xml:space="preserve">
     <value>Недопустимые параметры в запросе</value>
@@ -212,5 +212,29 @@
   </data>
   <data name="UndefinedError" xml:space="preserve">
     <value>Неизвестный тип ошибки</value>
+  </data>
+  <data name="WrongEventTotalSeats" xml:space="preserve">
+    <value>Общее количество мест должно быть больше нуля</value>
+  </data>
+  <data name="WrongEventAvailableSeats" xml:space="preserve">
+    <value>Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест</value>
+  </data>
+  <data name="RealiseBokingWrongCount" xml:space="preserve">
+    <value>Ошибка при отмене бронирования. Предано неверное количество мест</value>
+  </data>
+  <data name="No_TotalSeats" xml:space="preserve">
+    <value>Не передано общее количество мест для бронирования</value>
+  </data>
+  <data name="No_AvailableSeats" xml:space="preserve">
+    <value>Не передано количество доступных для бронирования мест </value>
+  </data>
+  <data name="NoAvailableSeats" xml:space="preserve">
+    <value>Нет доступных мест для этого события</value>
+  </data>
+  <data name="BookingRejected_NoVacantSeats" xml:space="preserve">
+    <value>В бронировании отказано. Свободных мест нет</value>
+  </data>
+  <data name="BookingNotConfirmed" xml:space="preserve">
+    <value>Бронирование не подтверждено</value>
   </data>
 </root>

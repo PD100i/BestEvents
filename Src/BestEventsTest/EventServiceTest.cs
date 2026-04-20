@@ -33,30 +33,32 @@ namespace BestEventsTest
             Event _event = EventCollection.GetEvent(0);
             return new List<object?[]>
             {
-                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, "Some description", "Some description" },
-                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, "", "" },
-                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, null, "" }
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, "Some description", "Some description" },
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, "", "" },
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, null, "" }
             };
         }
 
         [Theory]
         [MemberData(nameof(GetEventCorrectArguments))]
-        public void CreateEvent_CallWithCorrectArguments_CallRepoMethodReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, string expectedDescription)
+        public async Task CreateEvent_CallWithCorrectArguments_CallRepoMethodReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, int? totalSeats, string? description, string expectedDescription)
         {
             // Arrange
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
-            var _event = new Event(id, title, startAt, endAt, description);
+            var _event = Event.CreateEvent(id, title, startAt, endAt, description, totalSeats, totalSeats);
 
 
-            mockRepository.Setup(mock => mock.AddEvent(It.Is<Event>(e => e.Title == title &&
+            mockRepository.Setup(mock => mock.AddEventAsync(It.Is<Event>(e => e.Title == title &&
                                                                               e.StartAt == startAt &&
                                                                               e.EndAt == endAt &&
+                                                                              e.TotalSeats == totalSeats &&
+                                                                              e.AvailableSeats == totalSeats &&
                                                                               e.Description == expectedDescription)))
-                                                                              .Returns(_event);
+                                                                              .ReturnsAsync(_event);
             // Act
-            EventDto result = eventService.CreateEvent(new EventDtoBase(title, startAt, endAt, description));
+            EventInfoDto result = await eventService.CreateEventAsync(new CreateEventDto(title, startAt, endAt, description, totalSeats), CancellationToken.None);
 
             // Assert
             Assert.NotNull(result);
@@ -65,6 +67,8 @@ namespace BestEventsTest
             Assert.Equal(result.StartAt, startAt);
             Assert.Equal(result.EndAt, endAt);
             Assert.Equal(result.Description, expectedDescription);
+            Assert.Equal(result.TotalSeats, totalSeats!.Value);
+            Assert.Equal(result.AvailableSeats, totalSeats!.Value);
         }
 
 
@@ -73,30 +77,32 @@ namespace BestEventsTest
             Event _event = EventCollection.GetEvent(0);
             return new List<object?[]>
             {
-                 //new object?[] { "", _event.StartAt, _event.EndAt },
-                 //new object?[] { _event.Title, null, _event.EndAt },
-                 //new object?[] { _event.Title, _event.StartAt, null },
-                 new object?[] { "", null, null }
+                 new object?[] { "", _event.StartAt, _event.EndAt, _event.TotalSeats },
+                 new object?[] { _event.Title, null, _event.EndAt, _event.TotalSeats },
+                 new object?[] { _event.Title, _event.StartAt, null, _event.TotalSeats },
+                 new object?[] { _event.Title, _event.StartAt, _event.EndAt, null },
+                 new object?[] { _event.Title, _event.StartAt, _event.EndAt, 0 },
+                 new object?[] { "", null, null, null }
             };
     
         }
 
         [Theory]
         [MemberData(nameof(Get_CreateEvent_WrongArguments))]
-        public void CreateEvent_CallWithWrongArguments_Exception(string title, DateTime? startAt, DateTime? endAt)
+        public async Task CreateEvent_CallWithWrongArguments_Exception(string title, DateTime? startAt, DateTime? endAt, int totalSeats)
         {
             //Arrange
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             // Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.CreateEvent(new EventDtoBase(title, startAt, endAt, "")));
-            mockRepository.Verify(mock => mock.AddEvent(It.IsAny<Event>()), Times.Never);
+            await Assert.ThrowsAsync<EventWrongParameterException>(() => eventService.CreateEventAsync(new CreateEventDto(title, startAt, endAt, "", totalSeats), CancellationToken.None));
+            mockRepository.Verify(mock => mock.AddEventAsync(It.IsAny<Event>()), Times.Never);
         }
 
 
         [Fact]
-        public void DeleteEvent_CallWithCorrectId_CallRepoRemoveMethode()
+        public async Task DeleteEvent_CallWithCorrectId_CallRepoRemoveMethode()
         {
             // Arrange
             var fixture = new EventServiceFixture();
@@ -104,15 +110,15 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             Guid id = Guid.NewGuid();
             string _id = id.ToString();
-            mockRepository.Setup(mock => mock.RemoveEvent(id));
+            mockRepository.Setup(mock => mock.RemoveEventAsync(id)).ReturnsAsync(() => true);
             // Act 
-            eventService.DeleteEvent(_id);
+            await eventService.DeleteEventAsync(_id, CancellationToken.None);
             // Assert
-            mockRepository.Verify(mock => mock.RemoveEvent(id), Times.Once);
+            mockRepository.Verify(mock => mock.RemoveEventAsync(id), Times.Once);
         }
 
         [Fact]
-        public void DeleteEvent_CallWithWrongId_Exception()
+        public async Task DeleteEvent_CallWithWrongId_Exception()
         {
 
             // Arrange
@@ -121,12 +127,28 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             string id = "123";  
             // Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.DeleteEvent(id));
-            mockRepository.Verify(mock => mock.RemoveEvent(new Guid()), Times.Never);
+            await Assert.ThrowsAsync<EventWrongParameterException>(() => eventService.DeleteEventAsync(id, CancellationToken.None));
+            mockRepository.Verify(mock => mock.RemoveEventAsync(new Guid()), Times.Never);
         }
 
         [Fact]
-        public void GetEvent_CorrectId_ReturnEvent()
+        public async Task DeleteEvent_NotFoundEvent_Exception()
+        {
+
+            // Arrange
+            var fixture = new EventServiceFixture();
+            EventService eventService = fixture.EventService;
+            Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
+            Guid id = Guid.NewGuid();
+            string _id = id.ToString();
+            mockRepository.Setup(mock => mock.RemoveEventAsync(id)).ReturnsAsync(() => false);
+            // Act & Assert
+            await Assert.ThrowsAsync<EventNotFoundException>(() => eventService.DeleteEventAsync(_id, CancellationToken.None));
+            mockRepository.Verify(mock => mock.RemoveEventAsync(new Guid()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetEvent_CorrectId_ReturnEvent()
         {
             // Arrange
             var fixture = new EventServiceFixture();
@@ -134,9 +156,9 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             Event _event = EventCollection.GetEvent(0);
             string id = _event.Id.ToString();
-            mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Returns(_event);
+            mockRepository.Setup(mock => mock.GetEventAsync(_event.Id)).ReturnsAsync(_event);
             // Act
-            EventDto dto = eventService.GetEvent(id);
+            EventInfoDto dto = await eventService.GetEventAsync(id, CancellationToken.None);
             // Assert
             Assert.NotNull(dto);
             Assert.Equal(id, dto.Id);
@@ -147,7 +169,7 @@ namespace BestEventsTest
         }
 
         [Fact]
-        public void GetEvent_WrongId_Exception()
+        public async Task GetEvent_WrongId_Exception()
         {
             // Arrange
             string id = "123";
@@ -155,12 +177,12 @@ namespace BestEventsTest
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             // Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.GetEvent(id));
-            mockRepository.Verify(mock => mock.GetEvent(new Guid()), Times.Never);
+            await Assert.ThrowsAsync<EventWrongParameterException>(() => eventService.GetEventAsync(id, CancellationToken.None));
+            mockRepository.Verify(mock => mock.GetEventAsync(new Guid()), Times.Never);
         }
 
         [Fact]
-        public void GetEvent_NotExistedId_NotFoundExceotion()
+        public async Task GetEvent_NotExistedId_NotFoundExceotion()
         {
             // Arrange
             var fixture = new EventServiceFixture();
@@ -168,48 +190,67 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             Event _event = EventCollection.GetEvent(0);
             string id = _event.Id.ToString();
-            mockRepository.Setup(mock => mock.GetEvent(_event.Id)).Throws(new EventNotFoundException(""));
+            mockRepository.Setup(mock => mock.GetEventAsync(_event.Id)).ReturnsAsync(() => null);
             // Act & Assert
-            Assert.Throws<EventNotFoundException>(() => eventService.GetEvent(id));
+            await Assert.ThrowsAsync<EventNotFoundException>(() => eventService.GetEventAsync(id, CancellationToken.None));
         }
 
+        public static IEnumerable<object?[]> ReplaceEventCorrectArguments()
+        {
+            Event _event = EventCollection.GetEvent(0);
+            return new List<object?[]>
+            {
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, _event.AvailableSeats, "Some description", "Some description" },
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, _event.AvailableSeats, "", "" },
+                new object?[] { _event.Id, _event.Title, _event.StartAt, _event.EndAt, _event.TotalSeats, _event.AvailableSeats, null, "" }
+            };
+        }
         [Theory]
-        [MemberData(nameof(GetEventCorrectArguments))]
-        public void ReplaceEvent_CorrectArguments_ReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, string expectedDescription)
+        [MemberData(nameof(ReplaceEventCorrectArguments))]
+        public async Task ReplaceEvent_CorrectArguments_ReturnEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, int? totalSeats, int? availableSeats, string? description, string expectedDescription)
         {
             // Arrange
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
-            EventDto dto = new (id.ToString(), title, startAt, endAt, description);
-            mockRepository.Setup(mock => mock.ReplaceEvent(It.Is<Event>(e => e.Id == id &&
+            EventInfoDto dto = new (id.ToString(), title, startAt, endAt, description, totalSeats, availableSeats);
+            mockRepository.Setup(mock => mock.ReplaceEventAsync(It.Is<Event>(e =>  e.Id == id &&
                                                                               e.Title == title &&
                                                                               e.StartAt == startAt &&
                                                                               e.EndAt == endAt &&
-                                                                              e.Description == expectedDescription)));
+                                                                              e.TotalSeats == totalSeats &&
+                                                                              e.AvailableSeats == availableSeats &&
+                                                                              e.Description == expectedDescription))).ReturnsAsync(() => true);
             // Act
-            eventService.ReplaceEvent(dto.Id, dto);
+            await eventService.ReplaceEventAsync(dto.Id, dto, CancellationToken.None);
             // Assert
-            mockRepository.Verify(mock => mock.ReplaceEvent(It.IsAny<Event>()), Times.AtMost(3));
+            mockRepository.Verify(mock => mock.ReplaceEventAsync(It.IsAny<Event>()), Times.AtMost(3));
         }
 
         public static IEnumerable<object?[]> Get_ReplaceEvent_WrongArguments()
         {
-            EventDto dto = EventCollection.GetEventDto(0);
+            EventInfoDto dto = EventCollection.GetEventDto(0);
+            string unequalId = "349b6818-0d33-43ed-94e4-84824b09eeee";
+            string wrongFormatId = "349";
             return new List<object?[]>
             {
-                new object?[] { "349", "349", "", dto.StartAt, dto.EndAt },
-                new object?[] { "349b6818-0d33-43ed-94e4-84824b09eeee", dto.Id, "", dto.StartAt, dto.EndAt },
-                new object?[] { dto.Id, dto.Id, "", dto.StartAt, dto.EndAt },
-                new object?[] { dto.Id, dto.Id, dto.Title, null, dto.EndAt },
-                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, null },
-                new object?[] { dto.Id, dto.Id, "", null, null }
+                new object?[] { wrongFormatId, wrongFormatId, "", dto.StartAt, dto.EndAt, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { unequalId, dto.Id, "", dto.StartAt, dto.EndAt, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { dto.Id, dto.Id, "", dto.StartAt, dto.EndAt, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { dto.Id, dto.Id, dto.Title, null, dto.EndAt, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, null, dto.TotalSeats, dto.AvailableSeats },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, dto.EndAt, 0, 0 },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, dto.EndAt, null, 0 },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, dto.EndAt, dto.TotalSeats, null },
+                new object?[] { dto.Id, dto.Id, dto.Title, dto.StartAt, dto.EndAt, dto.TotalSeats, -1 },
+                new object?[] { dto.Id, dto.Id, "", null, null, null, null }
             };
         }
 
+
         [Theory]
         [MemberData(nameof(Get_ReplaceEvent_WrongArguments))]
-        public void ReplaceEvent_CallWithWrongArguments_Exception(string idFromRout, string id, string title, DateTime? startAt, DateTime? endAt)
+        public async Task ReplaceEvent_CallWithWrongArguments_Exception(string idFromRout, string id, string title, DateTime? startAt, DateTime? endAt, int? totalSeats, int? availableSeats)
         {
             //Arrange
             var fixture = new EventServiceFixture();
@@ -217,14 +258,29 @@ namespace BestEventsTest
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
 
             //Act & Assert
-            Assert.Throws<EventWrongParameterException>(() => eventService.ReplaceEvent(idFromRout, new EventDto(id, title, startAt, endAt, "")));
-            mockRepository.Verify(mock => mock.ReplaceEvent(It.IsAny<Event>()), Times.Never);
+            await Assert.ThrowsAsync<EventWrongParameterException>(() => eventService.ReplaceEventAsync(idFromRout, new EventInfoDto(id, title, startAt, endAt, "", totalSeats, availableSeats), CancellationToken.None));
+            mockRepository.Verify(mock => mock.ReplaceEventAsync(It.IsAny<Event>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ReplaceEvent_NotFoundEvent_Exception()
+        {
+            // Arrange
+            var fixture = new EventServiceFixture();
+            EventService eventService = fixture.EventService;
+            Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
+            EventInfoDto dto = EventCollection.GetEventDto(0);
+            mockRepository.Setup(mock => mock.ReplaceEventAsync(It.IsAny<Event>())).ReturnsAsync(() => false);
+            // Act
+            await Assert.ThrowsAsync<EventNotFoundException>(() => eventService.ReplaceEventAsync(dto.Id, dto, CancellationToken.None));
+            // Assert
+            mockRepository.Verify(mock => mock.ReplaceEventAsync(It.IsAny<Event>()), Times.Once);
         }
 
         public static IEnumerable<object?[]> Get_GetEvents_CorrectArguments()
         {             
-            List<Event> events = EventCollection.GetCollection();
-            List<EventDto> eventsDto = EventCollection.GetDtoCollection();
+            IQueryable<Event> events = EventCollection.GetCollection().AsQueryable<Event>();
+            List<EventInfoDto> eventsDto = EventCollection.GetDtoCollection();
             return new List<object?[]>
             {
                 new object?[] { null, null, null, 1, 10, events,
@@ -240,16 +296,15 @@ namespace BestEventsTest
 
         [Theory]
         [MemberData(nameof(Get_GetEvents_CorrectArguments))]
-        public void GetEvents_CorrectArguments_ReturnPaginatedResult(string? title, DateTime? from, DateTime? to, int page, int size, List<Event> events, 
-            PaginatedResultDto expectedResult)
+        public async Task GetEvents_CorrectArguments_ReturnPaginatedResult(string? title, DateTime? from, DateTime? to, int page, int size, IQueryable<Event> events, PaginatedResultDto expectedResult)
         {
             // Arrange
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
-            mockRepository.Setup(mock => mock.GetEvents()).Returns(events);
+            mockRepository.Setup(mock => mock.GetEventsAsync()).ReturnsAsync(events);
             // Act && Assert
-            var result = eventService.GetEvents(title, from, to, page, size);
+            var result = await eventService.GetEventsAsync(title, from, to, page, size, CancellationToken.None);
             Assert.Equal(result, expectedResult);
         }
 
@@ -257,7 +312,7 @@ namespace BestEventsTest
         public static IEnumerable<object?[]> Get_GetEvents_WrongArguments()
         {
             List<Event> events = EventCollection.GetCollection();
-            List<EventDto> eventsDto = EventCollection.GetDtoCollection();
+            List<EventInfoDto> eventsDto = EventCollection.GetDtoCollection();
             return new List<object?[]>
             {
                 new object?[] { null, new DateTime(2025, 06, 10), new DateTime(2024, 06, 10), 1, 10 },
@@ -268,15 +323,15 @@ namespace BestEventsTest
 
         [Theory]
         [MemberData(nameof(Get_GetEvents_WrongArguments))]
-        public void GetEvents_WrongArguments_Exception(string? title, DateTime? from, DateTime? to, int page, int size)
+        public async Task GetEvents_WrongArguments_Exception(string? title, DateTime? from, DateTime? to, int page, int size)
         {
             // Arrange
             var fixture = new EventServiceFixture();
             EventService eventService = fixture.EventService;
             Mock<IEventRepository> mockRepository = fixture.MockEventRepository;
             // Act & Assert 
-            Assert.Throws<EventWrongParameterException>(() => eventService.GetEvents(title, from, to, page, size));
-            mockRepository.Verify(mock => mock.GetEvents(), Times.Never);
+            await Assert.ThrowsAsync<EventWrongParameterException>(() => eventService.GetEventsAsync(title, from, to, page, size, CancellationToken.None));
+            mockRepository.Verify(mock => mock.GetEventsAsync(), Times.Never);
         }
     }
 }

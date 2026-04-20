@@ -61,6 +61,15 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Бронирование не подтверждено.
+        /// </summary>
+        public static string BookingNotConfirmed {
+            get {
+                return ResourceManager.GetString("BookingNotConfirmed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Бронирование с идентификатором {0} не найдено.
         /// </summary>
         public static string BookingNotFound {
@@ -70,7 +79,7 @@ namespace BestEvents {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Бронирование не найдено.
+        ///   Looks up a localized string similar to Бронирование не подтверждено.
         /// </summary>
         public static string BookingNotFoundShort {
             get {
@@ -93,6 +102,15 @@ namespace BestEvents {
         public static string BookingProcessingError {
             get {
                 return ResourceManager.GetString("BookingProcessingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to В бронировании отказано. Свободных мест нет.
+        /// </summary>
+        public static string BookingRejected_NoVacantSeats {
+            get {
+                return ResourceManager.GetString("BookingRejected_NoVacantSeats", resourceCulture);
             }
         }
         
@@ -223,6 +241,15 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не передано количество доступных для бронирования мест .
+        /// </summary>
+        public static string No_AvailableSeats {
+            get {
+                return ResourceManager.GetString("No_AvailableSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не была передана дата завершения события.
         /// </summary>
         public static string No_EndAt {
@@ -259,6 +286,33 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не передано общее количество мест для бронирования.
+        /// </summary>
+        public static string No_TotalSeats {
+            get {
+                return ResourceManager.GetString("No_TotalSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Нет доступных мест для этого события.
+        /// </summary>
+        public static string NoAvailableSeats {
+            get {
+                return ResourceManager.GetString("NoAvailableSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка при отмене бронирования. Предано неверное количество мест.
+        /// </summary>
+        public static string RealiseBokingWrongCount {
+            get {
+                return ResourceManager.GetString("RealiseBokingWrongCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Недопустимые параметры в запросе.
         /// </summary>
         public static string RequestWrongParameters {
@@ -268,7 +322,7 @@ namespace BestEvents {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;Попытка подтверждения уже отклоненной брони {0}.
+        ///   Looks up a localized string similar to Попытка подтверждения уже отклоненной брони {0}.
         /// </summary>
         public static string TryConfirmRejectedBooking {
             get {
@@ -327,6 +381,24 @@ namespace BestEvents {
         public static string Wrong_Id_Format {
             get {
                 return ResourceManager.GetString("Wrong_Id_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест.
+        /// </summary>
+        public static string WrongEventAvailableSeats {
+            get {
+                return ResourceManager.GetString("WrongEventAvailableSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Общее количество мест должно быть больше нуля.
+        /// </summary>
+        public static string WrongEventTotalSeats {
+            get {
+                return ResourceManager.GetString("WrongEventTotalSeats", resourceCulture);
             }
         }
         

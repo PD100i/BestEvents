@@ -1,4 +1,4 @@
-﻿namespace BestEvents.ErrorHandler
+﻿namespace BestEvents
 {
     /// <summary>
     /// Класс детализации ошибок (по RFC7807)

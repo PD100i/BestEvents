@@ -15,7 +15,7 @@ namespace BestEventsTest
 {
     public class BookingProcessorFixture
     {
-        public int OneCycleTime { get; set; } = 2200;
+        public int OneCycleTime { get; set; } = 2500;
         public BookingProcesser BookingProcessor {  get; set; }
         public Mock<IEventRepository> MockEventRepository { get; set; }
         public Mock<IBookingRepository> MockBookingRepository {  get; set; }
@@ -48,12 +48,12 @@ namespace BestEventsTest
             var eventId = Guid.NewGuid();
             var booking = new Booking(eventId);
             List<Booking> bookings = [booking];
-            var _event = new Event(eventId, "AvailableEvent", DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "");
+            var _event = Event.CreateEvent(eventId, "AvailableEvent", DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "", 10, 9);
             var fixture = new BookingProcessorFixture();
             fixture.MockBookingRepository.Setup(r => r.GetPendingBookingAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookings.Where(i => i.Status == BookingStatus.Pending).ToList());
 
-            fixture.MockEventRepository.Setup(r => r.GetEvent(eventId)).Returns(_event);
+            fixture.MockEventRepository.Setup(r => r.GetEventAsync(eventId)).ReturnsAsync(_event);
             var cts = new CancellationTokenSource();
             var ct = cts.Token;
 
@@ -77,7 +77,7 @@ namespace BestEventsTest
             fixture.MockBookingRepository.Setup(r => r.GetPendingBookingAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookings.Where(i => i.Status == BookingStatus.Pending).ToList());
 
-            fixture.MockEventRepository.Setup(r => r.GetEvent(eventId)).Throws(new EventNotFoundException("Событие не найдено"));
+            fixture.MockEventRepository.Setup(r => r.GetEventAsync(eventId)).Throws(new EventNotFoundException("Событие не найдено"));
             var cts = new CancellationTokenSource();
             var ct = cts.Token;
 
@@ -97,12 +97,12 @@ namespace BestEventsTest
             var eventId = Guid.NewGuid();
             var booking = new Booking(eventId);
             List<Booking> bookings = [booking];
-            var _event = new Event(eventId, "EventPassed", DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), "");
+            var _event = Event.CreateEvent(eventId, "EventPassed", DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), "", 10, 9);
             var fixture = new BookingProcessorFixture();
             fixture.MockBookingRepository.Setup(r => r.GetPendingBookingAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookings.Where(i => i.Status == BookingStatus.Pending).ToList());
 
-            fixture.MockEventRepository.Setup(r => r.GetEvent(eventId)).Returns(_event);
+            fixture.MockEventRepository.Setup(r => r.GetEventAsync(eventId)).ReturnsAsync(_event);
             var cts = new CancellationTokenSource();
             var ct = cts.Token;
 

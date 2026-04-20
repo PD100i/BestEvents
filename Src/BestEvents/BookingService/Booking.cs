@@ -1,5 +1,4 @@
-﻿using BestEvents.ErrorHandler;
-using BestEvents.Exceptions;
+﻿using BestEvents.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BestEvents
@@ -73,6 +72,25 @@ namespace BestEvents
                 throw new ServiceInvalidOperationException(string.Format(Messages_ru.DoubleBookingReject, Id));
             Status = BookingStatus.Rejected;
             ProcessedAt = DateTime.Now;
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            Booking other = (Booking)obj;
+            return Id == other.Id &&
+                   EventId == other.EventId &&
+                   CreatedAt == other.CreatedAt &&
+                   ProcessedAt == other.ProcessedAt &&
+                   Status == other.Status;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, EventId, CreatedAt, ProcessedAt, Status);
         }
     }
 

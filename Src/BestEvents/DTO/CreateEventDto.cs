@@ -9,7 +9,8 @@ namespace BestEvents
     /// <param name="startAt">Дата начала</param>
     /// <param name="endAt">Дата завершения</param>
     /// <param name="description">Описание (необязательный параметр)</param>
-    public class EventDtoBase(string title, DateTime? startAt, DateTime? endAt, string? description)
+    /// <param name="totalSeats">Общее количество мест на событии</param>
+    public class CreateEventDto(string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats)
     {
         /// <summary>
         /// Название события
@@ -36,23 +37,14 @@ namespace BestEvents
         [DataType(DataType.Date, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "WrongFormat_EndAt")]
         public DateTime? EndAt { get; set; } = endAt;
 
-        /// <inheritdoc/>
-        public override bool Equals(object? obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-            EventDtoBase other = (EventDtoBase)obj;
-            return Title == other.Title &&
-                   Description == other.Description &&
-                   StartAt == other.StartAt &&
-                   EndAt == other.EndAt;
-        }
 
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Title, Description, StartAt, EndAt);
+        /// <summary>
+        /// Общее количество мест на событии
+        /// </summary>
+        [Required(ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "No_TotalSeats")]
+        [Range(1, int.MaxValue, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "WrongEventTotalSeats")]
+        public int? TotalSeats { get; } = totalSeats;
 
-        }
+        
     }
 }

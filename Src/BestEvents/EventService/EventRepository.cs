@@ -16,39 +16,40 @@ namespace BestEvents
         static readonly ConcurrentDictionary<Guid, Event> events = new();
 
         /// <inheritdoc/>
-        public Event AddEvent(Event _event)
+        public async Task<Event> AddEventAsync(Event _event)
         {
             events.TryAdd(_event.Id, _event);
-            return _event;
+            return await Task.FromResult(_event);
         }
 
         /// <inheritdoc/>
-        public void RemoveEvent(Guid id)
+        public async Task<bool> RemoveEventAsync(Guid id)
         {
-            if (!events.TryRemove(id, out _))
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotDeleted, id));
+            return await Task.FromResult(events.TryRemove(id, out _));
+                
         }
 
         /// <inheritdoc/>
-        public Event GetEvent(Guid id)
+        public async Task<Event?> GetEventAsync(Guid id)
         {
             if (!events.TryGetValue(id, out Event? value))
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
-            return value;
+                return null;
+            return await Task.FromResult(value);
         }
 
         /// <inheritdoc/>
-        public void ReplaceEvent(Event _event)
+        public async Task<bool> ReplaceEventAsync(Event _event)
         {
             if (!events.ContainsKey(_event.Id))
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotReplaced, _event.Id));
+                return await Task.FromResult(false);
             events[_event.Id] = _event;
+            return await Task.FromResult(true);
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Event> GetEvents()
+        public async Task<IQueryable<Event>> GetEventsAsync()
         {
-            return events.Values;
+            return await Task.FromResult(events.Values.AsQueryable());
         }
 
         

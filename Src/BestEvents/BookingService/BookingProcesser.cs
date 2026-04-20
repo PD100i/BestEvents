@@ -1,4 +1,5 @@
 ﻿using BestEvents.Exceptions;
+using System.Collections;
 
 namespace BestEvents
 {
@@ -7,6 +8,11 @@ namespace BestEvents
     /// </summary>
     public class BookingProcesser(IServiceScopeFactory scopeFactory, ILogger<BookingProcesser> logger) : BackgroundService
     {
+        private readonly SemaphoreSlim semaphore = new (1, 1);
+
+        private int pollingDelay = 100;
+        private int processingDelay = 2000;
+
         /// <summary>
         /// Фоновый процесс обработки бронирования
         /// </summary>
@@ -16,62 +22,80 @@ namespace BestEvents
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                Task? resultTask = null;
                 try
                 {
                     using var scope = scopeFactory.CreateScope();
                     var eventRepo = scope.ServiceProvider.GetRequiredService<IEventRepository>();
                     var bookingRepo = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
 
-                    List<Booking> queue = await bookingRepo.GetPendingBookingAsync(stoppingToken);
-                    if (queue == null || queue.Count == 0)
+                    List<Booking> pendingBookings = await bookingRepo.GetPendingBookingAsync(stoppingToken);
+                    if (pendingBookings == null || pendingBookings.Count == 0)
                     {
-                        await Task.Delay(500, stoppingToken);
+                        await Task.Delay(pollingDelay, stoppingToken);
                         continue;
                     }
-                    foreach(var task in queue)
-                    {
-                        await BookingProcessing(bookingRepo, eventRepo, task, stoppingToken);
-                    }
+                    var tasks = pendingBookings.Select(booking => ProcessBookingAsync(bookingRepo, eventRepo, booking, stoppingToken));
+                    resultTask = Task.WhenAll(tasks);
+                    await resultTask;
                 }
                 catch (OperationCanceledException) { throw; }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, Messages_ru.UnexpectedBookingError);
-                    await Task.Delay(1000, stoppingToken);
+                    if (resultTask != null && resultTask.Exception != null)
+                    {
+                        foreach (var _ex in resultTask.Exception.InnerExceptions)
+                        {
+                            logger.LogError(_ex, _ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        logger.LogError(ex, Messages_ru.UnexpectedBookingError);
+                    }
+                    await Task.Delay(pollingDelay, stoppingToken);
                 }
             }
         }
 
-        private async Task BookingProcessing(IBookingRepository bookingRepository, IEventRepository eventRepository, Booking booking, CancellationToken stoppingToken)
+        private async Task ProcessBookingAsync(IBookingRepository bookingRepository, IEventRepository eventRepository, Booking booking, CancellationToken stoppingToken)
         {
+            Event? _event = null;
             try
             {
                 stoppingToken.ThrowIfCancellationRequested();
-                await Task.Delay(2000, stoppingToken);
+                await Task.Delay(processingDelay, stoppingToken);
 
-                var _event = eventRepository.GetEvent(booking.EventId);
+                await semaphore.WaitAsync();
+
+                _event = await eventRepository.GetEventAsync(booking.EventId);
+                if (_event == null)
+                    throw new EventNotFoundException(Messages_ru.EventNotFound);
+
                 if (_event.EndAt < DateTime.Now)
-                {
-                    booking.Reject();
-                    await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
-                    logger.LogInformation(string.Format(Messages_ru.BookingRejectedEventCompleted, booking.Id, booking.EventId));
-                    return;
-                }
-               
+                    throw new EventCompletedException();
+
                 booking.Confirm();
                 await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
             }
-            catch (OperationCanceledException) 
-                { throw; }
-            catch (EventNotFoundException)
+            catch (OperationCanceledException)
+            { 
+                throw; 
+            }
+            catch
             {
+                if (_event!= null)
+                {
+                    _event.ReleaseSeats();
+                    await eventRepository.ReplaceEventAsync(_event);
+                }
                 booking.Reject();
                 await bookingRepository.ReplaceBookingAsync(booking, stoppingToken);
-                logger.LogInformation(string.Format(Messages_ru.BookingRejectedEventNoExist, booking.Id, booking.EventId));
+                throw;
             }
-            catch (Exception ex)
-            {
-                logger.LogError(string.Format(Messages_ru.BookingProcessingError, booking.Id, ex.Message));
+            finally
+            { 
+                semaphore.Release();
             }
         }
     }

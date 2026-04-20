@@ -16,8 +16,17 @@ namespace BestEvents
         {
             ct.ThrowIfCancellationRequested();
             Guid id = ParseStringId(eventId);
-            Event _event = GetEvent(id);
-            ValidateEvent(_event);
+            SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+            try
+            {
+                await semaphore.WaitAsync();
+                Event _event = await GetEventAsync(id);
+                await TryBookingAndUpdateEventAsync(_event);            
+            }
+            finally 
+            { 
+                semaphore.Release();
+            }
             Booking booking = await bookingRepo.CreateBookingAsync(new Booking(id), ct);
             return new BookingResultDto
             {
@@ -45,28 +54,29 @@ namespace BestEvents
             };
         }
 
-        private Guid ParseStringId(string id)
+        private static Guid ParseStringId(string id)
         {
             if (!Guid.TryParse(id, out Guid result))
                 throw new BookingWrongParameterException(Messages_ru.Wrong_Id_Format);
             return result;
         }
-        private void ValidateEvent(Event _event)
+
+        private async Task TryBookingAndUpdateEventAsync(Event _event)
         {
             if (_event.EndAt < DateTime.Now)
-                throw new CreateBookingException(string.Format(Messages_ru.CreateBookingEventCompleted, _event.Id));
+                throw new EventCompletedException();
+            if (!_event.TryReserveSeats())
+                throw new NoAvailableSeatsException();
+            await eventRepo.ReplaceEventAsync(_event);
+            return;
         }
 
-        private Event GetEvent(Guid id)
+        private async Task<Event> GetEventAsync(Guid id)
         {
-            try
-            {
-                return eventRepo.GetEvent(id);
-            }
-            catch (EventNotFoundException)
-            {
-                throw new BookingWrongParameterException(string.Format(Messages_ru.CreateBookingEventNotFound, id));
-            }
+            var _event = await eventRepo.GetEventAsync(id);
+            if (_event == null)
+                throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, id));
+            return _event;
         }
     }
 }

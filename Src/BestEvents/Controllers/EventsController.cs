@@ -1,6 +1,8 @@
 ﻿
+using BestEvents.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace BestEvents.Controllers
 {
@@ -8,9 +10,10 @@ namespace BestEvents.Controllers
     /// Контроллер событий
     /// </summary>
     /// <param name="eventService"></param>
+    /// <param name="bookingService"></param>
     [ApiController]
     [Route("events")]
-    public class EventsController(IEventService eventService) : ControllerBase
+    public class EventsController(IEventService eventService, IBookingService bookingService) : ControllerBase
     {
 
         /// <summary>
@@ -21,66 +24,112 @@ namespace BestEvents.Controllers
         /// <param name="to">Дата для поиска событий, которые заканчиваются не позже этой даты</param>
         /// <param name="page">Номер страницы для вывода</param>
         /// <param name="pageSize">Количество элементов на странице</param>
-        /// <response code="200">Возвращается JSON-структура EventDto[] с деталями ответа
-        /// и HTTP статус-кодом 200 Ok в случае успеха</response>
+        /// <param name="ct">Токен отмены</param>
+        /// <response code="200">Возвращается JSON-структура PaginationResultsDto с деталями ответа и HTTP статус-кодом 200 Ok в случае успеха</response>
         [HttpGet]
-        public IActionResult GetEvents([FromQuery] string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResultDto))]
+        public async Task<IActionResult> GetEventsAsync([FromQuery] string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10, CancellationToken ct = default)
         {
-            return Ok(eventService.GetEvents(title, from, to, page, pageSize));
+            var result = await eventService.GetEventsAsync(title, from, to, page, pageSize, ct);
+            return Ok(result);
         }
 
         /// <summary>
-        /// Возвращает событие по его идентификатору. Возвращает HTTP статус-код 200 Ok в случае успеха, 
-        /// или 404 (Not Found), если событие с таким идентификатором не найдено
+        /// Возвращает событие по его идентификатору
         /// </summary>
         /// <param name="id">Идентификационный номер для получения события </param>
-        /// <response code="200">Возвращается JSON-структура EventDto с деталями ответа
-        /// и HTTP статус-кодом 200 Ok в случае успеха</response>
+        /// <param name="ct">Токен отмены</param>
+        /// <response code="200">Если событие найдено, возвращается JSON-структура EventDto с деталями ответа</response>
+        /// <response code="400">Если id некорректен</response>
+        /// <response code="404">Если событие с таким идентификатором не найдено</response>
         [HttpGet("{id}")]
-        public IActionResult GetEvent([FromRoute] string id)
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventInfoDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
+        public async Task<IActionResult> GetEventAsync([FromRoute] string id, CancellationToken ct = default)
         {
-            return Ok(eventService.GetEvent(id));
+            var result = await eventService.GetEventAsync(id, ct);
+            return Ok(result);
         }
 
         /// <summary>
         /// Создает новое событие и добавляет в репозиторий. Возвращает HTTP статус-код 201 Created в случае успеха
         /// </summary>
         /// <param name="eventDto">JSON структура с параметрами события</param>
-        /// <response code="201"></response>
+        /// <param name="ct">Токен отмены</param>
+        /// <response code="201">В случае успешного создания события</response>
+        /// <response code="400">Если параметры некорректны</response>
         [HttpPost]
-        public IActionResult CreateEvent([FromBody] EventDtoBase eventDto)
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(EventInfoDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        public async Task<IActionResult> CreateEventAsync([FromBody] CreateEventDto eventDto, CancellationToken ct = default)
         {
-            return Created(Request.Path.ToString(), eventService.CreateEvent(eventDto));
+            var result = await eventService.CreateEventAsync(eventDto, ct);
+            return Created(Request.Path.ToString(), result);
         }
 
 
         /// <summary>
-        /// Перезаписывает событие с идентификатором id. Возвращает HTTP статус-код 204 No Content в случае успеха, или 404 (Not Found), 
-        /// если событие с таким идентификатором не найдено
+        /// Перезаписывает событие с идентификатором id
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <param name="eventDto"></param>
-        /// <response code="204"></response>
+        /// <param name="ct">Токен отмены</param>
+        /// <response code="204">В случае успешной записи</response>
+        /// <response code="400">Если параметры некорректны</response>
+        /// <response code="404">Если событие с таким идентификатором не найдено</response>
         [HttpPut("{id}")]
-        public IActionResult ReplaceEvent([FromRoute] string id, [FromBody] EventDto eventDto)
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
+        public async Task<IActionResult> ReplaceEventAsync([FromRoute] string id, [FromBody] EventInfoDto eventDto, CancellationToken ct = default)
         {
-            eventService.ReplaceEvent(id, eventDto);
+            await eventService.ReplaceEventAsync(id, eventDto, ct);
             return NoContent();
         }
 
         /// <summary>
-        /// Удаляет событие с идентификатором id. Возвращает HTTP статус-код 204 No Content  в случае успеха, или 404 (Not Found), 
-        /// если событие с таким идентификатором не найдено
+        /// Удаляет событие с идентификатором id
         /// </summary>
         /// <param name="id">Идентификатор события</param>
-        /// <response code="204"></response>
+        /// <param name="ct">Токен отмены</param>
+        /// <response code="204">В случае успешного удаления</response>
+        /// <response code="400">Если id некорректен</response>
+        /// <response code="404">Если событие с таким идентификатором не найдено</response>
         [HttpDelete("{id}")]
-        public IActionResult DeleteEvent([FromRoute] string id)
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
+        public async Task<IActionResult> DeleteEventAsync([FromRoute] string id, CancellationToken ct = default)
         {
-            eventService.DeleteEvent(id);
+            await eventService.DeleteEventAsync(id, ct);
             return NoContent();
         }
 
-        
+        /// <summary>
+        /// Создает бронирование на событие с идентификатором id
+        /// </summary>
+        /// <param name="id">Идентификатор события</param>
+        /// <param name="ct">Токен отмены</param>
+        /// <response code="202">В случае успешного бронирования возвращает URL для получения статуса бронирования</response>
+        /// <response code="400">Если id некорректен</response>
+        /// <response code="404">Если событие с таким идентификатором не найдено</response>
+        /// <response code="409">В случае отклонения бронирования, например, если нет свободных мест или событие уже завершилось</response>
+        [HttpPost("{id}/book")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorDetails))]
+        public async Task<IActionResult> CreateBookingAsync([FromRoute] string id, CancellationToken ct = default)
+        {
+            var booking = await bookingService.CreateBookingAsync(id, ct);
+            return AcceptedAtRoute("GetBookingId", new { id = booking.Id });
+        }
     }
 }

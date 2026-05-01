@@ -18,17 +18,16 @@ namespace BestEvents
         /// <param name="page">Номер страницы</param>
         /// <param name="size">Количество элементов на странице</param>
         /// <returns></returns>
-        public PaginatedResult<T> GetResult(IEnumerable<T> data, int page, int size)
+        public IQueryable<T>? GetResult(IQueryable<T> data, int page, int size)
         {
             if (data == null)
-                return new PaginatedResult<T>([], page, 0);
+                return null;
             if (page <= 0)
                 throw new EventWrongParameterException(string.Format(Messages_ru.WrongPageForPagination, page));
             if (size <= 0)
                 throw new EventWrongParameterException(string.Format(Messages_ru.WrongSizeForPagination, size));
             int totalCount = data.Count();
-            var result = data.Skip((page - 1)*size).Take(size);
-            return new PaginatedResult<T>([.. result], page, totalCount);
+            return data.Skip((page - 1)*size).Take(size);
         }
     }
 }

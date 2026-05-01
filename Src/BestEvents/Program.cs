@@ -13,7 +13,11 @@ builder.Services.AddHostedService<BookingProcesser>();
 
 builder.Services.AddSingleton<EventFilters>();
 builder.Services.AddSingleton<Pagination<Event>>();
-builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddSingleton<EntityMapper>();
+builder.Services.AddSingleton<DtoMapper>();
+builder.Services.AddSingleton<EntityMapper>();
+builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddScoped<IEventService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();

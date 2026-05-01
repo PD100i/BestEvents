@@ -16,36 +16,36 @@ namespace BestEvents
         /// <param name="size"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<PaginatedResultDto> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default);
+        Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default);
 
         /// <summary>
-        /// Возвращает событие по его идентификатору в виде EventDto. Если событие с таким идентификатором не найдено, возвращает null.
+        /// Возвращает событие по его идентификатору. Если событие с таким идентификатором не найдено, возвращает null.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<EventInfoDto> GetEventAsync(string id, CancellationToken ct = default);
+        Task<Event> GetEventAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
-        /// Создает новое событие, используя данные из Dto объекта
+        /// Создает новое событие
         /// </summary>
-        /// <param name="eventDto"></param>
+        /// <param name="_event"></param>
         /// /// <param name="ct"></param>
-        Task<EventInfoDto> CreateEventAsync(CreateEventDto eventDto, CancellationToken ct = default);
+        Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default);
 
         /// <summary>
-        /// Перезаписывает событие, используя данные из Dto объекта
+        /// Перезаписывает событие
         /// </summary>
-        /// <param name="eventDto"></param>
+        /// <param name="_event"></param>
         /// <param name="id"></param>
         /// <param name="ct"></param>
-        Task ReplaceEventAsync(string id, EventInfoDto eventDto, CancellationToken ct = default);
+        Task ReplaceEventAsync(Guid id, Event _event, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет событие по его идентификатору
         /// </summary>
         /// <param name="id"></param>
         /// <param name="ct"></param>
-        Task DeleteEventAsync(string id, CancellationToken ct = default);
+        Task DeleteEventAsync(Guid id, CancellationToken ct = default);
     }
 }

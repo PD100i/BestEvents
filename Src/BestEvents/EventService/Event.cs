@@ -18,7 +18,7 @@ namespace BestEvents
         /// <param name="description">Описание (необязательный параметр)</param>
         /// <param name="totalSeats">Общее количество мест на событии</param>
         /// <param name="availableSeats">Доступное количество мест на событии</param>
-        public static Event CreateEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats, int? availableSeats)
+        public static Event CreateInstanceEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats, int? availableSeats)
         {
            
             if (string.IsNullOrEmpty(title))
@@ -54,51 +54,52 @@ namespace BestEvents
         /// <summary>
         /// Фабричный метод для создания нового события
         /// </summary>
+        /// <param name="id">Идентификатор</param>
         /// <param name="title">Название события</param>
         /// <param name="startAt">Дата начала</param>
         /// <param name="endAt">Дата завершения</param>
         /// <param name="description">Описание (необязательный параметр)</param>
         /// <param name="totalSeats">Общее количество мест на событии</param>
-        public static Event CreateNewEvent(string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats)
+        public static Event CreateNewEvent(Guid id, string title, DateTime? startAt, DateTime? endAt, string? description, int? totalSeats)
         {
-            return CreateEvent(Guid.NewGuid(), title, startAt, endAt, description, totalSeats, totalSeats);
+            return CreateInstanceEvent(id, title, startAt, endAt, description, totalSeats, totalSeats);
         }
 
 
         /// <summary>
         /// Идентификатор
         /// </summary>
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Название события
         /// </summary>
-        public string Title { get; private set; } = ""; 
+        public string Title { get; set; } = ""; 
 
         /// <summary>
         /// Описание события
         /// </summary>
-        public string? Description { get; private set; } = "";
+        public string? Description { get; set; } = "";
 
         /// <summary>
         /// Время начала
         /// </summary>
-        public DateTime StartAt { get; private set; }
+        public DateTime StartAt { get; set; }
 
         /// <summary>
         /// Время завершения
         /// </summary>
-        public DateTime EndAt { get; private set; }
+        public DateTime EndAt { get; set; }
 
         /// <summary>
         /// Общее количество мест на событии
         /// </summary>
-        public int TotalSeats { get; private set; }
+        public int TotalSeats { get; set; }
 
         /// <summary>
         /// Текущее число свободных мест
         /// </summary>
-        public int AvailableSeats { get; private set; }
+        public int AvailableSeats { get; set; }
 
         /// <summary>
         /// Возвращает false если свободных мест недостаточно, в противном случае, уменьшает AvailableSeats на count и возвращает true 

@@ -16,7 +16,7 @@
         /// <param name="eventId"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<BookingResultDto> CreateBookingAsync(string eventId, CancellationToken ct);
+        Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct);
 
         /// <summary>
         /// Получение бронирования по его идентификатору. Метод возвращает результат бронирования
@@ -24,6 +24,6 @@
         /// <param name="bookingId"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<BookingResultDto> GetBookingByIdAsync(string bookingId, CancellationToken ct);
+        Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct);
     }
 }

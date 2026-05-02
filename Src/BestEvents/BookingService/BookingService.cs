@@ -1,82 +1,59 @@
 ﻿using BestEvents.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace BestEvents
 {
     /// <summary>
     /// Реализация сервиса бронирования
     /// </summary>
-    public class BookingService(IEventRepository eventRepo, IBookingRepository bookingRepo) : IBookingService
+    public class BookingService(AppDbContext db, EntityMapper mapper) : IBookingService
     {
         /// <inheritdoc/>
         public static TimeSpan AllowedTimeUntilEventEnd { get; set; } = TimeSpan.FromHours(2);
 
+
+
         /// <inheritdoc/>
-        public async Task<BookingResultDto> CreateBookingAsync(string eventId, CancellationToken ct)
+        public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-            Guid id = ParseStringId(eventId);
-            SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-            try
-            {
-                await semaphore.WaitAsync();
-                Event _event = await GetEventAsync(id);
-                await TryBookingAndUpdateEventAsync(_event);            
-            }
-            finally 
-            { 
-                semaphore.Release();
-            }
-            Booking booking = await bookingRepo.CreateBookingAsync(new Booking(id), ct);
-            return new BookingResultDto
-            {
-                Id = booking.Id.ToString(),
-                EventId = booking.EventId.ToString(),
-                Status = booking.Status.ToString(),
-                CreatedAt = booking.CreatedAt,
-                ProcessedAt = booking.ProcessedAt
-            };
+            var bookingEntity = await db.Bookings.FindAsync(bookingId, ct);
+            if (bookingEntity == null)
+                throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, bookingId));
+            return mapper.MapEntityToBooking(bookingEntity);
         }
 
         /// <inheritdoc/>
-        public async Task<BookingResultDto> GetBookingByIdAsync(string bookingId, CancellationToken ct)
+        public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct)
         {
-            Guid id = ParseStringId(bookingId);
             ct.ThrowIfCancellationRequested();
-            Booking booking = await (bookingRepo.GetBookingAsync(id, ct));
-            return new BookingResultDto
-            {
-                Id = booking.Id.ToString(),
-                EventId = booking.EventId.ToString(),
-                Status = booking.Status.ToString(),
-                CreatedAt = booking.CreatedAt,
-                ProcessedAt = booking.ProcessedAt
-            };
-        }
+            await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
-        private static Guid ParseStringId(string id)
-        {
-            if (!Guid.TryParse(id, out Guid result))
-                throw new BookingWrongParameterException(Messages_ru.Wrong_Id_Format);
-            return result;
-        }
+            var eventEntity = await db.Events.FromSqlRaw(
+            "SELECT * FROM products WHERE id = {0} FOR UPDATE", eventId)
+            .FirstOrDefaultAsync();
 
-        private async Task TryBookingAndUpdateEventAsync(Event _event)
-        {
+            if (eventEntity == null)
+                throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, eventId));
+
+            Event _event = mapper.MapEntityToEvent(eventEntity);
             if (_event.EndAt < DateTime.Now)
                 throw new EventCompletedException();
             if (!_event.TryReserveSeats())
                 throw new NoAvailableSeatsException();
-            await eventRepo.ReplaceEventAsync(_event);
-            return;
-        }
 
-        private async Task<Event> GetEventAsync(Guid id)
-        {
-            var _event = await eventRepo.GetEventAsync(id);
-            if (_event == null)
-                throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, id));
-            return _event;
+            var booking = new Booking(Guid.NewGuid());
+
+            mapper.UpdateEventEntity(_event, eventEntity);
+            await db.Bookings.AddAsync(mapper.MapBookingToEntity(booking), ct);
+            await db.SaveChangesAsync(ct);
+
+            await db.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            return booking;
         }
     }
 }

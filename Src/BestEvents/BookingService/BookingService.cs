@@ -13,8 +13,6 @@ namespace BestEvents
         /// <inheritdoc/>
         public static TimeSpan AllowedTimeUntilEventEnd { get; set; } = TimeSpan.FromHours(2);
 
-
-
         /// <inheritdoc/>
         public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct)
         {
@@ -32,7 +30,7 @@ namespace BestEvents
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
             var eventEntity = await db.Events.FromSqlRaw(
-            "SELECT * FROM products WHERE id = {0} FOR UPDATE", eventId)
+            "SELECT * FROM events WHERE id = {0} FOR UPDATE", eventId)
             .FirstOrDefaultAsync();
 
             if (eventEntity == null)
@@ -45,15 +43,81 @@ namespace BestEvents
                 throw new NoAvailableSeatsException();
 
             var booking = new Booking(Guid.NewGuid());
+            await db.Bookings.AddAsync(mapper.MapBookingToEntity(booking), ct);
 
             mapper.UpdateEventEntity(_event, eventEntity);
-            await db.Bookings.AddAsync(mapper.MapBookingToEntity(booking), ct);
-            await db.SaveChangesAsync(ct);
+            db.Events.Update(eventEntity);
 
             await db.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
 
             return booking;
+        }
+
+        /// <inheritdoc/>
+        public List<Guid> GetPendingBookings()
+        {
+            return db.Bookings
+                .Where(b => b.Status == BookingStatus.Pending)
+                .Select(b => b.Id)
+                .ToList();
+        }
+
+        /// <inheritdoc/>
+        public async Task TryProcessBooking(Guid id, CancellationToken ct)
+        {
+            EventEntity? eventEntity = null;
+            Booking? booking = null;
+            BookingEntity? bookingEntity = null;
+
+            ct.ThrowIfCancellationRequested();
+            await using var transaction = await db.Database.BeginTransactionAsync(ct);
+
+            try
+            {
+                bookingEntity = await db.Bookings.FromSqlRaw(
+                "SELECT * FROM bookins WHERE id = {0} FOR UPDATE", id)
+                .FirstOrDefaultAsync();
+
+                if (bookingEntity == null)
+                    throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, id));
+
+                eventEntity = await db.Events.FromSqlRaw(
+                "SELECT * FROM events WHERE id = {0} FOR UPDATE", bookingEntity.EventId)
+                .FirstOrDefaultAsync();
+
+                if (eventEntity == null)
+                    throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, bookingEntity.EventId));
+
+                if (eventEntity.EndAt < DateTime.Now)
+                    throw new EventCompletedException();
+
+                booking = mapper.MapEntityToBooking(bookingEntity);
+                booking.Confirm();
+
+
+            }
+            catch
+            {
+                if (eventEntity != null)
+                {
+                    Event _event = mapper.MapEntityToEvent(eventEntity);
+                    _event.ReleaseSeats();
+                    mapper.UpdateEventEntity(_event, eventEntity);
+                    db.Events.Update(eventEntity);
+                }
+                if (booking != null)
+                {
+                    booking.Reject();
+                    db.Bookings.Update(mapper.MapBookingToEntity(booking));
+                }
+                throw;
+            }
+            finally
+            {
+                await db.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+            }
         }
     }
 }

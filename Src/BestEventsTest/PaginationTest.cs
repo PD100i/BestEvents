@@ -42,7 +42,12 @@ namespace BestEventsTest
         [MemberData(nameof(GetCorrectPaginationTestData))]
         public void GetResult_CorrectData_CorrectResult(IEnumerable<int> data, int page, int size, PaginatedResult<int> expectedResult)
         {
-            Assert.Equal(pagination.GetResult(data, page, size), expectedResult);
+            // Arrange
+            var _data = data.AsQueryable();
+            // Act
+            var result = pagination.GetResult(_data, page, size);
+            // Assert
+            Assert.Equal(pagination.GetResult(data.AsQueryable(), page, size), expectedResult);
         }
 
         public class WrongPaginationTestData : IEnumerable<object[]>
@@ -62,7 +67,10 @@ namespace BestEventsTest
         [ClassData(typeof(WrongPaginationTestData))]
         public void GetResult_WrongInputData_ThrowException(IEnumerable<int> data, int page, int size)
         {
-            Assert.Throws<EventWrongParameterException>(() => pagination.GetResult(data, page, size));
+            // Arrange
+            var _data = data.AsQueryable();
+            // Act & Assert
+            Assert.Throws<EventWrongParameterException>(() => pagination.GetResult(_data, page, size));
         }
 
         

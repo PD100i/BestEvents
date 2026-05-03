@@ -71,6 +71,13 @@ namespace BestEvents
         /// <param name="entity">Сущность BookingEntity, содержащая новые данные.</param>
         [MapperIgnoreSource(nameof(BookingEntity.Event))]
         public partial void UpdateBooking(BookingEntity entity, Booking booking);
+
+        /// <summary>
+        /// Маппинг из PaginatedResult/<EventEntity/> в PaginatedResult/<Event/> для использования в бизнес-логике приложения.
+        /// </summary>
+        /// <param name="paginatedResult">PaginatedResult/<EventEntity/>, который нужно преобразовать.</param>
+        /// <returns>PaginatedResult/<Event/>, соответствующий PaginatedResult/<EventEntity/>.</returns>
+        public partial PaginatedResult<Event> MapPaginatedResultToEntity(PaginatedResult<EventEntity> paginatedResult);
         
     }
 }

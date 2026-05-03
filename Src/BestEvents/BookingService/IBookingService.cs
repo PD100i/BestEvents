@@ -25,5 +25,20 @@
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct);
+
+        /// <summary>
+        /// Возвращает список бронирований, ожидающих обработки
+        /// </summary>
+        /// <returns></returns>
+        List<Guid> GetPendingBookings();
+
+
+        /// <summary>
+        /// Обрабатывает бронирование. При успешном бронировании изменяет статус бронирования на Confirmed
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task TryProcessBooking(Guid id, CancellationToken ct);
     }
 }

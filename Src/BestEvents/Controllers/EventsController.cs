@@ -11,6 +11,7 @@ namespace BestEvents.Controllers
     /// </summary>
     /// <param name="eventService"></param>
     /// <param name="bookingService"></param>
+    /// <param name="mapper"></param>
     [ApiController]
     [Route("events")]
     public class EventsController(IEventService eventService, IBookingService bookingService, DtoMapper mapper) : ControllerBase
@@ -128,7 +129,7 @@ namespace BestEvents.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> CreateBookingAsync([FromRoute] string id, CancellationToken ct = default)
         {
-            var booking = await bookingService.CreateBookingAsync(id, ct);
+            var booking = await bookingService.CreateBookingAsync(mapper.StringToGuid(id), ct);
             return AcceptedAtRoute("GetBookingId", new { id = booking.Id });
         }
     }

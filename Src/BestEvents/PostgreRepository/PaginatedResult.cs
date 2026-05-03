@@ -1,34 +1,53 @@
 ﻿namespace BestEvents
 {
+
     /// <summary>
-    /// Результаты поиска в репозитории c фильтрацией и пагинацией 
+    /// Класс для представления результатов поиска в репозитории с фильтрацией и пагинацией.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="resultsOnPage"></param>
-    /// <param name="currentPage"></param>
-    /// <param name="totalResultsNumber"></param>
-
-    public class PaginatedResult<T>(IEnumerable<T> resultsOnPage, int currentPage, int totalResultsNumber): IEquatable<PaginatedResult<T>>
+    public class PaginatedResult<T> : IEquatable<PaginatedResult<T>>
     {
+        /// <summary>
+        /// Конструктор для инициализации пустого результата с пагинацией.
+        /// </summary>
+        public PaginatedResult()
+        {
+        }
+
+
+        /// <summary>
+        /// Результаты поиска в репозитории c фильтрацией и пагинацией 
+        /// </summary>
+        /// <param name="resultsOnPage"></param>
+        /// <param name="currentPage"></param>
+        /// <param name="totalResultsNumber"></param>
+        public PaginatedResult (IEnumerable<T> resultsOnPage, int currentPage, int totalResultsNumber)
+        {
+            ResultsOnPage = resultsOnPage;
+            CurrentPage = currentPage;
+            TotalResultsNumber = totalResultsNumber;
+            ResultsNumberOnPage = resultsOnPage.Count();
+        }
+
         /// <summary>
         /// Общее количество записей
         /// </summary>
-        public int TotalResultsNumber { get; } = totalResultsNumber;
+        public int TotalResultsNumber { get; set; }
 
         /// <summary>
         /// Содержание
         /// </summary>
-        public IEnumerable<T> ResultsOnPage { get; } = resultsOnPage;
+        public IEnumerable<T> ResultsOnPage { get; set; } = Array.Empty<T>();
 
         /// <summary>
         /// Текущая страница
         /// </summary>
-        public int CurrentPage { get; } = currentPage;
+        public int CurrentPage { get; set; }
 
         /// <summary>
         /// Количество записей на странице
         /// </summary>
-        public int ResultsNumberOnPage { get; } = resultsOnPage.Count();
+        public int ResultsNumberOnPage { get; set; } 
 
         
 

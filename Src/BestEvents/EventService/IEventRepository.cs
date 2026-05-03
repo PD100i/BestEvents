@@ -1,5 +1,6 @@
 ﻿using BestEvents.Exceptions;
 
+
 namespace BestEvents
 {
     /// <summary>

@@ -56,15 +56,9 @@ namespace BestEvents
             var filtredResult = filters.FilterEventsByTitle(db.Events, title);
             filtredResult = filters.FilterEventsByDateFrom(filtredResult, from);
             filtredResult = filters.FilterEventsByDateTo(filtredResult, to);
-            var paginatedResult = pagination.GetResult(filtredResult, page, size);
-            List <EventEntity> result = [];
-            if (paginatedResult != null)
-                result = await paginatedResult.ToListAsync(ct);
+            var result = pagination.GetResult(filtredResult, page, size);
 
-            List<Event> events = [];
-            result.ForEach(e => events.Add(mapper.MapEntityToEvent(e)));
-
-            return new PaginatedResult<Event>(events, page, filtredResult.Count());
+            return await Task.FromResult(mapper.MapPaginatedResultToEntity(result));
         }
 
         /// <inheritdoc/>
@@ -80,5 +74,7 @@ namespace BestEvents
             db.Events.Update(eventEntity);
             await db.SaveChangesAsync(ct);           
         }
+
+        
     }
 }

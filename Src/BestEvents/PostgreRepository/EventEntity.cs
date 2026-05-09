@@ -43,7 +43,7 @@
         /// <summary>
         /// Список бронирований, связанных с этим событием
         /// </summary>
-        public List<BookingEntity>? Bookings { get; set; } = null;
+        public List<BookingEntity> Bookings { get; set; } = [];
 
 
         /// <inheritdoc/>

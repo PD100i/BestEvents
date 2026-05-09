@@ -17,5 +17,15 @@ namespace BestEvents
         /// Таблица для хранения бронирований
         /// </summary>
         public DbSet<BookingEntity> Bookings { get; set; }
+
+        /// <summary>
+        /// Применяет конфигурацию сущностей к модели данных
+        /// </summary>
+        /// <param name="modelBuilder">Объект ModelBuilder, используемый для настройки модели данных.</param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new EventConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingConfiguration());
+        }
     }
 }

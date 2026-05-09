@@ -42,10 +42,12 @@ namespace BestEvents
             if (!_event.TryReserveSeats())
                 throw new NoAvailableSeatsException();
 
-            var booking = new Booking(Guid.NewGuid());
-            await db.Bookings.AddAsync(mapper.MapBookingToEntity(booking), ct);
+            var booking = new Booking(_event.Id);
+            var bookingEntity = mapper.MapBookingToEntity(booking);
+            await db.Bookings.AddAsync(bookingEntity, ct);
 
             mapper.UpdateEventEntity(_event, eventEntity);
+            eventEntity.Bookings.Add(bookingEntity);
             db.Events.Update(eventEntity);
 
             await db.SaveChangesAsync(ct);
@@ -76,7 +78,7 @@ namespace BestEvents
             try
             {
                 bookingEntity = await db.Bookings.FromSqlRaw(
-                "SELECT * FROM bookins WHERE id = {0} FOR UPDATE", id)
+                "SELECT * FROM bookings WHERE id = {0} FOR UPDATE", id)
                 .FirstOrDefaultAsync();
 
                 if (bookingEntity == null)
@@ -95,6 +97,8 @@ namespace BestEvents
                 booking = mapper.MapEntityToBooking(bookingEntity);
                 booking.Confirm();
 
+                mapper.UpdateBookingEntity(booking, bookingEntity);
+                db.Bookings.Update(bookingEntity);
 
             }
             catch

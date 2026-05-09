@@ -17,6 +17,9 @@ namespace BestEvents
             builder.ToTable("events");
             builder.HasKey(e => e.Id);
 
+            builder.Property(e => e.Id)
+                .HasColumnName("id");
+
             builder.Property(e => e.Title)
                 .HasColumnName("title")
                 .IsRequired()
@@ -45,7 +48,7 @@ namespace BestEvents
             builder.HasMany(e => e.Bookings)
                 .WithOne(b => b.Event)
                 .HasForeignKey(b => b.EventId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

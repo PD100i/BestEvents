@@ -53,24 +53,18 @@ namespace BestEvents
         /// </summary>
         /// <param name="booking">Доменная модель Booking, содержащая новые данные.</param>
         /// <param name="entity">Сущность BookingEntity, которую нужно обновить.</param>
+        /// 
         [MapperIgnoreTarget(nameof(BookingEntity.Event))]
-        public partial void UpdateBookingEntity( Booking booking, BookingEntity entity);
+        public partial void UpdateBookingEntity(Booking booking, BookingEntity entity);
 
         /// <summary>
         /// Мапинг из сущности BookingEntity в доменную модель Booking для использования в бизнес-логике приложения.
         /// </summary>
         /// <param name="entity">Сущность BookingEntity, которую нужно преобразовать в доменную модель.</param>
         /// <returns>Доменная модель Booking, соответствующая сущности BookingEntity.</returns>
+        
         [MapperIgnoreSource(nameof(BookingEntity.Event))]
         public partial Booking MapEntityToBooking(BookingEntity entity);
-
-        /// <summary>
-        /// Обновление существующей доменной модели Booking на основе данных из сущности BookingEntity.
-        /// </summary>
-        /// <param name="booking">Доменная модель Booking, которую нужно обновить.</param>
-        /// <param name="entity">Сущность BookingEntity, содержащая новые данные.</param>
-        [MapperIgnoreSource(nameof(BookingEntity.Event))]
-        public partial void UpdateBooking(BookingEntity entity, Booking booking);
 
         /// <summary>
         /// Маппинг из PaginatedResult/<EventEntity/> в PaginatedResult/<Event/> для использования в бизнес-логике приложения.
@@ -78,6 +72,15 @@ namespace BestEvents
         /// <param name="paginatedResult">PaginatedResult/<EventEntity/>, который нужно преобразовать.</param>
         /// <returns>PaginatedResult/<Event/>, соответствующий PaginatedResult/<EventEntity/>.</returns>
         public partial PaginatedResult<Event> MapPaginatedResultToEntity(PaginatedResult<EventEntity> paginatedResult);
-        
+
+        /// <summary>
+        /// Приведение DateTime к UTC для корректного сохранения в базе данных и обеспечения единообразия при работе с датами и временем.
+        /// </summary>
+        /// <param name="dt">Дата и время, которые нужно привести к UTC.</param>
+        /// <returns>Дата и время в формате UTC.</returns>
+        public DateTime MapToUtc(DateTime dt)
+        {
+            return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+        }
     }
 }

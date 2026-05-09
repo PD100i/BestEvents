@@ -35,7 +35,7 @@ namespace BestEvents
         public async Task<Event> GetEventAsync(Guid id, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-            var eventEntity = await db.Events.FindAsync(id, ct);
+            var eventEntity = await db.Events.FirstOrDefaultAsync(e => e.Id == id, ct);
             if (eventEntity == null)
                 throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
             return mapper.MapEntityToEvent(eventEntity);

@@ -7,7 +7,7 @@ namespace BestEvents.Controllers
     /// Контроллкер бронирований
     /// </summary>
     [Route("booking")]
-    public class BookingController(IBookingService bookingService) : ControllerBase
+    public class BookingController(IBookingService bookingService, DtoMapper mapper) : ControllerBase
     {
 
 
@@ -27,7 +27,7 @@ namespace BestEvents.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> GetBookingByIdAync(string id, CancellationToken ct = default)
         {
-            return Ok(await bookingService.GetBookingByIdAsync(id, ct));
+            return Ok(await bookingService.GetBookingByIdAsync(mapper.StringToGuid(id), ct));
         }
 
         

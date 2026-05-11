@@ -1,44 +1,49 @@
-﻿
-using BestEvents.Exceptions;
+﻿using BestEvents.Exceptions;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace BestEvents
 {
     /// <summary>
     /// Сервис событий, реализующий интерфейс IEventService. 
-    /// Использует репозиторий для получения данных и преобразования их 
-    /// в Dto объекты для передачи в контроллеры и обратно
     /// </summary>
-    public class EventService(IEventRepository repository, EventFilters filters, Pagination<Event> pagination) : IEventService
+    public class EventService(AppDbContext db, EntityMapper mapper, EventFilters filters, Pagination<EventEntity> pagination) : IEventService
     {
         /// <inheritdoc/>
-        public async Task<EventInfoDto> CreateEventAsync(CreateEventDto _event, CancellationToken ct = default)
+        public async Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-            var newEvent = await repository.AddEventAsync(Event.CreateNewEvent(_event.Title, _event.StartAt, _event.EndAt, _event.Description, _event.TotalSeats));
-            return GetDtoFromEvent(newEvent);
+            var entity = mapper.MapEventToEntity(_event);
+            await db.Events.AddAsync(entity, ct);
+            await db.SaveChangesAsync(ct);
+            return _event;
         }
 
         /// <inheritdoc/>
-        public async Task DeleteEventAsync(string id, CancellationToken ct = default)
+        public async Task DeleteEventAsync(Guid id, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-            if (! await repository.RemoveEventAsync(ParseStringId(id)))
+            var eventEntity = await db.Events.FindAsync(id, ct);
+            if (eventEntity == null)
                 throw new EventNotFoundException(string.Format(Messages_ru.EventNotDeleted, id));
+            db.Events.Remove(eventEntity);
+            await db.SaveChangesAsync(ct);
+
         }
 
         /// <inheritdoc/>
-        public async Task<EventInfoDto> GetEventAsync(string id, CancellationToken ct = default)
+        public async Task<Event> GetEventAsync(Guid id, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-            var _event = await repository.GetEventAsync(ParseStringId(id));
-            if (_event == null)
+            var eventEntity = await db.Events.FirstOrDefaultAsync(e => e.Id == id, ct);
+            if (eventEntity == null)
                 throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
-            return GetDtoFromEvent(_event);
+            return mapper.MapEntityToEvent(eventEntity);
+
         }
 
         /// <inheritdoc/>
-        public async Task<PaginatedResultDto> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default)
+        public async Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             if (from != null && to != null && from > to)
@@ -47,55 +52,29 @@ namespace BestEvents
                 throw new EventWrongParameterException(string.Format(Messages_ru.WrongPageForPagination, page));
             if (size <= 0)
                 throw new EventWrongParameterException(string.Format(Messages_ru.WrongSizeForPagination, size));
-
-            IQueryable<Event> events = await repository.GetEventsAsync();
-            
-            var filtredResult = filters.FilterEventsByTitle(events, title);
+                    
+            var filtredResult = filters.FilterEventsByTitle(db.Events, title);
             filtredResult = filters.FilterEventsByDateFrom(filtredResult, from);
             filtredResult = filters.FilterEventsByDateTo(filtredResult, to);
             var result = pagination.GetResult(filtredResult, page, size);
 
-            List<EventInfoDto> eventsDto = [];
-
-            result.ResultsOnPage.ToList().ForEach(e => eventsDto.Add(GetDtoFromEvent(e)));
-
-            return new PaginatedResultDto()
-            {
-                CurrentPage = result.CurrentPage,
-                TotalResultsNumber = result.TotalResultsNumber,
-                ResultsOnPage = eventsDto,
-                ResultsNumberOnPage = result.ResultsNumberOnPage
-            };
-           
+            return await Task.FromResult(mapper.MapPaginatedResultToEntity(result));
         }
 
         /// <inheritdoc/>
-        public async Task ReplaceEventAsync(string id, EventInfoDto eventDto, CancellationToken ct = default)
+        public async Task ReplaceEventAsync(Guid id, Event _event, CancellationToken ct = default)
         {
+            if (id != _event.Id)
+                throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, _event.Id));
             ct.ThrowIfCancellationRequested();
-            if (id != eventDto.Id)
-                throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, eventDto.Id));
-            if (eventDto.StartAt == null)
-                throw new EventWrongParameterException(Messages_ru.No_StartAt);
-            if (eventDto.EndAt == null)
-                throw new EventWrongParameterException(Messages_ru.No_EndAt);
-            var _event = Event.CreateEvent(ParseStringId(eventDto.Id), eventDto.Title, eventDto.StartAt.Value, eventDto.EndAt.Value, eventDto.Description, 
-                eventDto.TotalSeats, eventDto.AvailableSeats);
-            if( !await repository.ReplaceEventAsync(_event))
+            var eventEntity = await db.Events.FindAsync(_event.Id, ct);
+            if (eventEntity == null)
                 throw new EventNotFoundException(string.Format(Messages_ru.EventNotReplaced, _event.Id));
+            mapper.UpdateEventEntity(_event, eventEntity);
+            db.Events.Update(eventEntity);
+            await db.SaveChangesAsync(ct);           
         }
 
-
-        private EventInfoDto GetDtoFromEvent(Event _event)
-        {
-            return new EventInfoDto(_event.Id.ToString(), _event.Title, _event.StartAt, _event.EndAt, _event.Description, _event.TotalSeats, _event.AvailableSeats);
-        }
-
-        private Guid ParseStringId(string id)
-        {
-            if (!Guid.TryParse(id, out Guid result))
-                throw new EventWrongParameterException(Messages_ru.Wrong_Id_Format);
-            return result;
-        }
+        
     }
 }

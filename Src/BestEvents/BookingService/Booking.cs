@@ -9,6 +9,11 @@ namespace BestEvents
     public class Booking
     {
         /// <summary>
+        /// Конструктор для создания пустой брони
+        /// </summary>
+        public Booking() { }
+
+        /// <summary>
         /// Создание брони для события с идентификатором eventId. Статус брони по умолчанию - Pending, дата создания - текущая дата и время
         /// </summary>
         /// <param name="eventId"></param>
@@ -26,27 +31,27 @@ namespace BestEvents
         /// <summary>
         /// Идентификатор брони
         /// </summary>
-        public Guid Id { get; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Идентификатор события, на которое было сделано бронирование
         /// </summary>
-        public Guid EventId { get; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Статус брони
         /// </summary>
-        public BookingStatus Status { get; private set; }
+        public BookingStatus Status { get; set; }
 
         /// <summary>
         /// Дата и время создания брони
         /// </summary>
-        public DateTime CreatedAt { get; }
+        public DateTime CreatedAt { get; set; }
 
         /// <summary>
         /// Дата и время обработки брони
         /// </summary>
-        public DateTime? ProcessedAt { get; private set; }
+        public DateTime? ProcessedAt { get; set; }
 
         /// <summary>
         /// Подтверждение бронирования

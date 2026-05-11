@@ -11,9 +11,10 @@ namespace BestEvents.Controllers
     /// </summary>
     /// <param name="eventService"></param>
     /// <param name="bookingService"></param>
+    /// <param name="mapper"></param>
     [ApiController]
     [Route("events")]
-    public class EventsController(IEventService eventService, IBookingService bookingService) : ControllerBase
+    public class EventsController(IEventService eventService, IBookingService bookingService, DtoMapper mapper) : ControllerBase
     {
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace BestEvents.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> GetEventAsync([FromRoute] string id, CancellationToken ct = default)
         {
-            var result = await eventService.GetEventAsync(id, ct);
+            var result = await eventService.GetEventAsync(mapper.StringToGuid(id), ct);
             return Ok(result);
         }
 
@@ -67,7 +68,7 @@ namespace BestEvents.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> CreateEventAsync([FromBody] CreateEventDto eventDto, CancellationToken ct = default)
         {
-            var result = await eventService.CreateEventAsync(eventDto, ct);
+            var result = await eventService.CreateEventAsync(mapper.MapCreateEventDtoToEvent(eventDto), ct);
             return Created(Request.Path.ToString(), result);
         }
 
@@ -88,7 +89,7 @@ namespace BestEvents.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> ReplaceEventAsync([FromRoute] string id, [FromBody] EventInfoDto eventDto, CancellationToken ct = default)
         {
-            await eventService.ReplaceEventAsync(id, eventDto, ct);
+            await eventService.ReplaceEventAsync(mapper.StringToGuid(id), mapper.MapEventInfoDtoToEvent(eventDto), ct);
             return NoContent();
         }
 
@@ -107,7 +108,7 @@ namespace BestEvents.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> DeleteEventAsync([FromRoute] string id, CancellationToken ct = default)
         {
-            await eventService.DeleteEventAsync(id, ct);
+            await eventService.DeleteEventAsync(mapper.StringToGuid(id), ct);
             return NoContent();
         }
 
@@ -128,7 +129,7 @@ namespace BestEvents.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> CreateBookingAsync([FromRoute] string id, CancellationToken ct = default)
         {
-            var booking = await bookingService.CreateBookingAsync(id, ct);
+            var booking = await bookingService.CreateBookingAsync(mapper.StringToGuid(id), ct);
             return AcceptedAtRoute("GetBookingId", new { id = booking.Id });
         }
     }

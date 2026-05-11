@@ -14,7 +14,7 @@ namespace BestEvents
         /// <param name="events"></param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public IEnumerable<Event> FilterEventsByTitle(IEnumerable<Event> events, string? title)
+        public IQueryable<EventEntity> FilterEventsByTitle(IQueryable<EventEntity> events, string? title)
         {
             if (title == null || title == "")
                 return events;
@@ -28,7 +28,7 @@ namespace BestEvents
         /// <param name="events"></param>
         /// <param name="from"></param>
         /// <returns></returns>
-        public IEnumerable<Event> FilterEventsByDateFrom(IEnumerable<Event> events, DateTime? from)
+        public IQueryable<EventEntity> FilterEventsByDateFrom(IQueryable<EventEntity> events, DateTime? from)
         {
             if (from == null)
                 return events;
@@ -42,7 +42,7 @@ namespace BestEvents
         /// <param name="events"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public IEnumerable<Event> FilterEventsByDateTo(IEnumerable<Event> events, DateTime? to)
+        public IQueryable<EventEntity> FilterEventsByDateTo(IQueryable<EventEntity> events, DateTime? to)
         {
             if (to == null)
                 return events;

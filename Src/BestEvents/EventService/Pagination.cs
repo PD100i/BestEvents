@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using BestEvents.Exceptions;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
-using BestEvents.Exceptions;
 
 namespace BestEvents
 {
@@ -18,7 +19,7 @@ namespace BestEvents
         /// <param name="page">Номер страницы</param>
         /// <param name="size">Количество элементов на странице</param>
         /// <returns></returns>
-        public PaginatedResult<T> GetResult(IEnumerable<T> data, int page, int size)
+        public PaginatedResult<T> GetResult(IQueryable<T> data, int page, int size)
         {
             if (data == null)
                 return new PaginatedResult<T>([], page, 0);
@@ -27,8 +28,8 @@ namespace BestEvents
             if (size <= 0)
                 throw new EventWrongParameterException(string.Format(Messages_ru.WrongSizeForPagination, size));
             int totalCount = data.Count();
-            var result = data.Skip((page - 1)*size).Take(size);
-            return new PaginatedResult<T>([.. result], page, totalCount);
+            var result = data.Skip((page - 1)*size).Take(size).ToList();
+            return new PaginatedResult<T>(result, page, totalCount);
         }
     }
 }

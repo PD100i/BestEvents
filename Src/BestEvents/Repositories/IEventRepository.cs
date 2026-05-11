@@ -2,12 +2,12 @@
 namespace BestEvents
 {
     /// <summary>
-    /// Интерфейс сервиса работы с событиями
+    /// Интерфейс репозитория работы с событиями
     /// </summary>
-    public interface IEventService
+    public interface IEventRepository
     {
         /// <summary>
-        /// Возвращает все события в виде списка Event
+        /// Возвращает все события в виде списка EventDto
         /// </summary>
         /// <param name="title"></param>
         /// <param name="from"></param>
@@ -34,12 +34,19 @@ namespace BestEvents
         Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default);
 
         /// <summary>
-        /// Перезаписывает событие
-        /// </summary>
-        /// <param name="_event"></param>
+        /// Получает событие по его идентификатору для последующего обновления. Метод должен блокировать запись в БД для данного события, чтобы предотвратить одновременное обновление одной и той же записи несколькими запросами. 
         /// <param name="id"></param>
         /// <param name="ct"></param>
-        Task ReplaceEventAsync(Guid id, Event _event, CancellationToken ct = default);
+        /// <returns></returns>
+        Task<Event> GetEventForUpdateAsync(Guid id, CancellationToken ct = default);
+
+        /// <summary>
+        /// Обновляет событие. Метод должен сохранять изменения в базе данных и разблокировать запись, чтобы другие транзакции могли получить доступ к ней
+        /// </summary>
+        /// <param name="_event"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<Event> UpdateEventAsync(Event _event, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет событие по его идентификатору

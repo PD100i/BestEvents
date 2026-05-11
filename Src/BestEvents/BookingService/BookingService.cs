@@ -27,33 +27,41 @@ namespace BestEvents
         public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-            await using var transaction = await db.Database.BeginTransactionAsync(ct);
+            await using var transaction = db.Database.CurrentTransaction ?? await db.Database.BeginTransactionAsync(ct);
 
-            var eventEntity = await db.Events.FromSqlRaw(
-            "SELECT * FROM events WHERE id = {0} FOR UPDATE", eventId)
-            .FirstOrDefaultAsync();
+            try
+            {
+                var eventEntity = await db.Events.FromSql(
+                $"SELECT * FROM events WHERE id = {eventId} FOR UPDATE")
+                .FirstOrDefaultAsync(ct);
 
-            if (eventEntity == null)
-                throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, eventId));
+                if (eventEntity == null)
+                    throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, eventId));
 
-            Event _event = mapper.MapEntityToEvent(eventEntity);
-            if (_event.EndAt < DateTime.Now)
-                throw new EventCompletedException();
-            if (!_event.TryReserveSeats())
-                throw new NoAvailableSeatsException();
+                Event _event = mapper.MapEntityToEvent(eventEntity);
+                if (_event.EndAt < DateTime.Now)
+                    throw new EventCompletedException();
+                if (!_event.TryReserveSeats())
+                    throw new NoAvailableSeatsException();
 
-            var booking = new Booking(_event.Id);
-            var bookingEntity = mapper.MapBookingToEntity(booking);
-            await db.Bookings.AddAsync(bookingEntity, ct);
+                var booking = new Booking(_event.Id);
+                var bookingEntity = mapper.MapBookingToEntity(booking);
+                await db.Bookings.AddAsync(bookingEntity, ct);
 
-            mapper.UpdateEventEntity(_event, eventEntity);
-            eventEntity.Bookings.Add(bookingEntity);
-            db.Events.Update(eventEntity);
+                mapper.UpdateEventEntity(_event, eventEntity);
+                // eventEntity.Bookings.Add(bookingEntity);
+                db.Events.Update(eventEntity);
 
-            await db.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
+                await db.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
 
-            return booking;
+                return booking;
+            }
+            catch
+            {
+                await transaction.RollbackAsync(ct); 
+                throw;
+            }
         }
 
         /// <inheritdoc/>

@@ -16,14 +16,14 @@ namespace BestEvents
         /// <summary>
         /// Создание брони для события с идентификатором eventId. Статус брони по умолчанию - Pending, дата создания - текущая дата и время
         /// </summary>
-        /// <param name="eventId"></param>
-        public Booking(Guid eventId)
+        /// <param name="id"></param>
+        /// <param name="_event"></param>
+        public Booking(Guid id, Event _event)
         {
-            if (eventId == Guid.Empty)
-                throw new BookingWrongParameterException(Messages_ru.CreateBooking_No_EventId);
-
-            Id = Guid.NewGuid();
-            EventId = eventId;
+            
+            Id = id;
+            EventId = _event.Id;
+            Event = _event;
             Status = BookingStatus.Pending;
             CreatedAt = DateTime.Now;
         }
@@ -37,6 +37,11 @@ namespace BestEvents
         /// Идентификатор события, на которое было сделано бронирование
         /// </summary>
         public Guid EventId { get; set; }
+
+        /// <summary>
+        /// Событие, на которое сделано бронирование
+        /// </summary>
+        public Event? Event { get; set; }
 
         /// <summary>
         /// Статус брони

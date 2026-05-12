@@ -49,7 +49,6 @@ namespace BestEvents
                 await db.Bookings.AddAsync(bookingEntity, ct);
 
                 mapper.UpdateEventEntity(_event, eventEntity);
-                // eventEntity.Bookings.Add(bookingEntity);
                 db.Events.Update(eventEntity);
 
                 await db.SaveChangesAsync(ct);

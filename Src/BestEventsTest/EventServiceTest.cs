@@ -16,7 +16,8 @@ namespace BestEventsTest
     public class EventServiceFixture : IDisposable
     {
         public AppDbContext Context { get; }
-        public EventService EventService { get; }
+
+        public EventRepository EventService { get; }
 
         public EventServiceFixture()
         {
@@ -48,7 +49,7 @@ namespace BestEventsTest
         {
             // Arrange
             using var fixture = new EventServiceFixture();
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             var _event = new Event()
             {
                 Id = Guid.Parse("2f3bf53d-ee2d-4973-9aca-93f767e7d40f"),
@@ -81,7 +82,7 @@ namespace BestEventsTest
         {
             // Arrange
             using var fixture = new EventServiceFixture();
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
             await fixture.AddCollection();
             List<BookingEntity> bookings = new List<BookingEntity> {
@@ -109,7 +110,7 @@ namespace BestEventsTest
             // Arrange
             using var fixture = new EventServiceFixture();
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.AddCollection();
             var id = Guid.Parse("349b6818-0d33-43ed-94e4-84824b09eee1");
 
@@ -123,7 +124,7 @@ namespace BestEventsTest
             // Arrange
             using var fixture = new EventServiceFixture();
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.AddCollection();
             var _event = EventCollection.GetEventEntity(2);
             var id = _event.Id;
@@ -146,7 +147,7 @@ namespace BestEventsTest
             // Arrange
             using var fixture = new EventServiceFixture();
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.AddCollection();
             var id = Guid.Parse("349b6818-0d33-43ed-94e4-84824b09eee1");
 
@@ -160,7 +161,7 @@ namespace BestEventsTest
             // Arrange
             using var fixture = new EventServiceFixture();
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.AddCollection();
             var entity = EventCollection.GetEventEntity(2);
             string newTitle = "ReplacedTitle";
@@ -201,7 +202,7 @@ namespace BestEventsTest
             // Arrange
             using var fixture = new EventServiceFixture();
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.AddCollection();
             var _event = new Event()
             {
@@ -224,7 +225,7 @@ namespace BestEventsTest
             // Arrange
             using var fixture = new EventServiceFixture();
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.AddCollection();
             var wrongId = Guid.Parse("349b6818-0d33-43ed-94e4-84824b09eee1");
             var _event = new Event()
@@ -267,7 +268,7 @@ namespace BestEventsTest
             // Arrange
             using var fixture = new EventServiceFixture();
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.AddCollection();
 
             // Act && Assert
@@ -294,7 +295,7 @@ namespace BestEventsTest
             // Arrange
             using var fixture = new EventServiceFixture();
             await fixture.Context.Database.EnsureCreatedAsync(CancellationToken.None);
-            EventService eventService = fixture.EventService;
+            EventRepository eventService = fixture.EventService;
             await fixture.AddCollection();
 
             // Act & Assert 

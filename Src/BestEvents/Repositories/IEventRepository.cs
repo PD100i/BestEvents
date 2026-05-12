@@ -32,14 +32,6 @@ namespace BestEvents
         /// <param name="_event"></param>
         /// /// <param name="ct"></param>
         Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default);
-
-        /// <summary>
-        /// Получает событие по его идентификатору для последующего обновления. Метод должен блокировать запись в БД для данного события, чтобы предотвратить одновременное обновление одной и той же записи несколькими запросами. 
-        /// <param name="id"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<Event> GetEventForUpdateAsync(Guid id, CancellationToken ct = default);
-
         /// <summary>
         /// Обновляет событие. Метод должен сохранять изменения в базе данных и разблокировать запись, чтобы другие транзакции могли получить доступ к ней
         /// </summary>
@@ -47,6 +39,15 @@ namespace BestEvents
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<Event> UpdateEventAsync(Event _event, CancellationToken ct = default);
+
+        /// <summary>
+        /// Читает событие и обновляет согласно переданному методу action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="action"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<Event> UpdateEventAsync(Guid id, Func<Event, Task> action, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет событие по его идентификатору

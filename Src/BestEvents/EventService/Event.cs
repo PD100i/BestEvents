@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+
+using System.ComponentModel.DataAnnotations;
 using BestEvents.Exceptions;
 
 namespace BestEvents
@@ -113,6 +115,7 @@ namespace BestEvents
             AvailableSeats -= count; 
             return true;
         }
+
 
         /// <summary>
         /// Освобождает count мест при освобождении брони, увеличивает AvalableSeats на count

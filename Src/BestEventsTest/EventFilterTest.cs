@@ -1,5 +1,6 @@
 ﻿
 using BestEvents;
+using BestEvents.Repositories;
 
 
 namespace BestEventsTest

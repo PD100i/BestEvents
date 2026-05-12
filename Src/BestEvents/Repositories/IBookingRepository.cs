@@ -12,7 +12,7 @@
         /// <param name="booking"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Booking> CreateBookingAsync(Booking booking, CancellationToken ct);
+        Task<Booking> AddBookingAsync(Booking booking, CancellationToken ct);
 
         /// <summary>
         /// Получение бронирования по его идентификатору. Метод возвращает результат бронирования
@@ -22,26 +22,17 @@
         /// <returns></returns>
         Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct);
 
-
         /// <summary>
-        /// Получение бронирования по его идентификатору для обновления. 
-        /// Метод должен блокировать запись до завершения транзакции, чтобы избежать гонок при обработке бронирования
+        /// Читает бронирование по id, затем обновляет согласно переданному методу action
         /// </summary>
-        /// <param name="bookingId"></param>
+        /// <param name="id"></param>
+        /// <param name="action"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Booking> GetBookingForUpdateAsync(Guid bookingId, CancellationToken ct);
+        Task<Booking> UpdateBookingAsync(Guid id, Func<Booking, Task> action, CancellationToken ct = default);
 
         /// <summary>
-        /// Обновляет бронирование. Метод должен сохранять изменения в базе данных и разблокировать запись, чтобы другие транзакции могли получить доступ к ней
-        /// </summary>
-        /// <param name="booking"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<Booking> UpdateBookingAsync(Booking booking, CancellationToken ct);
-
-        /// <summary>
-        /// Возвращает список бронирований, ожидающих обработки
+        /// Возвращает список id необработанных броней
         /// </summary>
         /// <returns></returns>
         List<Guid> GetPendingBookings();

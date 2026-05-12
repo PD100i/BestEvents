@@ -1,4 +1,5 @@
 ﻿using BestEvents;
+using BestEvents.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -22,7 +23,7 @@ builder.Services.AddSingleton<Pagination<EventEntity>>();
 builder.Services.AddSingleton<EntityMapper>();
 builder.Services.AddSingleton<DtoMapper>();
 builder.Services.AddSingleton<EntityMapper>();
-builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IEventService, EventRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
 builder.Services.AddSwaggerGen(options =>

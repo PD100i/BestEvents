@@ -39,8 +39,7 @@ namespace BestEvents
         public async Task ReplaceEventAsync(Guid id, Event _event, CancellationToken ct = default)
         {
             if (id != _event.Id)
-                throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, _event.Id));
-            await eventRepository.GetEventForUpdateAsync(_event.Id, ct);    
+                throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, _event.Id));  
             await eventRepository.UpdateEventAsync(_event, ct);
         }
 

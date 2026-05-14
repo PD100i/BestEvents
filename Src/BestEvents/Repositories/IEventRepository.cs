@@ -41,15 +41,6 @@ namespace BestEvents
         Task<Event> UpdateEventAsync(Event _event, CancellationToken ct = default);
 
         /// <summary>
-        /// Читает событие и обновляет согласно переданному методу action
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="action"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<Event> UpdateEventAsync(Guid id, Func<Event, Task> action, CancellationToken ct = default);
-
-        /// <summary>
         /// Удаляет событие по его идентификатору
         /// </summary>
         /// <param name="id"></param>

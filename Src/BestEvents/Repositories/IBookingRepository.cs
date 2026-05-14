@@ -7,12 +7,21 @@
     {
 
         /// <summary>
-        /// Создает новое бронирование  .
+        /// Создает новое бронирование и добавляет в базу.
         /// </summary>
         /// <param name="booking"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<Booking> AddBookingAsync(Booking booking, CancellationToken ct);
+
+        /// <summary>
+        /// Создает новое бронирование, применяя метод бизнес логики action и добавляет в базу
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <param name="AddBookingAction"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<Booking> AddBookingAsync(Guid eventId, Func<Event, CancellationToken, Task<Booking>> AddBookingAction, CancellationToken ct);
 
         /// <summary>
         /// Получение бронирования по его идентификатору. Метод возвращает результат бронирования
@@ -23,20 +32,17 @@
         Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct);
 
         /// <summary>
-        /// Читает бронирование по id, затем обновляет согласно переданному методу action
+        /// Обновляет бронирование
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="action"></param>
+        /// <param name="booking"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Booking> UpdateBookingAsync(Guid id, Func<Booking, Task> action, CancellationToken ct = default);
+        Task UpdateBookingAsync(Booking booking, CancellationToken ct = default);
 
         /// <summary>
         /// Возвращает список id необработанных броней
         /// </summary>
         /// <returns></returns>
         List<Guid> GetPendingBookings();
-
-        
     }
 }

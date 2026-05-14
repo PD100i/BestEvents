@@ -43,8 +43,6 @@ namespace BestEvents
             return mapper.MapEntityToEvent(eventEntity);
         }
 
-        
-
         /// <inheritdoc/>
         public async Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default)
         {
@@ -86,39 +84,5 @@ namespace BestEvents
             return _event;
         }
 
-
-        /// <inheritdoc/>
-        public async Task<Event> UpdateEventAsync(Guid id, Func<Event, Task> action, CancellationToken ct = default)
-        {
-            ct.ThrowIfCancellationRequested();
-            await using var transaction = db.Database.CurrentTransaction ?? await db.Database.BeginTransactionAsync(ct);
-
-            try
-            {
-                var eventEntity = await db.Events.FromSql(
-                $"SELECT * FROM events WHERE id = {id} FOR UPDATE")
-                .FirstOrDefaultAsync(ct);
-
-                if (eventEntity == null)
-                    throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, id));
-
-                Event _event = mapper.MapEntityToEvent(eventEntity);
-
-                await action(_event);
-
-                mapper.UpdateEventEntity(_event, eventEntity);
-                db.Events.Update(eventEntity);
-
-                await db.SaveChangesAsync(ct);
-                await transaction.CommitAsync(ct);
-
-                return _event;
-            }
-            finally
-            {
-                await db.SaveChangesAsync(ct);
-                await transaction.CommitAsync(ct);
-            }
-        }
     }
 }

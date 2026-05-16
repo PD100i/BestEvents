@@ -4,24 +4,15 @@
     /// Интерфейс репозитория бронирований
     /// </summary>
     public interface IBookingRepository
-    {
-
-        /// <summary>
-        /// Создает новое бронирование и добавляет в базу.
-        /// </summary>
-        /// <param name="booking"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<Booking> AddBookingAsync(Booking booking, CancellationToken ct);
-
+    {        
         /// <summary>
         /// Создает новое бронирование, применяя метод бизнес логики action и добавляет в базу
         /// </summary>
         /// <param name="eventId"></param>
-        /// <param name="AddBookingAction"></param>
+        /// <param name="CreateBookingAction"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Booking> AddBookingAsync(Guid eventId, Func<Event, CancellationToken, Task<Booking>> AddBookingAction, CancellationToken ct);
+        Task<Booking> AddBookingAsync(Guid eventId, Func<Event, CancellationToken, Task<Booking>> CreateBookingAction, CancellationToken ct);
 
         /// <summary>
         /// Получение бронирования по его идентификатору. Метод возвращает результат бронирования

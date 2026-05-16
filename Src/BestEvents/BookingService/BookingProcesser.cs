@@ -8,8 +8,6 @@ namespace BestEvents
     /// </summary>
     public class BookingProcesser(IServiceScopeFactory scopeFactory, ILogger<BookingProcesser> logger) : BackgroundService
     {
-        private readonly SemaphoreSlim semaphore = new(1, 1);
-
         private int pollingDelay = 100;
         private int processingDelay = 2000;
 

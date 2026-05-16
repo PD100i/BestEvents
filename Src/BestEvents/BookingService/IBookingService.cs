@@ -24,7 +24,7 @@
         /// <param name="bookingId"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct);
+        Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct);
 
         /// <summary>
         /// Возвращает список бронирований, ожидающих обработки

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace BestEvents.Repositories
+namespace BestEvents
 {
     /// <summary>
     /// Фильтр для событий Event. Содержит методы для фильтрации событий по названию, дате начала и дате завершения.

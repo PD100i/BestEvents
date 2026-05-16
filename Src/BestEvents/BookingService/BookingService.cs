@@ -12,7 +12,7 @@ namespace BestEvents
     {
         
         /// <inheritdoc/>
-        public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct)
+        public async Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
             return await bookingRepository.GetBookingAsync(bookingId, ct);
@@ -24,6 +24,27 @@ namespace BestEvents
             ct.ThrowIfCancellationRequested();
             var booking = await bookingRepository.AddBookingAsync(eventId, CreateBookingAction, ct);
             return booking;
+        }
+
+        /// <summary>
+        /// Создает экземпляр бронирования на событие _event или бросает исключение, если бронирование невозможно
+        /// </summary>
+        /// <param name="_event"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        /// <exception cref="EventCompletedException"></exception>
+        /// <exception cref="NoAvailableSeatsException"></exception>
+        public static async Task<Booking> CreateBookingAction(Event _event, CancellationToken ct)
+        {
+            if (_event.EndAt < DateTime.UtcNow)
+                throw new EventCompletedException();
+
+            if (!_event.TryReserveSeats())
+                throw new NoAvailableSeatsException();
+
+            Guid bookingId = Guid.NewGuid();
+            return await Task.FromResult(new Booking(bookingId, _event));
+
         }
 
         /// <inheritdoc/>
@@ -46,11 +67,15 @@ namespace BestEvents
                 if (booking.Event == null)
                     throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, booking.EventId));
 
-                if (booking.Event.EndAt < DateTime.Now)
+                if (booking.Event.EndAt < DateTime.UtcNow)
                     throw new EventCompletedException();
                 booking.Confirm();
                 await bookingRepository.UpdateBookingAsync(booking, ct);
 
+            }
+            catch (BookingDoubleProcessingException)
+            {
+                throw;
             }
             catch (BookingNotFoundException)
             {
@@ -73,20 +98,8 @@ namespace BestEvents
                     booking.Event?.ReleaseSeats();
                     await bookingRepository.UpdateBookingAsync(booking, ct);
                 }
+                throw;
             }
-        }
-
-        private static async Task<Booking> CreateBookingAction(Event _event, CancellationToken ct)
-        {
-            if (_event.EndAt < DateTime.UtcNow)
-                throw new EventCompletedException();
-
-            if (!_event.TryReserveSeats())
-                throw new NoAvailableSeatsException();
-
-            Guid bookingId = Guid.NewGuid();
-            return await Task.FromResult(new Booking(bookingId, _event));
-
         }
     }
 }

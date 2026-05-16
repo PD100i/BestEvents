@@ -1,5 +1,4 @@
 ﻿using BestEvents.Exceptions;
-using BestEvents.Repositories;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,7 +12,7 @@ namespace BestEvents
     public class EventRepository(AppDbContext db, EntityMapper mapper, EventFilters filters, Pagination<EventEntity> pagination) : IEventRepository
     {
         /// <inheritdoc/>
-        public async Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default)
+        public async Task<Event> AddEventAsync(Event _event, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var entity = mapper.MapEventToEntity(_event);
@@ -62,15 +61,9 @@ namespace BestEvents
             return await Task.FromResult(mapper.MapPaginatedResultToEntity(result));
         }
 
-        
-        /// <summary>
-        /// Обновляет существующее событие
-        /// </summary>
-        /// <param name="_event"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<Event> UpdateEventAsync(Event _event, CancellationToken ct = default)
+
+        /// <inheritdoc/>
+        public async Task<Event> ReplaceEventAsync(Event _event, CancellationToken ct = default)
         {
             var eventEntity = await db.Events.FirstOrDefaultAsync(e => e.Id == _event.Id, ct);
             if (eventEntity == null)

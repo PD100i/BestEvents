@@ -1,5 +1,4 @@
 ﻿using BestEvents.Exceptions;
-using BestEvents.Repositories;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
@@ -14,7 +13,7 @@ namespace BestEvents
         /// <inheritdoc/>
         public async Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default)
         {
-            return await eventRepository.CreateEventAsync(_event, ct);
+            return await eventRepository.AddEventAsync(_event, ct);
         }
 
         /// <inheritdoc/>
@@ -40,7 +39,7 @@ namespace BestEvents
         {
             if (id != _event.Id)
                 throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, _event.Id));  
-            await eventRepository.UpdateEventAsync(_event, ct);
+            await eventRepository.ReplaceEventAsync(_event, ct);
         }
 
         

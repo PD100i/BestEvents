@@ -64,9 +64,9 @@ namespace BestEvents
         public void Confirm()
         {
             if (Status == BookingStatus.Confirmed)
-                throw new ServiceInvalidOperationException(string.Format(Messages_ru.DoubleBookingConfirm, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingConfirm, Id));
             if (Status == BookingStatus.Rejected)
-                throw new ServiceInvalidOperationException(string.Format(Messages_ru.TryConfirmRejectedBooking, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.TryConfirmRejectedBooking, Id));
             Status = BookingStatus.Confirmed;
             ProcessedAt = DateTime.Now;
         }
@@ -77,9 +77,9 @@ namespace BestEvents
         public void Reject()
         {
             if (Status == BookingStatus.Confirmed)
-                throw new ServiceInvalidOperationException(string.Format(Messages_ru.TryRedjectConfirmedBooking, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.TryRedjectConfirmedBooking, Id));
             if (Status == BookingStatus.Rejected)
-                throw new ServiceInvalidOperationException(string.Format(Messages_ru.DoubleBookingReject, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingReject, Id));
             Status = BookingStatus.Rejected;
             ProcessedAt = DateTime.Now;
         }

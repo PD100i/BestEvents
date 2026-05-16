@@ -65,7 +65,7 @@ namespace BestEventsTest
             var eventEntity = new EventEntity()
             {
                 Id = _event.Id,
-                Title = "Test Event2",
+                Title = "Test Event 2",
                 StartAt = DateTime.UtcNow.AddHours(1),
                 EndAt = DateTime.UtcNow.AddHours(2),
                 Description = "Description2",
@@ -95,7 +95,7 @@ namespace BestEventsTest
             var eventEntity = new EventEntity()
             {
                 Id = Guid.NewGuid(),
-                Title = "Test Event2",
+                Title = "Test Event 2",
                 StartAt = DateTime.UtcNow.AddHours(1),
                 EndAt = DateTime.UtcNow.AddHours(2),
                 Description = "Description2",
@@ -121,11 +121,12 @@ namespace BestEventsTest
         {
             // Arrange
             var mapper = new EntityMapper();
-            var booking = new Booking() { 
-                Id = Guid.NewGuid(), 
-                EventId = Guid.NewGuid(), 
-                Status = BookingStatus.Confirmed, 
-                CreatedAt = DateTime.Now, 
+            var booking = new Booking() {
+                Id = Guid.NewGuid(),
+                EventId = Guid.NewGuid(),
+                Event = Event.CreateInstanceEvent(Guid.NewGuid(), "Event 1", DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(5), "Descripion", 100, 50),
+                Status = BookingStatus.Confirmed,
+                CreatedAt = DateTime.UtcNow,
                 ProcessedAt = DateTime.UtcNow.AddMinutes(3) };
 
             // Act
@@ -137,6 +138,14 @@ namespace BestEventsTest
             Assert.Equal(booking.Status, bookingEntity.Status);
             Assert.Equal(booking.CreatedAt, bookingEntity.CreatedAt);
             Assert.Equal(booking.ProcessedAt, bookingEntity.ProcessedAt);
+            Assert.NotNull(bookingEntity.Event);
+            Assert.Equal(booking.Event.Id, bookingEntity.Event.Id);
+            Assert.Equal(booking.Event.Title, bookingEntity.Event.Title);
+            Assert.Equal(booking.Event.StartAt, bookingEntity.Event.StartAt);
+            Assert.Equal(booking.Event.EndAt, bookingEntity.Event.EndAt);
+            Assert.Equal(booking.Event.Description, bookingEntity.Event.Description);
+            Assert.Equal(booking.Event.TotalSeats, bookingEntity.Event.TotalSeats);
+            Assert.Equal(booking.Event.AvailableSeats, bookingEntity.Event.AvailableSeats);
         }
 
         [Fact]
@@ -144,14 +153,29 @@ namespace BestEventsTest
         {
             // Arrange
             var mapper = new EntityMapper();
+            var eventEntity = new EventEntity()
+            {
+                Id = Guid.NewGuid(),
+                Title = "Event 1",
+                StartAt = DateTime.UtcNow.AddHours(-5),
+                EndAt = DateTime.UtcNow.AddHours(5),
+                Description = "Description",
+                TotalSeats = 101,
+                AvailableSeats = 52
+            };
+
+
             var bookingEntity = new BookingEntity()
             {
                 Id = Guid.NewGuid(),
-                EventId = Guid.NewGuid(),
+                EventId = eventEntity.Id,
+                Event = eventEntity,
                 Status = BookingStatus.Confirmed,
                 CreatedAt = DateTime.Now,
                 ProcessedAt = DateTime.UtcNow.AddMinutes(3)
             };
+
+
 
             // Act
             var booking = mapper.MapEntityToBooking(bookingEntity);
@@ -162,6 +186,14 @@ namespace BestEventsTest
             Assert.Equal(bookingEntity.Status, booking.Status);
             Assert.Equal(bookingEntity.CreatedAt, booking.CreatedAt);
             Assert.Equal(bookingEntity.ProcessedAt, booking.ProcessedAt);
+            Assert.NotNull(booking.Event);
+            Assert.Equal(bookingEntity.Event.Id, booking.Event.Id);
+            Assert.Equal(bookingEntity.Event.Title, booking.Event.Title);
+            Assert.Equal(bookingEntity.Event.StartAt, booking.Event.StartAt);
+            Assert.Equal(bookingEntity.Event.EndAt, booking.Event.EndAt);
+            Assert.Equal(bookingEntity.Event.Description, booking.Event.Description);
+            Assert.Equal(bookingEntity.Event.TotalSeats, booking.Event.TotalSeats);
+            Assert.Equal(bookingEntity.Event.AvailableSeats, booking.Event.AvailableSeats);
         }
 
         [Fact]

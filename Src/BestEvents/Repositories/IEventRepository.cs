@@ -31,14 +31,14 @@ namespace BestEvents
         /// </summary>
         /// <param name="_event"></param>
         /// /// <param name="ct"></param>
-        Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default);
+        Task<Event> AddEventAsync(Event _event, CancellationToken ct = default);
         /// <summary>
         /// Обновляет событие. Метод должен сохранять изменения в базе данных и разблокировать запись, чтобы другие транзакции могли получить доступ к ней
         /// </summary>
         /// <param name="_event"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Event> UpdateEventAsync(Event _event, CancellationToken ct = default);
+        Task<Event> ReplaceEventAsync(Event _event, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет событие по его идентификатору

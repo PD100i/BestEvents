@@ -12,7 +12,7 @@ namespace BestEvents
         /// Название события
         /// </summary>
         [Required(AllowEmptyStrings = false, ErrorMessageResourceType = typeof(Messages_ru), ErrorMessageResourceName = "No_Title")]
-        public string Title { get; set; } 
+        public string Title { get; set; } = ""; 
 
         /// <summary>
         /// Описание события

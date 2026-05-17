@@ -32,7 +32,7 @@ namespace BestEventsIntegrationTest
 
         private async Task InitializeDatabaseAsync()
         {
-            await _fixture.CreateContext().Database.MigrateAsync("0");
+            await _fixture.ResetDatabaseAsync();
         }
 
         private EventRepository CreateEventRepository(AppDbContext dbContext)
@@ -252,9 +252,9 @@ namespace BestEventsIntegrationTest
                     new PaginatedResult<Event>() { TotalResultsNumber = events.Count, CurrentPage = 1, ResultsNumberOnPage = 10, ResultsOnPage = events.GetRange(0, 10)} },
                 new object?[] { "Event", null, null, 1, 10,
                     new PaginatedResult<Event>() { TotalResultsNumber = 2, CurrentPage = 1, ResultsNumberOnPage = 2, ResultsOnPage = events.GetRange(10, 2)} },
-                new object?[] { null, new DateTime(2025, 06, 10), new DateTime(2026, 12, 20), 3, 4,
+                new object?[] { null, DateTime.SpecifyKind(new DateTime(2025, 06, 10), DateTimeKind.Utc), DateTime.SpecifyKind(new DateTime(2026, 12, 20), DateTimeKind.Utc), 3, 4,
                     new PaginatedResult<Event>() { TotalResultsNumber = 9, CurrentPage = 3, ResultsNumberOnPage = 1, ResultsOnPage = events.GetRange(9, 1)} },
-                new object?[] { "фести", new DateTime(2025, 06, 10), new DateTime(2026, 12, 20), 1, 10,
+                new object?[] { "фести", DateTime.SpecifyKind(new DateTime(2025, 06, 10), DateTimeKind.Utc), DateTime.SpecifyKind(new DateTime(2026, 12, 20), DateTimeKind.Utc), 1, 10,
                     new PaginatedResult<Event>() { TotalResultsNumber = 2, CurrentPage = 1, ResultsNumberOnPage = 2, ResultsOnPage = [ events[1], events[5] ] } }
             };
         }
@@ -271,8 +271,9 @@ namespace BestEventsIntegrationTest
             var actContext = CreateContext();
             var eventRepository = CreateEventRepository(actContext);
 
-            // Act && Assert
+            // Act
             var result = await eventRepository.GetEventsAsync(title, from, to, page, size, CancellationToken.None);
+            // Assert
             Assert.Equal(result, expectedResult);
         }
 

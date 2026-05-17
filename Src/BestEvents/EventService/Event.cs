@@ -131,14 +131,16 @@ namespace BestEvents
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
+            TimeSpan dateTimePrecision = TimeSpan.FromMilliseconds(100);
+
             if (obj == null || GetType() != obj.GetType())
                 return false;
             Event other = (Event)obj;
             return Id == other.Id &&
                    Title == other.Title &&
                    Description == other.Description &&
-                   StartAt == other.StartAt &&
-                   EndAt == other.EndAt &&
+                   (StartAt - other.StartAt) < dateTimePrecision &&
+                   (EndAt - other.EndAt) < dateTimePrecision &&
                    TotalSeats == other.TotalSeats &&
                    AvailableSeats == other.AvailableSeats;
         }

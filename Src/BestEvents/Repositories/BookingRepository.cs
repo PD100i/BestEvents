@@ -1,6 +1,7 @@
 ﻿using BestEvents.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -27,7 +28,7 @@ namespace BestEvents
         
 
         /// <inheritdoc/>
-        public async Task<Booking> AddBookingAsync(Guid eventId, Func<Event, CancellationToken, Task<Booking>> AddBookingAction, CancellationToken ct)
+        public async Task<Booking> AddBookingAsync(Guid bookingId, Guid eventId, Func<Guid, Event, Booking> CreateBookingAction, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
             await using var transaction = db.Database.CurrentTransaction ?? await db.Database.BeginTransactionAsync(ct);
@@ -43,7 +44,7 @@ namespace BestEvents
 
                 Event _event = mapper.MapEntityToEvent(eventEntity);
 
-                var booking =  await AddBookingAction(_event, ct);
+                var booking =  CreateBookingAction(bookingId, _event);
 
                 await AddBookingAsync(booking, ct);
 
@@ -74,31 +75,40 @@ namespace BestEvents
 
 
         /// <inheritdoc/>
-        public async Task UpdateBookingAsync(Booking booking, CancellationToken ct = default)
+        public async Task UpdateBookingAsync(Guid bookingId, Action<Booking> BookingUpdateAction, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
             try
             {
+
                 var bookingEntity = await db.Bookings.FromSqlRaw(
-                    "SELECT * FROM bookings WHERE id = {0} FOR UPDATE", booking.Id)
+                    "SELECT * FROM bookings WHERE id = {0} FOR UPDATE", bookingId)
                     .FirstOrDefaultAsync(ct);
 
                 if (bookingEntity == null)
-                    throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, booking.Id));
+                    throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, bookingId));
 
                 var eventEntity = await db.Events.FromSqlRaw(
                     "SELECT * FROM events WHERE id = {0} FOR UPDATE", bookingEntity.EventId)
                     .FirstOrDefaultAsync(ct);
 
-                if (eventEntity == null)
-                    throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, bookingEntity.Id));
-
+                
                 bookingEntity.Event = eventEntity;
+
+                var booking = mapper.MapEntityToBooking(bookingEntity);
+                BookingUpdateAction(booking);
 
                 mapper.UpdateBookingEntity(booking, bookingEntity);
                 db.Bookings.Update(bookingEntity);
+
+                if (eventEntity != null && booking.Event != null)
+                {
+                    mapper.UpdateEventEntity(booking.Event, eventEntity);
+                    db.Events.Update(eventEntity);
+                }
+                
                 await db.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
             }

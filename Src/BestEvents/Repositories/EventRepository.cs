@@ -56,7 +56,8 @@ namespace BestEvents
             var filtredResult = filters.FilterEventsByTitle(db.Events, title);
             filtredResult = filters.FilterEventsByDateFrom(filtredResult, from);
             filtredResult = filters.FilterEventsByDateTo(filtredResult, to);
-            var result = pagination.GetResult(filtredResult, page, size);
+            var orderedResult = filtredResult.OrderBy(e => e.StartAt);
+            var result = pagination.GetResult(orderedResult, page, size);
 
             return await Task.FromResult(mapper.MapPaginatedResultToEntity(result));
         }

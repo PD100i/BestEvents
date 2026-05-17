@@ -102,6 +102,46 @@ namespace BestEvents
         {
             return HashCode.Combine(Id, EventId, CreatedAt, ProcessedAt, Status);
         }
+
+        /// <summary>
+        /// Фабричный метод для создания нового бронирования
+        /// </summary>
+        /// <param name="bookingId"></param>
+        /// <param name="_event"></param>
+        /// <returns></returns>
+        public static Booking CreateBooking(Guid bookingId, Event _event)
+        {
+            if (_event.EndAt < DateTime.UtcNow)
+                throw new EventCompletedException();
+            if (!_event.TryReserveSeats())
+                throw new NoAvailableSeatsException();
+
+            return new Booking(bookingId, _event);
+        }
+
+        /// <summary>
+        /// Метод для подтверждения бронирования
+        /// </summary>
+        /// <param name="booking"></param>
+        public static void Confirm(Booking booking)
+        {
+            if (booking.Event == null)
+                throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, booking.EventId));
+            if (booking.Event.EndAt < DateTime.UtcNow)
+                throw new EventCompletedException();
+            booking.Confirm();
+        }
+
+        /// <summary>
+        /// Метод для отклонения бронирования
+        /// </summary>
+        /// <param name="booking"></param>
+        public static void Reject(Booking booking)
+        {
+            booking.Reject();
+            if (booking.Event != null)
+                booking.Event.ReleaseSeats();
+        }
     }
 
     /// <summary>

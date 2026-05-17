@@ -13,6 +13,7 @@ namespace BestEventsIntegrationTest
     public sealed class DatabaseFixture : IAsyncLifetime
     {
         public PostgreSqlContainer DbContainer { get; } = new PostgreSqlBuilder("postgres:16-alpine")
+        .WithDatabase("DbBestEventsTest")
         .Build();
 
         
@@ -22,7 +23,6 @@ namespace BestEventsIntegrationTest
             await DbContainer.StartAsync();
             var context = CreateContext();
             await context.Database.EnsureCreatedAsync();
-            await context.Database.MigrateAsync();
         }
 
 
@@ -36,6 +36,14 @@ namespace BestEventsIntegrationTest
             var options = GetOptions();
             var context = new AppDbContext(options);
             return context;
+        }
+
+        public async Task ResetDatabaseAsync()
+        {
+            NpgsqlConnection.ClearAllPools();
+            var context = CreateContext();
+            await context.Database.EnsureDeletedAsync();
+            await context.Database.EnsureCreatedAsync();
         }
 
         private DbContextOptions<AppDbContext> GetOptions()

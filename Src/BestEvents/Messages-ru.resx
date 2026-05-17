@@ -178,13 +178,13 @@
     <value>Непредвиденная ошибка при работе сервиса бронирования</value>
   </data>
   <data name="BookingRejectedEventNoExist" xml:space="preserve">
-    <value>Бронирование {0} отклонено, так как событие {1} не существует или оно было удалено</value>
+    <value>Бронирование отклонено, так как событие не существует или оно было удалено</value>
   </data>
   <data name="BookingProcessingError" xml:space="preserve">
     <value>Ошибка при обработке бронирования {0}: {1}</value>
   </data>
   <data name="BookingRejectedEventCompleted" xml:space="preserve">
-    <value>Бронирование {0} отклонено, так как событие {1} уже завершилось</value>
+    <value>Бронирование отклонено, так как событие  уже завершилось</value>
   </data>
   <data name="BookingNotFound" xml:space="preserve">
     <value>Бронирование с идентификатором {0} не найдено</value>

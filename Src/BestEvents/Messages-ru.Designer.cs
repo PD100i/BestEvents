@@ -115,7 +115,7 @@ namespace BestEvents {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Бронирование {0} отклонено, так как событие {1} уже завершилось.
+        ///   Looks up a localized string similar to Бронирование отклонено, так как событие  уже завершилось.
         /// </summary>
         public static string BookingRejectedEventCompleted {
             get {
@@ -124,7 +124,7 @@ namespace BestEvents {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Бронирование {0} отклонено, так как событие {1} не существует или оно было удалено.
+        ///   Looks up a localized string similar to Бронирование отклонено, так как событие не существует или оно было удалено.
         /// </summary>
         public static string BookingRejectedEventNoExist {
             get {

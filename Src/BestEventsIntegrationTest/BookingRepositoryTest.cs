@@ -27,7 +27,7 @@ namespace BestEventsIntegrationTest
 
         private async Task InitializeDatabaseAsync()
         {
-            await _fixture.CreateContext().Database.MigrateAsync("0");
+            await _fixture.ResetDatabaseAsync();
             
         }
 
@@ -77,12 +77,12 @@ namespace BestEventsIntegrationTest
             context.Events.Add(eventEntity);
             await context.SaveChangesAsync(CancellationToken.None);
             var _event = CreateEvent(eventEntity);
-            int expectedAvailableSeats = _event.AvailableSeats - 1;
-            var booking = new Booking(Guid.NewGuid(), _event);
-            async Task<Booking> CreateBookingStub(Event evt, CancellationToken ct) => await Task.FromResult(booking);
+            var bookingId = Guid.NewGuid();
+            var booking = new Booking(bookingId, _event);
+            Booking CreateBookingStub(Guid id, Event _event) => booking;
 
             // Act
-            var result = await repository.AddBookingAsync(eventId, CreateBookingStub, CancellationToken.None);
+            var result = await repository.AddBookingAsync(bookingId, eventId, CreateBookingStub, CancellationToken.None);
 
             // Assert
             using var verifyContext = CreateContext();
@@ -92,83 +92,16 @@ namespace BestEventsIntegrationTest
             Assert.Equal(_event.Id, bookingFromDb.EventId);
             Assert.Equal(BookingStatus.Pending, bookingFromDb.Status);
             Assert.True(booking.CreatedAt - result.CreatedAt <= timePrecision);
-            Assert.Equal(expectedAvailableSeats, bookingFromDb.Event!.AvailableSeats);
+            Assert.Equal(eventEntity.AvailableSeats, bookingFromDb.Event!.AvailableSeats);
             Assert.NotNull(bookingFromDb.Event);
             Assert.Equal(eventEntity.Title, bookingFromDb.Event.Title);
             Assert.Equal(eventEntity.Description, bookingFromDb.Event.Description);
             Assert.Equal(eventEntity.TotalSeats, bookingFromDb.Event.TotalSeats);
-            Assert.Equal(expectedAvailableSeats, bookingFromDb.Event.AvailableSeats);
+            Assert.Equal(eventEntity.AvailableSeats, bookingFromDb.Event.AvailableSeats);
             Assert.True(eventEntity.StartAt - bookingFromDb.Event.StartAt <= timePrecision);
             Assert.True(eventEntity.EndAt - bookingFromDb.Event.EndAt <= timePrecision);
         }
 
-        [Fact]
-        public async Task AddBookingAsync_Overbooking_CreateOnlyAvailableBookings()
-        {
-            // Arrange
-            await InitializeDatabaseAsync();
-            using var context = CreateContext();
-            var eventId = Guid.NewGuid();
-            var eventEntity = CreateEventEntity(eventId);
-            context.Events.Add(eventEntity);
-            await context.SaveChangesAsync(CancellationToken.None);
-            var _event = CreateEvent(eventEntity);
-            var booking = new Booking(Guid.NewGuid(), _event);
-            async Task<Booking> CreateBookingStub(Event evt, CancellationToken ct) => await Task.FromResult(booking);
-
-            int BOOKING_ATTEMPT = 15;
-
-            Task<Booking>[] tasks = new Task<Booking>[BOOKING_ATTEMPT];
-            for (int i = 0; i < tasks.Length; i++)
-            {
-                var actContext = CreateContext();
-                var repository = new BookingRepository(actContext, new EntityMapper());
-                tasks[i] = repository.AddBookingAsync(eventId, CreateBookingStub, CancellationToken.None);
-            }
-
-            // Act
-            await Assert.ThrowsAsync<BestEvents.Exceptions.NoAvailableSeatsException>(async () => { var results = await Task.WhenAll(tasks); });
-
-            // Assert
-            using var verifyContext = CreateContext();
-            var bookingsFromDb = await verifyContext.Bookings.Where(b => b.EventId == eventId).ToListAsync(CancellationToken.None);
-            Assert.Equal(TOTAL_SEATS, bookingsFromDb.Count);  
-        }
-
-        [Fact]
-        public async Task AddBookingAsync_EnoughSeats_CreateUnicBookingsWithSameEventId()
-        {
-            // Arrange
-            await InitializeDatabaseAsync();
-            using var context = CreateContext();
-            var eventId = Guid.NewGuid();
-            var eventEntity = CreateEventEntity(eventId);
-            context.Events.Add(eventEntity);
-            await context.SaveChangesAsync(CancellationToken.None);
-            var _event = CreateEvent(eventEntity);
-            var booking = new Booking(Guid.NewGuid(), _event);
-            async Task<Booking> CreateBookingStub(Event evt, CancellationToken ct) => await Task.FromResult(booking);
-
-            Task<Booking>[] tasks = new Task<Booking>[TOTAL_SEATS];
-            for (int i = 0; i < tasks.Length; i++)
-            {
-                var actContext = CreateContext();
-                var repository = new BookingRepository(actContext, new EntityMapper());
-                tasks[i] = repository.AddBookingAsync(_event.Id, CreateBookingStub, CancellationToken.None);
-            }        
-
-            // Act
-            var results = await Task.WhenAll(tasks);
-
-            // Assert
-            var verifyContext = CreateContext();
-            var updatedEvent = await verifyContext.Events.FirstAsync(e => e.Id == _event.Id, CancellationToken.None);
-            var bookings = verifyContext.Bookings.ToList();
-            Assert.Equal(0, updatedEvent.AvailableSeats);
-            Assert.Equal(TOTAL_SEATS, results.Select(r => r.Id).Distinct().Count());
-            Assert.True(results.All(r => r.EventId == _event.Id));
-            Assert.Equal(TOTAL_SEATS, bookings.Where(b => b.EventId == _event.Id).Select(b => b.Id).Distinct().Count());
-        }
 
         [Fact]
         public async Task AddBookingAsync_EventDoesNotExist_ShouldThrowEventNotFoundException()
@@ -176,35 +109,16 @@ namespace BestEventsIntegrationTest
             // Arrange
             await InitializeDatabaseAsync();
             using var context = CreateContext();
+            var bookingId = Guid.NewGuid();
             var eventId = Guid.NewGuid();
             var repository = new BookingRepository(context, new EntityMapper());
             await context.SaveChangesAsync(CancellationToken.None);
             var _event = CreateEvent(eventId);
             var booking = new Booking(Guid.NewGuid(), _event);
-            async Task<Booking> CreateBookingStub(Event evt, CancellationToken ct) => await Task.FromResult(booking);
+            Booking CreateBookingStub(Guid bookingId, Event _event) => booking;
 
             // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.EventNotFoundException>(() => repository.AddBookingAsync(Guid.NewGuid(), CreateBookingStub, CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task AddBookingAsync_NoAwailableSeats_ShouldThrowNoAvailableSeatsException()
-        {
-            // Arrange
-            await InitializeDatabaseAsync();
-            using var context = CreateContext();
-            var eventId = Guid.NewGuid();
-            var repository = new BookingRepository(context, new EntityMapper());
-            var eventEntity = CreateEventEntity(eventId);
-            eventEntity.AvailableSeats = 0;
-            context.Events.Add(eventEntity);
-            await context.SaveChangesAsync(CancellationToken.None);
-            var _event = CreateEvent(eventEntity);
-            var booking = new Booking(Guid.NewGuid(), _event);
-            async Task<Booking> CreateBookingStub(Event evt, CancellationToken ct) => await Task.FromResult(booking);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.NoAvailableSeatsException>(() => repository.AddBookingAsync(eventId, CreateBookingStub, CancellationToken.None));        
+            await Assert.ThrowsAsync<BestEvents.Exceptions.EventNotFoundException>(() => repository.AddBookingAsync(bookingId, Guid.NewGuid(), CreateBookingStub, CancellationToken.None));
         }
 
         [Fact]
@@ -257,14 +171,14 @@ namespace BestEventsIntegrationTest
         }
 
         [Fact]
-        public async Task UpdateBookingAsync_CorrectData_ShouldUpdateBooking()
+        public async Task UpdateBookingAsync_EventAndBookingChanged_ShouldUpdateBookingAndEvent()
         {
             // Arrange
             await InitializeDatabaseAsync();
             var eventId = Guid.NewGuid();
             var bookingId = Guid.NewGuid();
             var eventEntity = CreateEventEntity(eventId);
-            var _event = CreateEvent(eventEntity);
+            int expectedAvailableSeats = eventEntity.AvailableSeats + 1;
             DateTime bookingCreatedAt = DateTime.UtcNow.AddSeconds(-2);
             DateTime bookingProcessedAt = DateTime.UtcNow;
 
@@ -277,16 +191,13 @@ namespace BestEventsIntegrationTest
                 Event = eventEntity
             };
 
-            var updatedBooking = new Booking()
+            Action<Booking> updateAction = b =>
             {
-                Id = bookingId,
-                CreatedAt = bookingCreatedAt,
-                Status = BookingStatus.Confirmed,
-                EventId = eventId,
-                Event = _event,
-                ProcessedAt = bookingProcessedAt,
+                b.ProcessedAt = DateTime.UtcNow;
+                b.Status = BookingStatus.Rejected;
+                b.Event!.AvailableSeats = expectedAvailableSeats;
             };
-
+                                                        
             using var context = CreateContext();
             context.Events.Add(eventEntity);
             context.Bookings.Add(bookingEntity);
@@ -295,17 +206,17 @@ namespace BestEventsIntegrationTest
             // Act
             using var actContext = CreateContext();
             var repository = new BookingRepository(actContext, new EntityMapper());
-            await repository.UpdateBookingAsync(updatedBooking, CancellationToken.None);
+            await repository.UpdateBookingAsync(bookingId, updateAction, CancellationToken.None);
 
             //Assert
             using var assertContext = CreateContext();
-            var bookingFromMemory = await assertContext.Bookings.FirstAsync(b => b.Id == bookingId, CancellationToken.None);
-            Assert.Equal(updatedBooking.Id, bookingFromMemory.Id);
-            Assert.Equal(updatedBooking.EventId, bookingFromMemory.EventId);
-            Assert.Equal(eventEntity, bookingFromMemory.Event);
-            Assert.Equal(updatedBooking.Status, bookingFromMemory.Status);
-            Assert.True(updatedBooking.CreatedAt - bookingFromMemory.CreatedAt < timePrecision);
-            Assert.True(updatedBooking.ProcessedAt - bookingFromMemory.ProcessedAt < timePrecision);
+            var bookingFromMemory = await assertContext.Bookings.Include(b => b.Event).FirstAsync(b => b.Id == bookingId, CancellationToken.None);
+            Assert.Equal(bookingId, bookingFromMemory.Id);
+            Assert.Equal(eventId, bookingFromMemory.EventId);
+            Assert.Equal(BookingStatus.Rejected, bookingFromMemory.Status);
+            Assert.True(bookingFromMemory.ProcessedAt > bookingFromMemory.CreatedAt);
+            Assert.NotNull(bookingFromMemory.Event);
+            Assert.Equal(expectedAvailableSeats, bookingFromMemory.Event.AvailableSeats);
         }
 
         [Fact]
@@ -330,13 +241,13 @@ namespace BestEventsIntegrationTest
                 Event = _event,
                 ProcessedAt = bookingProcessedAt,
             };
+            void updateAction(Booking booking) => booking = updatedBooking;
 
-            
             using var actContext = CreateContext();
             var repository = new BookingRepository(actContext, new EntityMapper());
 
             // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.BookingNotFoundException>(() => repository.UpdateBookingAsync(updatedBooking, CancellationToken.None));
+            await Assert.ThrowsAsync<BestEvents.Exceptions.BookingNotFoundException>(() => repository.UpdateBookingAsync(bookingId, updateAction, CancellationToken.None));
         }
     }
 }

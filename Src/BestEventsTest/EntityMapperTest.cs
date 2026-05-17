@@ -138,14 +138,8 @@ namespace BestEventsTest
             Assert.Equal(booking.Status, bookingEntity.Status);
             Assert.Equal(booking.CreatedAt, bookingEntity.CreatedAt);
             Assert.Equal(booking.ProcessedAt, bookingEntity.ProcessedAt);
-            Assert.NotNull(bookingEntity.Event);
-            Assert.Equal(booking.Event.Id, bookingEntity.Event.Id);
-            Assert.Equal(booking.Event.Title, bookingEntity.Event.Title);
-            Assert.Equal(booking.Event.StartAt, bookingEntity.Event.StartAt);
-            Assert.Equal(booking.Event.EndAt, bookingEntity.Event.EndAt);
-            Assert.Equal(booking.Event.Description, bookingEntity.Event.Description);
-            Assert.Equal(booking.Event.TotalSeats, bookingEntity.Event.TotalSeats);
-            Assert.Equal(booking.Event.AvailableSeats, bookingEntity.Event.AvailableSeats);
+            Assert.Null(bookingEntity.Event);
+            
         }
 
         [Fact]

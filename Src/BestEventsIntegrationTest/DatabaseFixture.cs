@@ -1,4 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BestEvents;
+using BestEvents.Migrations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -6,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
-using BestEvents;
+
 
 namespace BestEventsIntegrationTest
 {
@@ -21,10 +27,7 @@ namespace BestEventsIntegrationTest
         public async ValueTask InitializeAsync()
         {
             await DbContainer.StartAsync();
-            var context = CreateContext();
-            await context.Database.EnsureCreatedAsync();
         }
-
 
         public async ValueTask DisposeAsync()
         {
@@ -43,7 +46,7 @@ namespace BestEventsIntegrationTest
             NpgsqlConnection.ClearAllPools();
             var context = CreateContext();
             await context.Database.EnsureDeletedAsync();
-            await context.Database.EnsureCreatedAsync();
+            await context.Database.MigrateAsync();
         }
 
         private DbContextOptions<AppDbContext> GetOptions()

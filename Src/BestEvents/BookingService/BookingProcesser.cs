@@ -8,8 +8,6 @@ namespace BestEvents
     /// </summary>
     public class BookingProcesser(IServiceScopeFactory scopeFactory, ILogger<BookingProcesser> logger) : BackgroundService
     {
-        private readonly SemaphoreSlim semaphore = new(1, 1);
-
         private int pollingDelay = 100;
         private int processingDelay = 2000;
 
@@ -29,7 +27,7 @@ namespace BestEvents
                     var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
 
-                    List<Guid> pendingBookings = bookingService.GetPendingBookings();
+                    List<Guid> pendingBookings = await bookingService.GetPendingBookingsAsync(stoppingToken);
                     if (pendingBookings == null || pendingBookings.Count == 0)
                     {
                         await Task.Delay(pollingDelay, stoppingToken);

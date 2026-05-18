@@ -21,7 +21,8 @@ builder.Services.AddSingleton<EventFilters>();
 builder.Services.AddSingleton<Pagination<EventEntity>>();
 builder.Services.AddSingleton<EntityMapper>();
 builder.Services.AddSingleton<DtoMapper>();
-builder.Services.AddSingleton<EntityMapper>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
@@ -51,7 +52,7 @@ app.UseAuthorization();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    db.Database.Migrate();
 }
 
 app.MapControllers();

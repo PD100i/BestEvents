@@ -18,7 +18,7 @@ namespace BestEvents
         {
             if (title == null || title == "")
                 return events;
-            return events.Where(e => e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+            return events.Where(e => e.Title.ToLower().Contains(title.ToLower()));
         }
 
         /// <summary>

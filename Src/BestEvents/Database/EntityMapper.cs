@@ -45,6 +45,8 @@ namespace BestEvents
         /// </summary>
         /// <param name="booking">Доменная модель Booking, которую нужно преобразовать в сущность.</param>
         /// <returns>Сущность BookingEntity, соответствующая доменной модели Booking.</returns>
+
+        [MapperIgnoreSource(nameof(Booking.Event))]
         [MapperIgnoreTarget(nameof(BookingEntity.Event))]
         public partial BookingEntity MapBookingToEntity(Booking booking);
 
@@ -54,6 +56,7 @@ namespace BestEvents
         /// <param name="booking">Доменная модель Booking, содержащая новые данные.</param>
         /// <param name="entity">Сущность BookingEntity, которую нужно обновить.</param>
         /// 
+        [MapperIgnoreSource(nameof(Booking.Event))]
         [MapperIgnoreTarget(nameof(BookingEntity.Event))]
         public partial void UpdateBookingEntity(Booking booking, BookingEntity entity);
 
@@ -61,9 +64,7 @@ namespace BestEvents
         /// Мапинг из сущности BookingEntity в доменную модель Booking для использования в бизнес-логике приложения.
         /// </summary>
         /// <param name="entity">Сущность BookingEntity, которую нужно преобразовать в доменную модель.</param>
-        /// <returns>Доменная модель Booking, соответствующая сущности BookingEntity.</returns>
-        
-        [MapperIgnoreSource(nameof(BookingEntity.Event))]
+        /// <returns>Доменная модель Booking, соответствующая сущности BookingEntity.</returns>        
         public partial Booking MapEntityToBooking(BookingEntity entity);
 
         /// <summary>

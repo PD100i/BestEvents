@@ -1,4 +1,6 @@
-﻿namespace BestEvents
+﻿using System.Threading.Tasks;
+
+namespace BestEvents
 {
     /// <summary>
     /// Интерфейс сервиса бронирований
@@ -24,13 +26,13 @@
         /// <param name="bookingId"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken ct);
+        Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct);
 
         /// <summary>
         /// Возвращает список бронирований, ожидающих обработки
         /// </summary>
         /// <returns></returns>
-        List<Guid> GetPendingBookings();
+        Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct);
 
 
         /// <summary>

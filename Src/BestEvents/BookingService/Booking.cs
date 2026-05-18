@@ -16,14 +16,14 @@ namespace BestEvents
         /// <summary>
         /// Создание брони для события с идентификатором eventId. Статус брони по умолчанию - Pending, дата создания - текущая дата и время
         /// </summary>
-        /// <param name="eventId"></param>
-        public Booking(Guid eventId)
+        /// <param name="id"></param>
+        /// <param name="_event"></param>
+        public Booking(Guid id, Event _event)
         {
-            if (eventId == Guid.Empty)
-                throw new BookingWrongParameterException(Messages_ru.CreateBooking_No_EventId);
-
-            Id = Guid.NewGuid();
-            EventId = eventId;
+            
+            Id = id;
+            EventId = _event.Id;
+            Event = _event;
             Status = BookingStatus.Pending;
             CreatedAt = DateTime.Now;
         }
@@ -37,6 +37,11 @@ namespace BestEvents
         /// Идентификатор события, на которое было сделано бронирование
         /// </summary>
         public Guid EventId { get; set; }
+
+        /// <summary>
+        /// Событие, на которое сделано бронирование
+        /// </summary>
+        public Event? Event { get; set; }
 
         /// <summary>
         /// Статус брони
@@ -59,9 +64,9 @@ namespace BestEvents
         public void Confirm()
         {
             if (Status == BookingStatus.Confirmed)
-                throw new ServiceInvalidOperationException(string.Format(Messages_ru.DoubleBookingConfirm, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingConfirm, Id));
             if (Status == BookingStatus.Rejected)
-                throw new ServiceInvalidOperationException(string.Format(Messages_ru.TryConfirmRejectedBooking, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.TryConfirmRejectedBooking, Id));
             Status = BookingStatus.Confirmed;
             ProcessedAt = DateTime.Now;
         }
@@ -72,9 +77,9 @@ namespace BestEvents
         public void Reject()
         {
             if (Status == BookingStatus.Confirmed)
-                throw new ServiceInvalidOperationException(string.Format(Messages_ru.TryRedjectConfirmedBooking, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.TryRedjectConfirmedBooking, Id));
             if (Status == BookingStatus.Rejected)
-                throw new ServiceInvalidOperationException(string.Format(Messages_ru.DoubleBookingReject, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingReject, Id));
             Status = BookingStatus.Rejected;
             ProcessedAt = DateTime.Now;
         }
@@ -96,6 +101,46 @@ namespace BestEvents
         public override int GetHashCode()
         {
             return HashCode.Combine(Id, EventId, CreatedAt, ProcessedAt, Status);
+        }
+
+        /// <summary>
+        /// Фабричный метод для создания нового бронирования
+        /// </summary>
+        /// <param name="bookingId"></param>
+        /// <param name="_event"></param>
+        /// <returns></returns>
+        public static Booking CreateBooking(Guid bookingId, Event _event)
+        {
+            if (_event.EndAt < DateTime.UtcNow)
+                throw new EventCompletedException();
+            if (!_event.TryReserveSeats())
+                throw new NoAvailableSeatsException();
+
+            return new Booking(bookingId, _event);
+        }
+
+        /// <summary>
+        /// Метод для подтверждения бронирования
+        /// </summary>
+        /// <param name="booking"></param>
+        public static void Confirm(Booking booking)
+        {
+            if (booking.Event == null)
+                throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, booking.EventId));
+            if (booking.Event.EndAt < DateTime.UtcNow)
+                throw new EventCompletedException();
+            booking.Confirm();
+        }
+
+        /// <summary>
+        /// Метод для отклонения бронирования
+        /// </summary>
+        /// <param name="booking"></param>
+        public static void Reject(Booking booking)
+        {
+            booking.Reject();
+            if (booking.Event != null)
+                booking.Event.ReleaseSeats();
         }
     }
 

@@ -27,7 +27,7 @@ namespace BestEvents.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> GetBookingByIdAync(string id, CancellationToken ct = default)
         {
-            return Ok(await bookingService.GetBookingByIdAsync(mapper.StringToGuid(id), ct));
+            return Ok(await bookingService.GetBookingAsync(mapper.StringToGuid(id), ct));
         }
 
         

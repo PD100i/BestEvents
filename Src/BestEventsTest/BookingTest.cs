@@ -1,47 +1,46 @@
-﻿using System;
+﻿using BestEvents;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BestEvents;
 
 namespace BestEventsTest
 {
     public class BookingTest
     {
+        private Event CreateEvent()
+        {
+            return Event.CreateInstanceEvent(Guid.NewGuid(), "Test Event", DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(5), "Description", 100, 50);
+        }
+
         [Fact]
         public void BookingConstructor_CorrectId_InitializeProperties()
         {
             // Arrange
-            var eventId = Guid.NewGuid();
+            var _event = CreateEvent();
+            var bookingId = Guid.NewGuid();
 
             // Act
-            var booking = new Booking(eventId);
+            var booking = new Booking(bookingId, _event);
 
             // Assert
             Assert.NotEqual(Guid.Empty, booking.Id);
-            Assert.Equal(eventId, booking.EventId);
+            Assert.Equal(_event.Id, booking.EventId);
             Assert.Equal(BookingStatus.Pending, booking.Status);
             Assert.True((DateTime.UtcNow - booking.CreatedAt).TotalSeconds < 1);
             Assert.Null(booking.ProcessedAt);
         }
 
-        [Fact]
-        public void BookingConstructor_EmptyEventId_ThrowBookingWrongParameterException()
-        {
-            // Arrange
-            var eventId = Guid.Empty;
-
-            // Act & Assert
-            Assert.Throws<BestEvents.Exceptions.BookingWrongParameterException>(() => new Booking(eventId));
-        }
+        
 
         [Fact]
         public void Confirm_SetStatusAndProcessedAt()
         {
             // Arrange
-            var eventId = Guid.NewGuid();
-            var booking = new Booking(eventId);
+            var bookingId = Guid.NewGuid();
+            var booking = new Booking(bookingId, CreateEvent());
 
             // Act
             booking.Confirm();
@@ -55,13 +54,13 @@ namespace BestEventsTest
         public void Confirm_MultipleTimes_ShouldSetStatusAndProcessedAtOnlyOnce()
         {
             // Arrange
-            var eventId = Guid.NewGuid();
-            var booking = new Booking(eventId);
+            var bookingId = Guid.NewGuid();
+            var booking = new Booking(bookingId, CreateEvent());
 
             // Act & Assert
             booking.Confirm();
             var firstProcessedAt = booking.ProcessedAt;            
-            Assert.Throws<BestEvents.Exceptions.ServiceInvalidOperationException>(() => booking.Confirm());
+            Assert.Throws<BestEvents.Exceptions.BookingDoubleProcessingException>(() => booking.Confirm());
             Assert.Equal(firstProcessedAt, booking.ProcessedAt ); 
         }
 
@@ -69,8 +68,8 @@ namespace BestEventsTest
         public void Reject_SetStatusAndProcessedAt()
         {
             // Arrange
-            var eventId = Guid.NewGuid();
-            var booking = new Booking(eventId);
+            var bookingId = Guid.NewGuid();
+            var booking = new Booking(bookingId, CreateEvent());
 
             // Act
             booking.Reject();
@@ -84,13 +83,13 @@ namespace BestEventsTest
         public void Reject_MultipleTimes_ShouldSetStatusAndProcessedAtOnlyOnce()
         {
             // Arrange
-            var eventId = Guid.NewGuid();
-            var booking = new Booking(eventId);
+            var bookingId = Guid.NewGuid();
+            var booking = new Booking(bookingId, CreateEvent());
 
             // Act & Assert
             booking.Reject();
             var firstProcessedAt = booking.ProcessedAt;
-            Assert.Throws<BestEvents.Exceptions.ServiceInvalidOperationException>(() => booking.Reject());
+            Assert.Throws<BestEvents.Exceptions.BookingDoubleProcessingException>(() => booking.Reject());
             Assert.Equal(firstProcessedAt, booking.ProcessedAt);
         }
     }

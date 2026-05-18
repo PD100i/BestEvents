@@ -66,11 +66,11 @@ namespace BestEvents
 
 
         /// <inheritdoc/>
-        public List<Guid> GetPendingBookings()
+        public async Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct)
         {
-            return [.. db.Bookings
+            return await db.Bookings
                 .Where(b => b.Status == BookingStatus.Pending)
-                .Select(b => b.Id)];
+                .Select(b => b.Id).ToListAsync(ct);
         }
 
 

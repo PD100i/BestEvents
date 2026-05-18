@@ -27,7 +27,7 @@ namespace BestEvents
                     var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
 
-                    List<Guid> pendingBookings = bookingService.GetPendingBookings();
+                    List<Guid> pendingBookings = await bookingService.GetPendingBookingsAsync(stoppingToken);
                     if (pendingBookings == null || pendingBookings.Count == 0)
                     {
                         await Task.Delay(pollingDelay, stoppingToken);

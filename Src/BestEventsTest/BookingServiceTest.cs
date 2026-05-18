@@ -54,6 +54,29 @@ namespace BestEventsTest
         }
 
         [Fact]
+        public async Task GetPandingBookings_ShouldCallGetPendingBookingsRepoReturnBookings()
+        {
+            // Assert
+            List<Guid> bookings = [];
+            int expectedCount = 10;
+            for (int i = 0; i < expectedCount; i++)
+            {
+                bookings.Add(Guid.NewGuid());
+            }
+            var mockRepo = new Mock<IBookingRepository>();
+            mockRepo.Setup(repo => repo.GetPendingBookingsAsync(CancellationToken.None)).ReturnsAsync(() => bookings);
+            var bookingService = new BookingService(mockRepo.Object);
+
+            // Act
+            var result = await bookingService.GetPendingBookingsAsync(CancellationToken.None);
+
+            // Assert
+            Assert.Equal(bookings, result);
+            mockRepo.Verify(repo => repo.GetPendingBookingsAsync(CancellationToken.None), Times.Once());
+
+        }
+
+        [Fact]
         public async Task CreateBookingAsync_GoodCase_ReturnBooking()
         {
             // Arrange

@@ -1,4 +1,5 @@
 ﻿using BestEvents;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -169,6 +170,95 @@ namespace BestEventsIntegrationTest
             // Act & Assert
             await Assert.ThrowsAsync<BestEvents.Exceptions.BookingNotFoundException>(() => repository.GetBookingAsync(bookingId, CancellationToken.None));
         }
+
+        [Fact]
+        public async Task GetPendingBookings_ThereIsSomePendingsBooking_ShouldReturnAllPendingBookings()
+        {
+            // Arrange
+            await InitializeDatabaseAsync();
+            using var context = CreateContext();
+            var eventId = Guid.NewGuid();
+            var _event = CreateEventEntity(eventId);
+            int pendingQuentity = 10;
+            List<BookingEntity> bookings = [];
+            for (int i = 0; i < pendingQuentity; i++)
+            {
+                bookings.Add(new BookingEntity
+                {
+                    Id = Guid.NewGuid(),
+                    EventId = eventId,
+                    Event = _event,
+                    Status = BookingStatus.Pending,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                bookings.Add(new BookingEntity
+                {
+                    Id = Guid.NewGuid(),
+                    EventId = _event.Id,
+                    Event = _event,
+                    Status = BookingStatus.Confirmed,
+                    CreatedAt = DateTime.UtcNow.AddMinutes(-2),
+                    ProcessedAt = DateTime.UtcNow.AddMinutes(-1)
+                });
+            }
+
+            context.Events.Add(_event);
+            context.Bookings.AddRange(bookings);
+
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            using var actContext = CreateContext();
+            var bookingRepository = new BookingRepository(actContext, new EntityMapper());
+
+            // Act
+            List<Guid> pendingBookings = await bookingRepository.GetPendingBookingsAsync(CancellationToken.None);
+
+            // Arrange
+            Assert.NotNull(pendingBookings);
+            Assert.Equal(pendingQuentity, pendingBookings.Count);
+        }
+
+        [Fact]
+        public async Task GetPendingBookings_ThereIsNotPendingsBooking_ShouldReturnEmptyList()
+        {
+            // Arrange
+            await InitializeDatabaseAsync();
+            using var context = CreateContext();
+            var eventId = Guid.NewGuid();
+            var _event = CreateEventEntity(eventId);
+            List<BookingEntity> bookings = [];
+            for (int i = 0; i < 3; i++)
+            {
+                bookings.Add(new BookingEntity
+                {
+                    Id = Guid.NewGuid(),
+                    EventId = _event.Id,
+                    Event = _event,
+                    Status = BookingStatus.Confirmed,
+                    CreatedAt = DateTime.UtcNow.AddMinutes(-2),
+                    ProcessedAt = DateTime.UtcNow.AddMinutes(-1)
+                });
+            }
+
+            context.Events.Add(_event);
+            context.Bookings.AddRange(bookings);
+
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            using var actContext = CreateContext();
+            var bookingRepository = new BookingRepository(actContext, new EntityMapper());
+
+            // Act
+            List<Guid> pendingBookings = await bookingRepository.GetPendingBookingsAsync(CancellationToken.None);
+
+            // Arrange
+            Assert.NotNull(pendingBookings);
+            Assert.Empty(pendingBookings);
+        }
+
 
         [Fact]
         public async Task UpdateBookingAsync_EventAndBookingChanged_ShouldUpdateBookingAndEvent()

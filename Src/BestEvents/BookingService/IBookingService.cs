@@ -1,4 +1,6 @@
-﻿namespace BestEvents
+﻿using System.Threading.Tasks;
+
+namespace BestEvents
 {
     /// <summary>
     /// Интерфейс сервиса бронирований
@@ -30,7 +32,7 @@
         /// Возвращает список бронирований, ожидающих обработки
         /// </summary>
         /// <returns></returns>
-        List<Guid> GetPendingBookings();
+        Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct);
 
 
         /// <summary>

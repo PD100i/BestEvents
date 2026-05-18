@@ -36,6 +36,6 @@
         /// Возвращает список id необработанных броней
         /// </summary>
         /// <returns></returns>
-        List<Guid> GetPendingBookings();
+        Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct = default);
     }
 }

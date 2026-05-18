@@ -21,7 +21,6 @@ builder.Services.AddSingleton<EventFilters>();
 builder.Services.AddSingleton<Pagination<EventEntity>>();
 builder.Services.AddSingleton<EntityMapper>();
 builder.Services.AddSingleton<DtoMapper>();
-builder.Services.AddSingleton<EntityMapper>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IEventService, EventService>();

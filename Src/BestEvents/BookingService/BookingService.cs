@@ -29,9 +29,9 @@ namespace BestEvents
 
         
         /// <inheritdoc/>
-        public List<Guid> GetPendingBookings()
+        public async Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct)
         {
-            return bookingRepository.GetPendingBookings();
+            return await bookingRepository.GetPendingBookingsAsync(ct);
         }
 
         /// <inheritdoc/>

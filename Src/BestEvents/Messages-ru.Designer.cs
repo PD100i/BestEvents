@@ -358,6 +358,24 @@ namespace BestEvents {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ошибка обновления бронирования {0}.
+        /// </summary>
+        public static string UpdateBookingErrorMessage {
+            get {
+                return ResourceManager.GetString("UpdateBookingErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка обновления события {0}.
+        /// </summary>
+        public static string UpdateEventErrorMessage {
+            get {
+                return ResourceManager.GetString("UpdateEventErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Неверный формат даты завершения события.
         /// </summary>
         public static string WronFormat_EndAt {

@@ -12,8 +12,6 @@ namespace BestEvents
     /// </summary>
     public class BookingRepository(AppDbContext db, EntityMapper mapper) : IBookingRepository
     {
-        /// <inheritdoc/>
-        public static TimeSpan AllowedTimeUntilEventEnd { get; set; } = TimeSpan.FromHours(2);
 
         /// <inheritdoc/>
         public async Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct)
@@ -25,45 +23,40 @@ namespace BestEvents
             return mapper.MapEntityToBooking(bookingEntity);
         }
 
-        
-
         /// <inheritdoc/>
-        public async Task<Booking> AddBookingAsync(Guid bookingId, Guid eventId, Func<Guid, Event, Booking> CreateBookingAction, CancellationToken ct)
+        public async Task AddBookingAsync(Booking booking, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-            await using var transaction = db.Database.CurrentTransaction ?? await db.Database.BeginTransactionAsync(ct);
 
-            try
-            {
-                var eventEntity = await db.Events.FromSql(
-                $"SELECT * FROM events WHERE id = {eventId} FOR UPDATE")
-                .FirstOrDefaultAsync(ct);
-
-                if (eventEntity == null)
-                    throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, eventId));
-
-                Event _event = mapper.MapEntityToEvent(eventEntity);
-
-                var booking =  CreateBookingAction(bookingId, _event);
-
-                await AddBookingAsync(booking, ct);
-
-                mapper.UpdateEventEntity(_event, eventEntity);
-                db.Events.Update(eventEntity);
-
-                await db.SaveChangesAsync(ct);
-                await transaction.CommitAsync(ct);
-
-                return booking;
-            }
-            catch
-            {
-                await transaction.RollbackAsync(ct);
-                throw;
-            }
-
+            var bookingEntity = mapper.MapBookingToEntity(booking);
+            await db.Bookings.AddAsync(bookingEntity, ct);
+            await db.SaveChangesAsync(ct);
         }
 
+        /// <inheritdoc/>
+        public async Task<Booking> GetBookingForUpdateAsync(Guid bookingId, CancellationToken ct)
+        {
+            int operationTimeout = 2000;
+
+            ct.ThrowIfCancellationRequested();
+
+            await db.Database.ExecuteSqlRawAsync("SELECT set_config('lock_timeout', {0}, true);", operationTimeout.ToString());
+
+            var bookingEntity = await db.Bookings.FromSqlRaw(
+                    "SELECT * FROM bookings WHERE id = {0} FOR UPDATE", bookingId)
+                    .FirstOrDefaultAsync(ct);
+
+            if (bookingEntity == null)
+                throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, bookingId));
+
+            var eventEntity = await db.Events.FromSqlRaw(
+                "SELECT * FROM events WHERE id = {0} FOR UPDATE", bookingEntity.EventId)
+                .FirstOrDefaultAsync(ct);
+
+            bookingEntity.Event = eventEntity;
+
+            return mapper.MapEntityToBooking(bookingEntity);
+        }
 
         /// <inheritdoc/>
         public async Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct)
@@ -75,60 +68,26 @@ namespace BestEvents
 
 
         /// <inheritdoc/>
-        public async Task UpdateBookingAsync(Guid bookingId, Action<Booking> BookingUpdateAction, CancellationToken ct = default)
+        public async Task UpdateBookingAsync(Booking booking, CancellationToken ct = default)
         {
-            ct.ThrowIfCancellationRequested();
-            await using var transaction = await db.Database.BeginTransactionAsync(ct);
-
             try
             {
-
-                var bookingEntity = await db.Bookings.FromSqlRaw(
-                    "SELECT * FROM bookings WHERE id = {0} FOR UPDATE", bookingId)
-                    .FirstOrDefaultAsync(ct);
-
-                if (bookingEntity == null)
-                    throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, bookingId));
-
-                var eventEntity = await db.Events.FromSqlRaw(
-                    "SELECT * FROM events WHERE id = {0} FOR UPDATE", bookingEntity.EventId)
-                    .FirstOrDefaultAsync(ct);
-
-                
-                bookingEntity.Event = eventEntity;
-
-                var booking = mapper.MapEntityToBooking(bookingEntity);
-                BookingUpdateAction(booking);
-
-                mapper.UpdateBookingEntity(booking, bookingEntity);
-                db.Bookings.Update(bookingEntity);
-
-                if (eventEntity != null && booking.Event != null)
+                ct.ThrowIfCancellationRequested();
+                if (booking.Event != null)
                 {
-                    mapper.UpdateEventEntity(booking.Event, eventEntity);
-                    db.Events.Update(eventEntity);
+                    var existingEvent = await db.Events.FirstAsync(e => e.Id == booking.Event.Id);
+                    if (existingEvent == null)
+                        throw new EventNotFoundException(Messages_ru.EventNotFound);
+                    mapper.UpdateEventEntity(booking.Event, existingEvent);
                 }
-                
+                var bookingEntity = await db.Bookings.FirstAsync(b => b.Id == booking.Id, ct);
+                mapper.UpdateBookingEntity(booking, bookingEntity);
                 await db.SaveChangesAsync(ct);
-                await transaction.CommitAsync(ct);
             }
-            catch
+            catch (Exception ex)
             {
-                await transaction.RollbackAsync(ct);
-                throw;
+                throw new UpdateBookingException(string.Format(Messages_ru.UpdateBookingErrorMessage, booking.Id), ex);
             }
         }
-
-        private async Task<Booking> AddBookingAsync(Booking booking, CancellationToken ct)
-        {
-            ct.ThrowIfCancellationRequested();
-
-            var bookingEntity = mapper.MapBookingToEntity(booking);
-            await db.Bookings.AddAsync(bookingEntity, ct);
-            await db.SaveChangesAsync(ct);
-
-            return booking;
-        }
-
     }
 }

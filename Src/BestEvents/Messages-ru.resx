@@ -237,4 +237,10 @@
   <data name="BookingNotConfirmed" xml:space="preserve">
     <value>Бронирование не подтверждено</value>
   </data>
+  <data name="UpdateBookingErrorMessage" xml:space="preserve">
+    <value>Ошибка обновления бронирования {0}</value>
+  </data>
+  <data name="UpdateEventErrorMessage" xml:space="preserve">
+    <value>Ошибка обновления события {0}</value>
+  </data>
 </root>

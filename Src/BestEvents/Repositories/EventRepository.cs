@@ -43,6 +43,24 @@ namespace BestEvents
         }
 
         /// <inheritdoc/>
+        public async Task<Event> GetEventForUpdateAsync(Guid id, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            int operationTimeout = 2000;
+            await db.Database.ExecuteSqlRawAsync("SELECT set_config('lock_timeout', {0}, true);", operationTimeout.ToString());
+
+            var eventEntity = await db.Events.FromSql(
+                $"SELECT * FROM events WHERE id = {id} FOR UPDATE")
+                .FirstOrDefaultAsync(ct);
+
+            if (eventEntity == null)
+                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
+
+            return mapper.MapEntityToEvent(eventEntity);
+        }
+
+        /// <inheritdoc/>
         public async Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -66,16 +84,20 @@ namespace BestEvents
         /// <inheritdoc/>
         public async Task<Event> ReplaceEventAsync(Event _event, CancellationToken ct = default)
         {
-            var eventEntity = await db.Events.FirstOrDefaultAsync(e => e.Id == _event.Id, ct);
-            if (eventEntity == null)
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, _event.Id));
-            mapper.UpdateEventEntity(_event, eventEntity);
-            db.Events.Update(eventEntity);
+            try
+            {
+                var existingEvent = await db.Events.FirstAsync(e => e.Id == _event.Id);
+                if (existingEvent == null)
+                    throw new EventNotFoundException(Messages_ru.EventNotFound);
+                mapper.UpdateEventEntity(_event, existingEvent);
 
-            await db.SaveChangesAsync(ct);
-            if (db.Database.CurrentTransaction != null)
-                await db.Database.CurrentTransaction.CommitAsync(ct);
-            return _event;
+                await db.SaveChangesAsync(ct);
+                return _event;
+            }
+            catch (Exception ex)
+            {
+                throw new UpdateEventException(string.Format(Messages_ru.UpdateEventErrorMessage, _event.Id), ex);
+            }
         }
 
     }

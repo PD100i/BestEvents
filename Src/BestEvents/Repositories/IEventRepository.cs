@@ -19,12 +19,20 @@ namespace BestEvents
         Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default);
 
         /// <summary>
-        /// Возвращает событие по его идентификатору. Если событие с таким идентификатором не найдено, возвращает null.
+        /// Возвращает событие по его идентификатору. 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<Event> GetEventAsync(Guid id, CancellationToken ct = default);
+
+        /// <summary>
+        /// Возвращает событие по его идентификатору для последующего обновления. Блокирует строку БД 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<Event> GetEventForUpdateAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
         /// Создает новое событие

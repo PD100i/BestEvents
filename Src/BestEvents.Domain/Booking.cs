@@ -1,7 +1,7 @@
-﻿using BestEvents.Exceptions;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using BestEvents.Domain.Exceptions;
 
-namespace BestEvents
+
+namespace BestEvents.Domain
 {
     /// <summary>
     /// Модель бронирования, которая содержит информацию о бронировании события

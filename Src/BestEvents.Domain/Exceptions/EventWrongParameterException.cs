@@ -1,4 +1,4 @@
-﻿namespace BestEvents.Exceptions
+﻿namespace BestEvents.Domain.Exceptions
 {
     /// <summary>
     /// Исключение, выбрасываемое при попытке передать сервису событий некорректные данные (например, если дата начала позже даты завершения)

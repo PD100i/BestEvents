@@ -1,9 +1,6 @@
-﻿
+﻿using BestEvents.Domain.Exceptions;
 
-using System.ComponentModel.DataAnnotations;
-using BestEvents.Exceptions;
-
-namespace BestEvents
+namespace BestEvents.Domain
 {
     /// <summary>
     /// Модель события

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace BestEvents 
+namespace BestEvents.Infrastructure
 { 
     /// <summary>
     /// Конекст базы данных приложения

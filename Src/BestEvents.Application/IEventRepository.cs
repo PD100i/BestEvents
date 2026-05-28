@@ -1,13 +1,14 @@
-﻿
-namespace BestEvents
+﻿using BestEvents.Domain;
+
+namespace BestEvents.Application
 {
     /// <summary>
-    /// Интерфейс сервиса работы с событиями
+    /// Интерфейс репозитория работы с событиями
     /// </summary>
-    public interface IEventService
+    public interface IEventRepository
     {
         /// <summary>
-        /// Возвращает все события в виде списка Event
+        /// Возвращает все события в виде списка EventDto
         /// </summary>
         /// <param name="title"></param>
         /// <param name="from"></param>
@@ -19,7 +20,7 @@ namespace BestEvents
         Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default);
 
         /// <summary>
-        /// Возвращает событие по его идентификатору. Если событие с таким идентификатором не найдено, возвращает null.
+        /// Возвращает событие по его идентификатору. 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="ct"></param>
@@ -27,19 +28,26 @@ namespace BestEvents
         Task<Event> GetEventAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
+        /// Возвращает событие по его идентификатору для последующего обновления. Блокирует строку БД 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<Event> GetEventForUpdateAsync(Guid id, CancellationToken ct = default);
+
+        /// <summary>
         /// Создает новое событие
         /// </summary>
         /// <param name="_event"></param>
         /// /// <param name="ct"></param>
-        Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default);
-
+        Task<Event> AddEventAsync(Event _event, CancellationToken ct = default);
         /// <summary>
-        /// Перезаписывает событие
+        /// Обновляет событие. Метод должен сохранять изменения в базе данных и разблокировать запись, чтобы другие транзакции могли получить доступ к ней
         /// </summary>
         /// <param name="_event"></param>
-        /// <param name="id"></param>
         /// <param name="ct"></param>
-        Task ReplaceEventAsync(Guid id, Event _event, CancellationToken ct = default);
+        /// <returns></returns>
+        Task<Event> ReplaceEventAsync(Event _event, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет событие по его идентификатору

@@ -1,7 +1,8 @@
-﻿using BestEvents.Exceptions;
-using System.Collections;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace BestEvents
+namespace BestEvents.Application
 {
     /// <summary>
     /// Фоновый сервис для обработки бронирований

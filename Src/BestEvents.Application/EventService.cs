@@ -1,9 +1,9 @@
-﻿using BestEvents.Exceptions;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using BestEvents.Domain.Exceptions;
+using BestEvents.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
-namespace BestEvents
+namespace BestEvents.Application
 {
     /// <summary>
     /// Сервис событий, реализующий интерфейс IEventService. 

@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing;
+using BestEvents.Application;
 
-namespace BestEvents
+namespace BestEvents.Infrastructure
 {
     /// <summary>
     /// Класс для пагинации данных

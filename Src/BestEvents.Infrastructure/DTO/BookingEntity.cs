@@ -1,4 +1,6 @@
-﻿namespace BestEvents
+﻿using BestEvents.Domain;
+
+namespace BestEvents.Infrastructure
 {
     /// <summary>
     /// Сущность бронирования для хранения в базе данных

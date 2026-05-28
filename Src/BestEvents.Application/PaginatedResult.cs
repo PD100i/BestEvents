@@ -1,4 +1,4 @@
-﻿namespace BestEvents
+﻿namespace BestEvents.Application
 {
 
     /// <summary>

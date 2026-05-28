@@ -1,9 +1,9 @@
-﻿using BestEvents.Exceptions;
+﻿using BestEvents.Domain;
+using BestEvents.Domain.Exceptions;
+using BestEvents.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Threading;
 
-namespace BestEvents
+namespace BestEvents.Application
 {
     /// <summary>
     /// Реализация сервиса бронирования

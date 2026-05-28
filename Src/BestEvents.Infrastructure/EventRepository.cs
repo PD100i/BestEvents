@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using BestEvents.Domain;
 
 
-namespace BestEvents
+namespace BestEvents.Infrastructure
 {
     /// <summary>
     /// Сервис событий, реализующий интерфейс IEventService. 

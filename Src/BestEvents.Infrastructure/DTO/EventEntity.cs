@@ -1,4 +1,4 @@
-﻿namespace BestEvents
+﻿namespace BestEvents.Infrastructure
 {
     /// <summary>
     /// сущность события для хранения в базе данных

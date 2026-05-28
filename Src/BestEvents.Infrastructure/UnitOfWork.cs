@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using BestEvents.Application;
 
-namespace BestEvents
+namespace BestEvents.Infrastructure
 {
     /// <summary>
     /// Класс для управления транзакциями и контекстом базы данных

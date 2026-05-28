@@ -1,6 +1,7 @@
-﻿using Riok.Mapperly.Abstractions;
+﻿using BestEvents.Domain;
+using Riok.Mapperly.Abstractions;
 
-namespace BestEvents
+namespace BestEvents.Infrastructure
 {
     /// <summary>
     /// Класс для маппинга между сущностями EventEntity и BookingEntity и доменными моделями Event и Booking.

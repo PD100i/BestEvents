@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using BestEvents.Domain;
 
-namespace BestEvents
+namespace BestEvents.Application
 {
     /// <summary>
     /// Интерфейс сервиса бронирований

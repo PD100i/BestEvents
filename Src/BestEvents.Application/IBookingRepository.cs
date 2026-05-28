@@ -1,4 +1,6 @@
-﻿namespace BestEvents
+﻿using BestEvents.Domain;
+
+namespace BestEvents.Application
 {
     /// <summary>
     /// Интерфейс репозитория бронирований

@@ -1,11 +1,9 @@
-﻿using BestEvents.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Npgsql;
-using System.Runtime.InteropServices;
-using System.Threading;
+﻿using Microsoft.EntityFrameworkCore;
+using BestEvents.Domain;
+using BestEvents.Application;
+using BestEvents.Infrastructure.Exceptions;
 
-namespace BestEvents
+namespace BestEvents.Infrastructure
 {
     /// <summary>
     /// Реализация сервиса бронирования
@@ -52,6 +50,8 @@ namespace BestEvents
             var eventEntity = await db.Events.FromSqlRaw(
                 "SELECT * FROM events WHERE id = {0} FOR UPDATE", bookingEntity.EventId)
                 .FirstOrDefaultAsync(ct);
+            if (eventEntity == null)
+                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, bookingEntity.EventId));
 
             bookingEntity.Event = eventEntity;
 

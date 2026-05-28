@@ -117,16 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="EventNotFoundTitle" xml:space="preserve">
-    <value>Событие не найдено</value>
+  <data name="BookingNotFound" xml:space="preserve">
+    <value>Бронирование с идентификатором {0} не найдено</value>
   </data>
-  <data name="RequestWrongParameters" xml:space="preserve">
-    <value>Недопустимые параметры в запросе</value>
+  <data name="EventNotDeleted" xml:space="preserve">
+    <value>Событие с идентификатором {0} не найдено. Удаление не произведено</value>
   </data>
-  <data name="UndefinedError" xml:space="preserve">
-    <value>Неизвестный тип ошибки</value>
+  <data name="EventNotFound" xml:space="preserve">
+    <value>Событие с идентификатором {0} не найдено</value>
   </data>
-  <data name="BookingNotConfirmed" xml:space="preserve">
-    <value>Бронирование не подтверждено</value>
+  <data name="UpdateBookingErrorMessage" xml:space="preserve">
+    <value>Ошибка обновления бронирования {0}</value>
+  </data>
+  <data name="UpdateEventErrorMessage" xml:space="preserve">
+    <value>Ошибка обновления события {0}</value>
+  </data>
+  <data name="WrongPageForPagination" xml:space="preserve">
+    <value>Попытка пагинации с недопустимым значением номера страницы (page={0})</value>
+  </data>
+  <data name="WrongSizeForPagination" xml:space="preserve">
+    <value>Попытка пагинации с недопустимым значением размера выборки на странице (size={0})</value>
   </data>
 </root>

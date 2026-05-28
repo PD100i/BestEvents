@@ -1,8 +1,8 @@
-﻿using BestEvents.Exceptions;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using BestEvents.Application;
+using BestEvents.Domain.Exceptions;
 
 namespace BestEvents.Infrastructure
 {

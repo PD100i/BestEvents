@@ -1,6 +1,9 @@
 ﻿
-using BestEvents.Exceptions;
-using System.ComponentModel.DataAnnotations;
+using BestEvents.Domain.Exceptions;
+using BestEvents.Application.Exceptions;
+using BestEvents.Infrastructure.Exceptions;
+using BestEvents.Application;
+
 
 namespace BestEvents
 {
@@ -41,7 +44,21 @@ namespace BestEvents
                 context.Response.StatusCode = 404;
                 ErrorDetails details = new()
                 {
-                    Title = Messages_ru.EventNotFoundShort,
+                    Title = Messages_ru.EventNotFoundTitle,
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
+            catch (EventNotExistsException ex)
+            {
+                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 404;
+                ErrorDetails details = new()
+                {
+                    Title = "Бронирование не подтверждено",
                     StatusCode = context.Response.StatusCode,
                     Detail = ex.Message,
                     Instance = context.Request.Path
@@ -69,7 +86,7 @@ namespace BestEvents
                 context.Response.StatusCode = 400;
                 ErrorDetails details = new()
                 {
-                    Title = Messages_ru.RequestWrongParameters,
+                    Title = "Недопустимые параметры в запросе",
                     StatusCode = context.Response.StatusCode,
                     Detail = ex.Message,
                     Instance = context.Request.Path

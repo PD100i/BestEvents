@@ -1,7 +1,7 @@
 ﻿
-using BestEvents.Exceptions;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 using Microsoft.AspNetCore.Mvc;
+using BestEvents.Application;
 
 
 namespace BestEvents.Controllers

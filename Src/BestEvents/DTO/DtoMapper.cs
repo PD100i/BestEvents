@@ -1,4 +1,6 @@
-﻿using BestEvents.Exceptions;
+﻿using BestEvents.Domain;
+using BestEvents.Domain.Exceptions;
+using BestEvents.Application;
 using Riok.Mapperly.Abstractions;
 
 
@@ -43,7 +45,7 @@ namespace BestEvents
         /// </summary>
         /// <param name="booking">Доменная модель бронирования</param>
         /// <returns>DTO модель результата бронирования</returns>
-        [MapperIgnoreSource(nameof(BookingEntity.Event))]
+        [MapperIgnoreSource(nameof(Booking.Event))]
         public partial BookingResultDto MapBookingToBookingResultDto(Booking booking);
 
         /// <summary>

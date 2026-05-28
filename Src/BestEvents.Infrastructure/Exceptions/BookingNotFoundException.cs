@@ -1,4 +1,4 @@
-﻿namespace BestEvents.Exceptions
+﻿namespace BestEvents.Infrastructure.Exceptions
 {
     /// <summary>
     /// Исключение, выбрасываемое при попытке получить бронирование, которого нет в репозитории

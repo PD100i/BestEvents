@@ -1,7 +1,7 @@
 ﻿using BestEvents.Domain;
 using BestEvents.Domain.Exceptions;
 using BestEvents.Application.Exceptions;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace BestEvents.Application
 {
@@ -55,7 +55,7 @@ namespace BestEvents.Application
             {               
                 booking = await bookingRepository.GetBookingForUpdateAsync(bookingId, ct);
                 if (booking.Event == null)
-                    throw new EventNotFoundException(string.Format(Messages_ru.CreateBookingEventNotFound, booking.EventId));
+                    throw new EventNotExistsException(string.Format(Messages_ru.CreateBookingEventNotFound, booking.EventId));
                 if (booking.Event.EndAt < DateTime.UtcNow)
                     throw new EventCompletedException();
                 booking.Confirm();

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+
 namespace BestEvents.Infrastructure
-{
 {
     /// <summary>
     /// Конфигурация сущности EventEntity

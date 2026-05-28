@@ -23,24 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Messages-ru.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Messages-ru.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Messages-ru.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages-ru.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Database\" />
     <Folder Include="Repositories\" />
     <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BestEvents.Application\BestEvents.Application.csproj" />
+    <ProjectReference Include="..\BestEvents.Domain\BestEvents.Domain.csproj" />
+    <ProjectReference Include="..\BestEvents.Infrastructure\BestEvents.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

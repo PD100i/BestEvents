@@ -1,4 +1,5 @@
 ﻿using BestEvents.Domain;
+using BestEvents.Application;
 using Riok.Mapperly.Abstractions;
 
 namespace BestEvents.Infrastructure

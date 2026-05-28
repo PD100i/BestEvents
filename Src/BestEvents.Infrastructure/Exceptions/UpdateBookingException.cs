@@ -1,4 +1,4 @@
-﻿namespace BestEvents.Exceptions
+﻿namespace BestEvents.Infrastructure.Exceptions
 {
     /// <summary>
     /// Бросается при неудачном обновлении бронирования

@@ -1,8 +1,8 @@
-﻿using BestEvents.Exceptions;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using BestEvents.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using BestEvents.Domain;
+using BestEvents.Application;
+using BestEvents.Domain.Exceptions;
 
 
 namespace BestEvents.Infrastructure
@@ -66,7 +66,7 @@ namespace BestEvents.Infrastructure
         {
             ct.ThrowIfCancellationRequested();
             if (from != null && to != null && from > to)
-                throw new EventWrongParameterException(Messages_ru.EndAt_Less_StartAt);
+                throw new EventWrongParameterException(Domain.Messages_ru.EndAt_Less_StartAt);
             if (page <= 0)
                 throw new EventWrongParameterException(string.Format(Messages_ru.WrongPageForPagination, page));
             if (size <= 0)

@@ -1,4 +1,4 @@
-﻿namespace BestEvents.Application.Exceptions
+﻿namespace BestEvents.Infrastructure.Exceptions
 {
     /// <summary>
     /// Исключение, выбрасываемое при попытке получить событие, которого нет в репозитории

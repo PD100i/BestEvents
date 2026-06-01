@@ -1,20 +1,12 @@
-﻿using BestEvents;
-using BestEvents.Exceptions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes;
+﻿using BestEvents.Domain;
+using BestEvents.Domain.Exceptions;
+using BestEvents.Application;
+using BestEvents.Infrastructure;
+using BestEvents.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.Common.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BestEventsIntegrationTest
 {
-    
-
     [Collection("Database collection")]
     public class EventRepositoryTest
     {

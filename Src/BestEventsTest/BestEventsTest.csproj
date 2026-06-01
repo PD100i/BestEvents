@@ -34,6 +34,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BestEvents.Application\BestEvents.Application.csproj" />
+    <ProjectReference Include="..\BestEvents.Domain\BestEvents.Domain.csproj" />
+    <ProjectReference Include="..\BestEvents\BestEvents.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

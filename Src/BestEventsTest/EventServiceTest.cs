@@ -1,6 +1,6 @@
-﻿using BestEvents;
-using BestEvents.Exceptions;
-using Microsoft.EntityFrameworkCore;
+﻿using BestEvents.Domain;
+using BestEvents.Domain.Exceptions;
+using BestEvents.Application;
 using Moq;
 
 

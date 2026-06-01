@@ -1,10 +1,8 @@
-﻿using BestEvents;
-using Microsoft.AspNetCore.Mvc;
+﻿using BestEvents.Domain;
+using BestEvents.Infrastructure;
+using BestEvents.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Npgsql;
-using System.Threading.Tasks;
-using Xunit;
+
 
 namespace BestEventsIntegrationTest
 {
@@ -148,7 +146,7 @@ namespace BestEventsIntegrationTest
 
 
             // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.BookingNotFoundException>(() => repository.GetBookingAsync(bookingId, CancellationToken.None));
+            await Assert.ThrowsAsync<BookingNotFoundException>(() => repository.GetBookingAsync(bookingId, CancellationToken.None));
         }
 
         [Fact]
@@ -234,7 +232,7 @@ namespace BestEventsIntegrationTest
 
 
             // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.BookingNotFoundException>(() => repository.GetBookingForUpdateAsync(bookingId, CancellationToken.None));
+            await Assert.ThrowsAsync<BookingNotFoundException>(() => repository.GetBookingForUpdateAsync(bookingId, CancellationToken.None));
         }
 
 
@@ -406,7 +404,7 @@ namespace BestEventsIntegrationTest
             var repository = new BookingRepository(actContext, new EntityMapper());
 
             // Act & Assert
-            await Assert.ThrowsAsync<BestEvents.Exceptions.UpdateBookingException>(() => repository.UpdateBookingAsync(booking, CancellationToken.None));
+            await Assert.ThrowsAsync<UpdateBookingException>(() => repository.UpdateBookingAsync(booking, CancellationToken.None));
         }
     }
 }

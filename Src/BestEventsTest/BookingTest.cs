@@ -1,10 +1,5 @@
-﻿using BestEvents;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BestEvents.Domain;
+using BestEvents.Domain.Exceptions;
 
 namespace BestEventsTest
 {
@@ -60,7 +55,7 @@ namespace BestEventsTest
             // Act & Assert
             booking.Confirm();
             var firstProcessedAt = booking.ProcessedAt;            
-            Assert.Throws<BestEvents.Exceptions.BookingDoubleProcessingException>(() => booking.Confirm());
+            Assert.Throws<BookingDoubleProcessingException>(() => booking.Confirm());
             Assert.Equal(firstProcessedAt, booking.ProcessedAt ); 
         }
 
@@ -89,7 +84,7 @@ namespace BestEventsTest
             // Act & Assert
             booking.Reject();
             var firstProcessedAt = booking.ProcessedAt;
-            Assert.Throws<BestEvents.Exceptions.BookingDoubleProcessingException>(() => booking.Reject());
+            Assert.Throws<BookingDoubleProcessingException>(() => booking.Reject());
             Assert.Equal(firstProcessedAt, booking.ProcessedAt);
         }
     }

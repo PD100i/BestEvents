@@ -2,10 +2,10 @@
 using BestEvents.Domain.Exceptions;
 using BestEvents.Application.Exceptions;
 using BestEvents.Infrastructure.Exceptions;
-using BestEvents.Application;
 
 
-namespace BestEvents
+
+namespace BestEvents.Presentation
 {
     /// <summary>
     /// Обработчик ошибок для HTTP запросов. Перехватывает исключения, возникающие при обработке запросов, и возвращает соответствующие HTTP статусы и сообщения об ошибках.
@@ -44,7 +44,7 @@ namespace BestEvents
                 context.Response.StatusCode = 404;
                 ErrorDetails details = new()
                 {
-                    Title = Messages_ru.EventNotFoundTitle,
+                    Title = Messages_ru.EventNotFound,
                     StatusCode = context.Response.StatusCode,
                     Detail = ex.Message,
                     Instance = context.Request.Path
@@ -72,7 +72,7 @@ namespace BestEvents
                 context.Response.StatusCode = 404;
                 ErrorDetails details = new()
                 {
-                    Title = Messages_ru.BookingNotFoundShort,
+                    Title = Messages_ru.BookingNotFound,
                     StatusCode = context.Response.StatusCode,
                     Detail = ex.Message,
                     Instance = context.Request.Path

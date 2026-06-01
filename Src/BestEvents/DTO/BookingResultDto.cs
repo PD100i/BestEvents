@@ -1,5 +1,5 @@
 ﻿
-namespace BestEvents
+namespace BestEvents.Presentation
 {
     /// <summary>
     /// DTO для возврата результата бронирования события.

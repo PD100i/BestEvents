@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using BestEvents.Application;
 
-namespace BestEvents.Controllers
+
+namespace BestEvents.Presentation.Controllers
 {
     /// <summary>
     /// Контроллкер бронирований

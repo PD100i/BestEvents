@@ -1,4 +1,4 @@
-﻿namespace BestEvents
+﻿namespace BestEvents.Presentation
 {
     /// <summary>
     /// Класс детализации ошибок (по RFC7807)

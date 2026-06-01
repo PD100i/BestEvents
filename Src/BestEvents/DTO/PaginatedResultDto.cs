@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace BestEvents
+namespace BestEvents.Presentation
 {
     /// <summary>
     /// DTO для возврата результатов пагинации

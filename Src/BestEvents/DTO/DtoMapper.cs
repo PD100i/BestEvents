@@ -4,7 +4,7 @@ using BestEvents.Application;
 using Riok.Mapperly.Abstractions;
 
 
-namespace BestEvents
+namespace BestEvents.Presentation
 {
     /// <summary>
     /// Маппер для преобразования между доменными моделями и DTO
@@ -66,7 +66,7 @@ namespace BestEvents
         /// <exception cref="EventWrongParameterException"></exception>
         public Guid StringToGuid(string id)
         {
-            return Guid.TryParse(id, out Guid result) ? result : throw new EventWrongParameterException(Messages_ru.Wrong_Id_Format);
+            return Guid.TryParse(id, out Guid result) ? result : throw new EventWrongParameterException(Messages_ru.WrongIdFormat);
         }
 
     }

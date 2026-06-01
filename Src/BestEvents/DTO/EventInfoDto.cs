@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace BestEvents
+namespace BestEvents.Presentation
 {
     /// <summary>
     /// Dto класс, описывающий JSON структуру для http запросов на изменение и получение события

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BestEvents
+namespace BestEvents.Presentation
 {
     /// <summary>
     /// Dto класс, описывающий JSON структуру для http запросов на создание события

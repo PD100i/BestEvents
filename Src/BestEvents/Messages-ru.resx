@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="EventNotFoundTitle" xml:space="preserve">
+  <data name="EventNotFound" xml:space="preserve">
     <value>Событие не найдено</value>
   </data>
   <data name="RequestWrongParameters" xml:space="preserve">
@@ -128,5 +128,11 @@
   </data>
   <data name="BookingNotConfirmed" xml:space="preserve">
     <value>Бронирование не подтверждено</value>
+  </data>
+  <data name="BookingNotFound" xml:space="preserve">
+    <value>Бронирование не найдено</value>
+  </data>
+  <data name="WrongIdFormat" xml:space="preserve">
+    <value>Формат переданного Id не соответствует GUID</value>
   </data>
 </root>

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using BestEvents.Application;
 
 
-namespace BestEvents.Controllers
+namespace BestEvents.Presentation.Controllers
 {
     /// <summary>
     /// Контроллер событий

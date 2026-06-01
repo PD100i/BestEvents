@@ -1,39 +1,15 @@
-﻿using BestEvents;
+﻿
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using BestEvents.Application;
+using BestEvents.Infrastructure;
+using BestEvents.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddPresentation();
 
-builder.Services.AddControllers(options =>
-{
-    options.SuppressAsyncSuffixInActionNames = false;
-});
-
-var connectionString = builder.Configuration.GetConnectionString("Default");
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
-
-builder.Services.AddHostedService<BookingProcesser>();
-
-builder.Services.AddSingleton<EventFilters>();
-builder.Services.AddSingleton<Pagination<EventEntity>>();
-builder.Services.AddSingleton<EntityMapper>();
-builder.Services.AddSingleton<DtoMapper>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IEventRepository, EventRepository>();
-builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<IBookingService, BookingService>();
-
-builder.Services.AddSwaggerGen(options =>
-{
-    // Путь к XML-файлу с документацией
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath);
-});
 
 var app = builder.Build();
 

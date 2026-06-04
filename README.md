@@ -16,6 +16,14 @@ PostgreSQL
 4. В терминале выполните команду dotnet run
 5. В браузере откройте "https://localhost:7046/swagger" или "http://localhost:5038/swagger" для просмотра API (Swagger/OpenAPI).
 6. Для запуска тестов перейдите в папку src и выполните команду dotnet test
+
+## Архитектура
+Выделены четыре слоя:
+* Domain - содержит сущности
+* Application - содержит сервисы
+* Infrastructure - содержит репозитории
+* Presentation - содержит API
+
 ## API
 Сущности:
 

@@ -68,3 +68,4 @@ GET /booking/{id} возвращает информацию о брониров�
 Для хранения данных используется PostgreSQL в docker-контейнере.
 Схема базы данных включает две таблицы events и bookings для сущностей событий и бронирования соответственно. Таблицы events и bookings имеют связь один ко многим через FK EventId в таблице bookings. Для воссоздания начальной схемы базы данных используйте миграцию InitialCreate.
 Для тестирования работы репозиториев с базой данных используются интеграционные тесты на основе Testcontainers
+Для создания миграции используйте команду dotnet ef migrations add SomeMigration --project BestEvents.Infrastructure --startup-project BestEvents.Presentation 

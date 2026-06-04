@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿
 
 namespace BestEvents.Application
 {
@@ -18,6 +18,6 @@ namespace BestEvents.Application
         /// Управляет транзакциями в случае блокировок
         /// </summary>
         /// <returns></returns>
-        Task<IDbContextTransaction> BeginTransactionAsync();
+        Task<ITransaction> BeginTransactionAsync();
     }
 }

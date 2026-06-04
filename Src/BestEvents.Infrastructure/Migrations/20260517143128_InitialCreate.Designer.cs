@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BestEvents.Migrations
+namespace BestEvents.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260517143128_InitialCreate")]

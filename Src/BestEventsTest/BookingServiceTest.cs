@@ -94,7 +94,7 @@ namespace BestEventsTest
             var mockBookingRepo = new Mock<IBookingRepository>();
             var mockEventRepo = new Mock<IEventRepository>();
             var mockUow = new Mock<IUnitOfWork>();
-            var mockTransaction = new Mock<IDbContextTransaction>();
+            var mockTransaction = new Mock<ITransaction>();
             int expectedAvailableSeats = _event.AvailableSeats - 1;
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUow.Object);
 
@@ -128,7 +128,7 @@ namespace BestEventsTest
             var mockBookingRepo = new Mock<IBookingRepository>();
             var mockEventRepo = new Mock<IEventRepository>();
             var mockUow = new Mock<IUnitOfWork>();
-            var mockTransaction = new Mock<IDbContextTransaction>();
+            var mockTransaction = new Mock<ITransaction>();
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUow.Object);
 
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
@@ -139,7 +139,7 @@ namespace BestEventsTest
             // Act & Assert
             await Assert.ThrowsAsync<EventCompletedException>(() => bookingService.CreateBookingAsync(_event.Id, CancellationToken.None));
             mockUow.Verify(uow => uow.BeginTransactionAsync(), Times.Once());
-            mockTransaction.Verify(transaction => transaction.Commit(), Times.Never());
+            mockTransaction.Verify(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()), Times.Never());
             mockEventRepo.Verify(repo => repo.GetEventForUpdateAsync(_event.Id, It.IsAny<CancellationToken>()), Times.Once());
             mockBookingRepo.Verify(repo => repo.AddBookingAsync(It.Is<Booking>(b => b.Id == bookingId), It.IsAny<CancellationToken>()), Times.Never());
         }
@@ -155,7 +155,7 @@ namespace BestEventsTest
             var mockBookingRepo = new Mock<IBookingRepository>();
             var mockEventRepo = new Mock<IEventRepository>();
             var mockUow = new Mock<IUnitOfWork>();
-            var mockTransaction = new Mock<IDbContextTransaction>();
+            var mockTransaction = new Mock<ITransaction>();
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUow.Object);
 
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
@@ -166,7 +166,7 @@ namespace BestEventsTest
             // Act & Assert
             await Assert.ThrowsAsync<NoAvailableSeatsException>(() => bookingService.CreateBookingAsync(_event.Id, CancellationToken.None));
             mockUow.Verify(uow => uow.BeginTransactionAsync(), Times.Once());
-            mockTransaction.Verify(transaction => transaction.Commit(), Times.Never());
+            mockTransaction.Verify(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()), Times.Never());
             mockEventRepo.Verify(repo => repo.GetEventForUpdateAsync(_event.Id, It.IsAny<CancellationToken>()), Times.Once());
             mockBookingRepo.Verify(repo => repo.AddBookingAsync(It.Is<Booking>(b => b.Id == bookingId), It.IsAny<CancellationToken>()), Times.Never());
         }
@@ -183,7 +183,7 @@ namespace BestEventsTest
             var mockBookingRepo = new Mock<IBookingRepository>();
             var mockEventRepo = new Mock<IEventRepository>();
             var mockUow = new Mock<IUnitOfWork>();
-            var mockTransaction = new Mock<IDbContextTransaction>();
+            var mockTransaction = new Mock<ITransaction>();
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUow.Object);
 
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
@@ -218,7 +218,7 @@ namespace BestEventsTest
             var mockBookingRepo = new Mock<IBookingRepository>();
             var mockEventRepo = new Mock<IEventRepository>();
             var mockUow = new Mock<IUnitOfWork>();
-            var mockTransaction = new Mock<IDbContextTransaction>();
+            var mockTransaction = new Mock<ITransaction>();
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUow.Object);
 
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
@@ -229,7 +229,7 @@ namespace BestEventsTest
             // Act && Assert
             await Assert.ThrowsAsync<BookingDoubleProcessingException>(() => bookingService.TryProcessBooking(booking.Id, CancellationToken.None));
             mockUow.Verify(uow => uow.BeginTransactionAsync(), Times.Once());
-            mockTransaction.Verify(transaction => transaction.Commit(), Times.Never());
+            mockTransaction.Verify(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()), Times.Never());
             mockBookingRepo.Verify(repo => repo.GetBookingForUpdateAsync(booking.Id, It.IsAny<CancellationToken>()), Times.Once());
             mockBookingRepo.Verify(repo => repo.UpdateBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()), Times.Never());
         }
@@ -246,7 +246,7 @@ namespace BestEventsTest
             var mockBookingRepo = new Mock<IBookingRepository>();
             var mockEventRepo = new Mock<IEventRepository>();
             var mockUow = new Mock<IUnitOfWork>();
-            var mockTransaction = new Mock<IDbContextTransaction>();
+            var mockTransaction = new Mock<ITransaction>();
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUow.Object);
 
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);

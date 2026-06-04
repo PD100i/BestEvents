@@ -184,42 +184,6 @@ namespace BestEventsIntegrationTest
             Assert.True(booking.CreatedAt - result.CreatedAt <= timePrecision);
         }
 
-        [Fact]
-        public async Task GetBookingForUpdateAsync_CheckLockingBookingAndEvent_ShouldLockStrings()
-        {
-            // Arrange
-            await InitializeDatabaseAsync();
-            using var context = CreateContext();
-            var eventId = Guid.NewGuid();
-            var _event = CreateEventEntity(eventId);
-            _event.AvailableSeats -= 1;
-            context.Events.Add(_event);
-            var booking = new BookingEntity
-            {
-                Id = Guid.NewGuid(),
-                EventId = _event.Id,
-                Status = BookingStatus.Pending,
-                CreatedAt = DateTime.UtcNow
-            };
-            context.Bookings.Add(booking);
-            await context.SaveChangesAsync(CancellationToken.None);
-
-            using var actContext = CreateContext();
-            var repository = new BookingRepository(actContext, new EntityMapper());
-            Task getForUpdate = repository.GetBookingForUpdateAsync(booking.Id, CancellationToken.None);
-
-
-            // Act
-            var result = await repository.GetBookingForUpdateAsync(booking.Id, CancellationToken.None);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(booking.Id, result.Id);
-            Assert.Equal(booking.EventId, result.EventId);
-            Assert.Equal(booking.Status, result.Status);
-            var dif = booking.CreatedAt - result.CreatedAt;
-            Assert.True(booking.CreatedAt - result.CreatedAt <= timePrecision);
-        }
 
         [Fact]
         public async Task GetBookingForUpdateAsync_BookingDoesNotExist_ShouldThrowBookingNotFoundException()

@@ -11,9 +11,10 @@ namespace BestEvents.Infrastructure
     public class UnitOfWork(AppDbContext context) : IUnitOfWork
     {
         /// <inheritdoc/>
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        public async Task<ITransaction> BeginTransactionAsync()
         {
-            return await context.Database.BeginTransactionAsync();
+            var transaction = await context.Database.BeginTransactionAsync();
+            return new Transaction(transaction);
         }
 
         /// <inheritdoc/>

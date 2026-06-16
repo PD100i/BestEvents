@@ -1,4 +1,4 @@
-﻿namespace BestEvents.Application.Exceptions
+﻿namespace BestEvents.Domain.Exceptions
 {
     /// <summary>
     /// Выбрасывется при попытке бронирования события, когда доступных мест нет

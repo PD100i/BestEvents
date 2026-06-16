@@ -1,7 +1,6 @@
 ﻿using BestEvents.Domain.Exceptions;
 using BestEvents.Domain;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
+
 
 namespace BestEvents.Application
 {

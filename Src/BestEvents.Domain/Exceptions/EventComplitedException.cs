@@ -1,4 +1,6 @@
-﻿namespace BestEvents.Application.Exceptions
+﻿
+
+namespace BestEvents.Domain.Exceptions
 {
     /// <summary>
     /// Выбрасывается при попытке забронировать событие, которое уже завершилось

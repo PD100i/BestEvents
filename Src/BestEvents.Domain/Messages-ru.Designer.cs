@@ -22,7 +22,7 @@ namespace BestEvents.Domain {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Messages_ru {
+    internal class Messages_ru {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace BestEvents.Domain {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BestEvents.Domain.Messages-ru", typeof(Messages_ru).Assembly);
@@ -51,7 +51,7 @@ namespace BestEvents.Domain {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,18 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Бронирование отклонено, так как событие  уже завершилось.
+        /// </summary>
+        internal static string BookingRejectedEventCompleted {
+            get {
+                return ResourceManager.GetString("BookingRejectedEventCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Попытка подтверждения брони {0}, которая уже подтверждена.
         /// </summary>
-        public static string DoubleBookingConfirm {
+        internal static string DoubleBookingConfirm {
             get {
                 return ResourceManager.GetString("DoubleBookingConfirm", resourceCulture);
             }
@@ -72,7 +81,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Попытка отклонения брони {0}, которая уже отклонена.
         /// </summary>
-        public static string DoubleBookingReject {
+        internal static string DoubleBookingReject {
             get {
                 return ResourceManager.GetString("DoubleBookingReject", resourceCulture);
             }
@@ -81,7 +90,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Дата начала события не может быть позже даты завершения.
         /// </summary>
-        public static string EndAt_Less_StartAt {
+        internal static string EndAt_Less_StartAt {
             get {
                 return ResourceManager.GetString("EndAt_Less_StartAt", resourceCulture);
             }
@@ -90,7 +99,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Не передано количество доступных для бронирования мест .
         /// </summary>
-        public static string No_AvailableSeats {
+        internal static string No_AvailableSeats {
             get {
                 return ResourceManager.GetString("No_AvailableSeats", resourceCulture);
             }
@@ -99,7 +108,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Не была передана дата завершения события.
         /// </summary>
-        public static string No_EndAt {
+        internal static string No_EndAt {
             get {
                 return ResourceManager.GetString("No_EndAt", resourceCulture);
             }
@@ -108,7 +117,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Не был передан параметр ID .
         /// </summary>
-        public static string No_Id {
+        internal static string No_Id {
             get {
                 return ResourceManager.GetString("No_Id", resourceCulture);
             }
@@ -117,7 +126,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Не была передана дата начала события.
         /// </summary>
-        public static string No_StartAt {
+        internal static string No_StartAt {
             get {
                 return ResourceManager.GetString("No_StartAt", resourceCulture);
             }
@@ -126,7 +135,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Не было передано наименование события.
         /// </summary>
-        public static string No_Title {
+        internal static string No_Title {
             get {
                 return ResourceManager.GetString("No_Title", resourceCulture);
             }
@@ -135,16 +144,25 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Не передано общее количество мест для бронирования.
         /// </summary>
-        public static string No_TotalSeats {
+        internal static string No_TotalSeats {
             get {
                 return ResourceManager.GetString("No_TotalSeats", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Нет доступных мест для этого события.
+        /// </summary>
+        internal static string NoAvailableSeats {
+            get {
+                return ResourceManager.GetString("NoAvailableSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка при отмене бронирования. Предано неверное количество мест.
         /// </summary>
-        public static string RealiseBokingWrongCount {
+        internal static string RealiseBokingWrongCount {
             get {
                 return ResourceManager.GetString("RealiseBokingWrongCount", resourceCulture);
             }
@@ -153,7 +171,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Попытка подтверждения уже отклоненной брони {0}.
         /// </summary>
-        public static string TryConfirmRejectedBooking {
+        internal static string TryConfirmRejectedBooking {
             get {
                 return ResourceManager.GetString("TryConfirmRejectedBooking", resourceCulture);
             }
@@ -162,7 +180,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Повторная отклонения уже подтвержденной брони {0}.
         /// </summary>
-        public static string TryRedjectConfirmedBooking {
+        internal static string TryRedjectConfirmedBooking {
             get {
                 return ResourceManager.GetString("TryRedjectConfirmedBooking", resourceCulture);
             }
@@ -171,7 +189,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест.
         /// </summary>
-        public static string WrongEventAvailableSeats {
+        internal static string WrongEventAvailableSeats {
             get {
                 return ResourceManager.GetString("WrongEventAvailableSeats", resourceCulture);
             }
@@ -180,7 +198,7 @@ namespace BestEvents.Domain {
         /// <summary>
         ///   Looks up a localized string similar to Общее количество мест должно быть больше нуля.
         /// </summary>
-        public static string WrongEventTotalSeats {
+        internal static string WrongEventTotalSeats {
             get {
                 return ResourceManager.GetString("WrongEventTotalSeats", resourceCulture);
             }

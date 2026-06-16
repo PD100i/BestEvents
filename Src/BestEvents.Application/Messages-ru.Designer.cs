@@ -61,15 +61,6 @@ namespace BestEvents.Application {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Бронирование отклонено, так как событие  уже завершилось.
-        /// </summary>
-        public static string BookingRejectedEventCompleted {
-            get {
-                return ResourceManager.GetString("BookingRejectedEventCompleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Бронирование не создано, так как события с идентификатором {0} не существует.
         /// </summary>
         public static string CreateBookingEventNotFound {
@@ -84,15 +75,6 @@ namespace BestEvents.Application {
         public static string MismatchIdInReplaceRequest {
             get {
                 return ResourceManager.GetString("MismatchIdInReplaceRequest", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Нет доступных мест для этого события.
-        /// </summary>
-        public static string NoAvailableSeats {
-            get {
-                return ResourceManager.GetString("NoAvailableSeats", resourceCulture);
             }
         }
         

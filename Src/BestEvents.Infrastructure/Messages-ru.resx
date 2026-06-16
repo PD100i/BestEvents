@@ -132,10 +132,4 @@
   <data name="UpdateEventErrorMessage" xml:space="preserve">
     <value>Ошибка обновления события {0}</value>
   </data>
-  <data name="WrongPageForPagination" xml:space="preserve">
-    <value>Попытка пагинации с недопустимым значением номера страницы (page={0})</value>
-  </data>
-  <data name="WrongSizeForPagination" xml:space="preserve">
-    <value>Попытка пагинации с недопустимым значением размера выборки на странице (size={0})</value>
-  </data>
 </root>

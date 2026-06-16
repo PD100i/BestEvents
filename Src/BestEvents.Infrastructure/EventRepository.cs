@@ -65,12 +65,6 @@ namespace BestEvents.Infrastructure
         public async Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-            if (from != null && to != null && from > to)
-                throw new EventWrongParameterException(Domain.Messages_ru.EndAt_Less_StartAt);
-            if (page <= 0)
-                throw new EventWrongParameterException(string.Format(Messages_ru.WrongPageForPagination, page));
-            if (size <= 0)
-                throw new EventWrongParameterException(string.Format(Messages_ru.WrongSizeForPagination, size));
                     
             var filtredResult = filters.FilterEventsByTitle(db.Events, title);
             filtredResult = filters.FilterEventsByDateFrom(filtredResult, from);

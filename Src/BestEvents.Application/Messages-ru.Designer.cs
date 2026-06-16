@@ -104,5 +104,23 @@ namespace BestEvents.Application {
                 return ResourceManager.GetString("UnexpectedBookingError", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Попытка пагинации с недопустимым значением номера страницы (page={0}).
+        /// </summary>
+        public static string WrongPageForPagination {
+            get {
+                return ResourceManager.GetString("WrongPageForPagination", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Попытка пагинации с недопустимым значением размера выборки на странице (size={0}).
+        /// </summary>
+        public static string WrongSizeForPagination {
+            get {
+                return ResourceManager.GetString("WrongSizeForPagination", resourceCulture);
+            }
+        }
     }
 }

@@ -1,10 +1,7 @@
 ﻿
-using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
-using BestEvents.Application;
 using BestEvents.Domain.Exceptions;
 
-namespace BestEvents.Infrastructure
+namespace BestEvents.Application
 {
     /// <summary>
     /// Класс для пагинации данных

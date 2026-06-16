@@ -1,4 +1,4 @@
-﻿using BestEvents;
+﻿using BestEvents.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Testcontainers.PostgreSql;

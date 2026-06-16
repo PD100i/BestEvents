@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BestEvents\BestEvents.csproj" />
+    <ProjectReference Include="..\BestEvents.Infrastructure\BestEvents.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

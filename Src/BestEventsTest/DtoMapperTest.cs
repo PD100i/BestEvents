@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BestEvents;
-using Org.BouncyCastle.Asn1.BC;
+﻿using BestEvents.Domain;
+using BestEvents.Presentation;
+using BestEvents.Application;
 
 namespace BestEventsTest
 {

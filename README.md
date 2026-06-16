@@ -16,6 +16,14 @@ PostgreSQL
 4. В терминале выполните команду dotnet run
 5. В браузере откройте "https://localhost:7046/swagger" или "http://localhost:5038/swagger" для просмотра API (Swagger/OpenAPI).
 6. Для запуска тестов перейдите в папку src и выполните команду dotnet test
+
+## Архитектура
+Выделены четыре слоя:
+* Domain - содержит сущности
+* Application - содержит сервисы
+* Infrastructure - содержит репозитории
+* Presentation - содержит API
+
 ## API
 Сущности:
 
@@ -60,3 +68,4 @@ GET /booking/{id} возвращает информацию о брониров�
 Для хранения данных используется PostgreSQL в docker-контейнере.
 Схема базы данных включает две таблицы events и bookings для сущностей событий и бронирования соответственно. Таблицы events и bookings имеют связь один ко многим через FK EventId в таблице bookings. Для воссоздания начальной схемы базы данных используйте миграцию InitialCreate.
 Для тестирования работы репозиториев с базой данных используются интеграционные тесты на основе Testcontainers
+Для создания миграции используйте команду dotnet ef migrations add SomeMigration --project BestEvents.Infrastructure --startup-project BestEvents.Presentation 

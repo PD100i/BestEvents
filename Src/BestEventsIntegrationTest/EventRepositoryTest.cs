@@ -1,20 +1,12 @@
-﻿using BestEvents;
-using BestEvents.Exceptions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes;
+﻿using BestEvents.Domain;
+using BestEvents.Domain.Exceptions;
+using BestEvents.Application;
+using BestEvents.Infrastructure;
+using BestEvents.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.Common.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BestEventsIntegrationTest
 {
-    
-
     [Collection("Database collection")]
     public class EventRepositoryTest
     {
@@ -172,6 +164,48 @@ namespace BestEventsIntegrationTest
         }
 
         [Fact]
+        public async Task GetEventForUpdate_CallWithExistedId_ShouldReturnEvent()
+        {
+            // Arrange
+            await InitializeDatabaseAsync();
+            var context = CreateContext();
+            await AddCollection(context);
+
+            var _event = EventCollection.GetEventEntity(2);
+            var id = _event.Id;
+
+            var actContext = CreateContext();
+            var eventRepository = CreateEventRepository(actContext);
+
+            // Act
+            Event result = await eventRepository.GetEventForUpdateAsync(id, CancellationToken.None);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(result.Id, _event.Id);
+            Assert.Equal(result.Title, _event.Title);
+            Assert.Equal(result.StartAt, _event.StartAt);
+            Assert.Equal(result.EndAt, _event.EndAt);
+            Assert.Equal(result.Description, _event.Description);
+        }
+
+
+        [Fact]
+        public async Task GetEventForUpdate_NotExistedId_NotFoundExceotion()
+        {
+            // Arrange
+            await InitializeDatabaseAsync();
+            var context = CreateContext();
+            await AddCollection(context);
+            var id = Guid.NewGuid();
+
+            var actContext = CreateContext();
+            var eventRepository = CreateEventRepository(actContext);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<EventNotFoundException>(() => eventRepository.GetEventForUpdateAsync(id, CancellationToken.None));
+        }
+
+        [Fact]
         public async Task ReplaceEvent_ShouldReplaceInDbAndReturnEvent()
         {
             // Arrange
@@ -237,7 +271,7 @@ namespace BestEventsIntegrationTest
             var eventRepository = CreateEventRepository(assertContext);
 
             // Act & Assert
-            await Assert.ThrowsAsync<EventNotFoundException>(() => eventRepository.ReplaceEventAsync(_event, CancellationToken.None));
+            await Assert.ThrowsAsync<UpdateEventException>(() => eventRepository.ReplaceEventAsync(_event, CancellationToken.None));
         }
 
         

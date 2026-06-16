@@ -1,9 +1,8 @@
-﻿using BestEvents;
-using BestEvents.Exceptions;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using BestEvents.Infrastructure;
+using BestEvents.Application;
+using BestEvents.Domain.Exceptions;
 using System.Collections;
-using System.Drawing;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace BestEventsTest
 {

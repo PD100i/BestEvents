@@ -34,7 +34,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BestEvents\BestEvents.csproj" />
+    <ProjectReference Include="..\BestEvents.Application\BestEvents.Application.csproj" />
+    <ProjectReference Include="..\BestEvents.Domain\BestEvents.Domain.csproj" />
+    <ProjectReference Include="..\BestEvents.Infrastructure\BestEvents.Infrastructure.csproj" />
+    <ProjectReference Include="..\BestEvents.Presentation\BestEvents.Presentation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

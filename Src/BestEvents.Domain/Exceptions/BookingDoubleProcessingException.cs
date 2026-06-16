@@ -7,4 +7,6 @@
     public class BookingDoubleProcessingException(string message) : Exception(message)
     {
     }
+
+   
 }

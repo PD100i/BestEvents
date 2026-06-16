@@ -18,7 +18,7 @@ namespace BestEvents.Domain
         /// </summary>
         /// <param name="id"></param>
         /// <param name="_event"></param>
-        public Booking(Guid id, Event _event)
+        public Booking(Guid id, Event _event, Guid userId)
         {
             
             Id = id;
@@ -26,6 +26,7 @@ namespace BestEvents.Domain
             Event = _event;
             Status = BookingStatus.Pending;
             CreatedAt = DateTime.Now;
+            UserId = userId;
         }
 
         /// <summary>
@@ -43,6 +44,12 @@ namespace BestEvents.Domain
         /// </summary>
         public Event? Event { get; set; }
 
+        /// <summary>
+        /// Идентификатор пользователя, зарезервировавшего событие
+        /// </summary>
+        public Guid UserId { get; set; }
+
+      
         /// <summary>
         /// Статус брони
         /// </summary>
@@ -64,9 +71,12 @@ namespace BestEvents.Domain
         public void Confirm()
         {
             if (Status == BookingStatus.Confirmed)
-                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingConfirm, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
             if (Status == BookingStatus.Rejected)
-                throw new BookingDoubleProcessingException(string.Format(Messages_ru.TryConfirmRejectedBooking, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
+            if (Status == BookingStatus.Cancelled)
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
+
             Status = BookingStatus.Confirmed;
             ProcessedAt = DateTime.Now;
         }
@@ -77,11 +87,27 @@ namespace BestEvents.Domain
         public void Reject()
         {
             if (Status == BookingStatus.Confirmed)
-                throw new BookingDoubleProcessingException(string.Format(Messages_ru.TryRedjectConfirmedBooking, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
             if (Status == BookingStatus.Rejected)
-                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingReject, Id));
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
+            if (Status == BookingStatus.Cancelled)
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
             Status = BookingStatus.Rejected;
             ProcessedAt = DateTime.Now;
+        }
+
+        public void Cancel(User user)
+        {
+            if (Status == BookingStatus.Confirmed)
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
+            if (Status == BookingStatus.Rejected)
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
+            if (Status == BookingStatus.Cancelled)
+                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
+            if (user.Id == UserId || user.Role == RolesEnum.Admin)
+                Status = BookingStatus.Cancelled;
+            else
+                throw new NoRightOfCancelBookingException();
         }
 
         /// <inheritdoc/>
@@ -121,6 +147,10 @@ namespace BestEvents.Domain
         /// <summary>
         /// Бронь отклонена
         /// </summary>
-        Rejected
+        Rejected,
+        /// <summary>
+        /// Бронь отменена
+        /// </summary>
+        Cancelled
     }
 }

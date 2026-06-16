@@ -70,20 +70,11 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Попытка подтверждения брони {0}, которая уже подтверждена.
+        ///   Looks up a localized string similar to Бронирование уже обработано.
         /// </summary>
-        internal static string DoubleBookingConfirm {
+        internal static string DoubleBookingProcessing {
             get {
-                return ResourceManager.GetString("DoubleBookingConfirm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Попытка отклонения брони {0}, которая уже отклонена.
-        /// </summary>
-        internal static string DoubleBookingReject {
-            get {
-                return ResourceManager.GetString("DoubleBookingReject", resourceCulture);
+                return ResourceManager.GetString("DoubleBookingProcessing", resourceCulture);
             }
         }
         
@@ -160,29 +151,20 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Нет прав на отмену бронирования.
+        /// </summary>
+        internal static string NoRightOfCancelBooking {
+            get {
+                return ResourceManager.GetString("NoRightOfCancelBooking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка при отмене бронирования. Предано неверное количество мест.
         /// </summary>
         internal static string RealiseBokingWrongCount {
             get {
                 return ResourceManager.GetString("RealiseBokingWrongCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Попытка подтверждения уже отклоненной брони {0}.
-        /// </summary>
-        internal static string TryConfirmRejectedBooking {
-            get {
-                return ResourceManager.GetString("TryConfirmRejectedBooking", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Повторная отклонения уже подтвержденной брони {0}.
-        /// </summary>
-        internal static string TryRedjectConfirmedBooking {
-            get {
-                return ResourceManager.GetString("TryRedjectConfirmedBooking", resourceCulture);
             }
         }
         

@@ -88,6 +88,15 @@ namespace BestEvents.Presentation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ошибка регистрации.
+        /// </summary>
+        public static string RegisterError {
+            get {
+                return ResourceManager.GetString("RegisterError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Недопустимые параметры в запросе.
         /// </summary>
         public static string RequestWrongParameters {

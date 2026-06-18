@@ -104,7 +104,7 @@ namespace BestEvents.Domain
                 throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
             if (Status == BookingStatus.Cancelled)
                 throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
-            if (user.Id == UserId || user.Role == RolesEnum.Admin)
+            if (user.Id == UserId || user.Role == UserRolesEnum.Admin)
                 Status = BookingStatus.Cancelled;
             else
                 throw new NoRightOfCancelBookingException();

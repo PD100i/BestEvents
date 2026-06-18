@@ -169,6 +169,15 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не задан логин.
+        /// </summary>
+        internal static string UserNameIsEmpty {
+            get {
+                return ResourceManager.GetString("UserNameIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест.
         /// </summary>
         internal static string WrongEventAvailableSeats {
@@ -183,6 +192,33 @@ namespace BestEvents.Domain {
         internal static string WrongEventTotalSeats {
             get {
                 return ResourceManager.GetString("WrongEventTotalSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Роль {0} не подддерживается сервисом.
+        /// </summary>
+        internal static string WrongRole {
+            get {
+                return ResourceManager.GetString("WrongRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Неверный формат идентификатора пользователя.
+        /// </summary>
+        internal static string WrongUserId {
+            get {
+                return ResourceManager.GetString("WrongUserId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Логин должен содержать только латинские символы.
+        /// </summary>
+        internal static string WrongUserNameFormat {
+            get {
+                return ResourceManager.GetString("WrongUserNameFormat", resourceCulture);
             }
         }
     }

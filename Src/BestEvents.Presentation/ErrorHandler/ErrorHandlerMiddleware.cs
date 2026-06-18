@@ -37,6 +37,20 @@ namespace BestEvents.Presentation
             {
                 await _next(context);
             }
+            catch (UserRegisterException ex)
+            {
+                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 404;
+                ErrorDetails details = new()
+                {
+                    Title = Messages_ru.RegisterError,
+                    StatusCode = context.Response.StatusCode,
+                    Detail = ex.Message,
+                    Instance = context.Request.Path
+                };
+                await context.Response.WriteAsJsonAsync(details);
+            }
             catch (EventNotFoundException ex)
             {
                 _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");

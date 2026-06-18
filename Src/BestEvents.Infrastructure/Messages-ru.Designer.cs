@@ -104,5 +104,32 @@ namespace BestEvents.Infrastructure {
                 return ResourceManager.GetString("UpdateEventErrorMessage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не найден пользователь с логином {0}.
+        /// </summary>
+        public static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Неправильный пароль.
+        /// </summary>
+        public static string WrongPassword {
+            get {
+                return ResourceManager.GetString("WrongPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Роль {0} не поддерживается сервисом.
+        /// </summary>
+        public static string WrongRole {
+            get {
+                return ResourceManager.GetString("WrongRole", resourceCulture);
+            }
+        }
     }
 }

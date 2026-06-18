@@ -153,10 +153,22 @@
   <data name="RealiseBokingWrongCount" xml:space="preserve">
     <value>Ошибка при отмене бронирования. Предано неверное количество мест</value>
   </data>
+  <data name="UserNameIsEmpty" xml:space="preserve">
+    <value>Не задан логин</value>
+  </data>
   <data name="WrongEventAvailableSeats" xml:space="preserve">
     <value>Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест</value>
   </data>
   <data name="WrongEventTotalSeats" xml:space="preserve">
     <value>Общее количество мест должно быть больше нуля</value>
+  </data>
+  <data name="WrongRole" xml:space="preserve">
+    <value>Роль {0} не подддерживается сервисом</value>
+  </data>
+  <data name="WrongUserId" xml:space="preserve">
+    <value>Неверный формат идентификатора пользователя</value>
+  </data>
+  <data name="WrongUserNameFormat" xml:space="preserve">
+    <value>Логин должен содержать только латинские символы</value>
   </data>
 </root>

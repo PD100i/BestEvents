@@ -132,4 +132,13 @@
   <data name="UpdateEventErrorMessage" xml:space="preserve">
     <value>Ошибка обновления события {0}</value>
   </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Не найден пользователь с логином {0}</value>
+  </data>
+  <data name="WrongPassword" xml:space="preserve">
+    <value>Неправильный пароль</value>
+  </data>
+  <data name="WrongRole" xml:space="preserve">
+    <value>Роль {0} не поддерживается сервисом</value>
+  </data>
 </root>

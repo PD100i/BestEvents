@@ -70,6 +70,20 @@ namespace BestEvents.Infrastructure
         public partial Booking MapEntityToBooking(BookingEntity entity);
 
         /// <summary>
+        /// Мапинг из доменной модели User в сущность UserEntity для сохранения в базе данных.
+        /// </summary>
+        /// <param name="user">Доменная модель User, которую нужно преобразовать в сущность.</param>
+        /// <returns>Сущность UserEntity, соответствующая доменной модели User.</returns>
+        public partial UserEntity MapUserToEntity(User user);
+
+        /// <summary>
+        /// Мапинг из сущности UserEntity в доменную модель User для использования в бизнес-логике приложения.
+        /// </summary>
+        /// <param name="entity">Сущность UserEntity, которую нужно преобразовать в доменную модель.</param>
+        /// <returns>Доменная модель User, соответствующая сущности UserEntity.</returns>
+        public partial User MapEntityToUser(UserEntity entity);
+
+        /// <summary>
         /// Маппинг из PaginatedResult/<EventEntity/> в PaginatedResult/<Event/> для использования в бизнес-логике приложения.
         /// </summary>
         /// <param name="paginatedResult">PaginatedResult/<EventEntity/>, который нужно преобразовать.</param>

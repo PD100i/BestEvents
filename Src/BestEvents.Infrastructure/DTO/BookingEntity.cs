@@ -23,6 +23,16 @@ namespace BestEvents.Infrastructure
         public EventEntity? Event { get; set; }
 
         /// <summary>
+        /// Идентификатор пользователя, который сделал бронирование
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Навигационное свойство для доступа к пользователю, который сделал бронирование
+        /// </summary>
+        public UserEntity? User { get; set; }
+
+        /// <summary>
         /// Статус брони
         /// </summary>
         public BookingStatus Status { get; set; }

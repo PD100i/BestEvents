@@ -19,7 +19,7 @@ namespace BestEvents.Infrastructure
 
             string hash = GetPasswordHashCode(password);
             Guid id = Guid.NewGuid();
-            User user = new(id, userName, hash, role);
+            UserEntity user = new(id, userName, hash, role);
             await userRepository.AddUserAsync(user, ct);
         }
 
@@ -27,7 +27,7 @@ namespace BestEvents.Infrastructure
         {
             var user = await userRepository.GetUserAsync(userName, ct) ??
                 throw new CreateTokenException(string.Format(Messages_ru.UserNotFound, userName));
-            if (user.PasswordHash != GetPasswordHashCode(password)
+            if (user.PasswordHash != GetPasswordHashCode(password))
                 throw new CreateTokenException(Messages_ru.WrongPassword);
 
             var claims = new Dictionary<string, object>

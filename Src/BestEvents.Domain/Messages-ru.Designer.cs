@@ -178,6 +178,15 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Пользователь {0} не найден.
+        /// </summary>
+        internal static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест.
         /// </summary>
         internal static string WrongEventAvailableSeats {

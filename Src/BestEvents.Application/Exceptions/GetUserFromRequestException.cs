@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BestEvents.Domain.Exceptions
+namespace BestEvents.Application.Exceptions
 {
-    public class UserRegisterException(string message) : Exception (message)
+    public class GetUserFromRequestException(string message) : Exception(message)
     {
     }
 }

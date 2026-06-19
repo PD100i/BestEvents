@@ -19,8 +19,16 @@ namespace BestEvents.Infrastructure
 
             string hash = GetPasswordHashCode(password);
             Guid id = Guid.NewGuid();
-            UserEntity user = new(id, userName, hash, role);
-            await userRepository.AddUserAsync(user, ct);
+            try
+            {
+                User user = User.CreateUser(id, userName, hash, role);
+                await userRepository.AddUserAsync(user, ct);
+            }
+            catch (Exception ex)
+            {
+                throw new UserRegisterException(ex.Message);
+            }
+           
         }
 
         public async Task<string> GetTokenAsync(string userName, string password, CancellationToken ct)

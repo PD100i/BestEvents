@@ -169,11 +169,29 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не задан логин.
+        ///   Looks up a localized string similar to Id пользователя не был передан.
+        /// </summary>
+        internal static string UserIdIsNotSent {
+            get {
+                return ResourceManager.GetString("UserIdIsNotSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не задано имя пользователя.
         /// </summary>
         internal static string UserNameIsEmpty {
             get {
                 return ResourceManager.GetString("UserNameIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не было передано имя пользователя.
+        /// </summary>
+        internal static string UserNameIsNotSent {
+            get {
+                return ResourceManager.GetString("UserNameIsNotSent", resourceCulture);
             }
         }
         
@@ -183,6 +201,15 @@ namespace BestEvents.Domain {
         internal static string UserNotFound {
             get {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Роль пользователя не была передана.
+        /// </summary>
+        internal static string UserRoleIsNotSent {
+            get {
+                return ResourceManager.GetString("UserRoleIsNotSent", resourceCulture);
             }
         }
         

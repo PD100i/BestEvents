@@ -153,11 +153,20 @@
   <data name="RealiseBokingWrongCount" xml:space="preserve">
     <value>Ошибка при отмене бронирования. Предано неверное количество мест</value>
   </data>
+  <data name="UserIdIsNotSent" xml:space="preserve">
+    <value>Id пользователя не был передан</value>
+  </data>
   <data name="UserNameIsEmpty" xml:space="preserve">
-    <value>Не задан логин</value>
+    <value>Не задано имя пользователя</value>
+  </data>
+  <data name="UserNameIsNotSent" xml:space="preserve">
+    <value>Не было передано имя пользователя</value>
   </data>
   <data name="UserNotFound" xml:space="preserve">
     <value>Пользователь {0} не найден</value>
+  </data>
+  <data name="UserRoleIsNotSent" xml:space="preserve">
+    <value>Роль пользователя не была передана</value>
   </data>
   <data name="WrongEventAvailableSeats" xml:space="preserve">
     <value>Количество доступных мест должно быть больше или равно нулю и не превышать общее количество мест</value>

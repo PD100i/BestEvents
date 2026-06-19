@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,27 +15,47 @@ namespace BestEvents.Domain
     {
         public User() { }
 
-        public User(Guid userId, string name, string passwordHash, string? role) 
+        public static User CreateUser(Guid userId, string name, string passwordHash, string? role) 
         {
-            if (userId == default)
-                throw new UserRegisterException(Messages_ru.WrongUserId);
+            User user = CreateUser(userId, name, role);
+            user.PasswordHash = passwordHash;
+            return user;
+        }
+
+        public static User CreateUser(string? userId, string? name, string? role)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new UserWrongParameterException(Messages_ru.UserIdIsNotSent);
+            if (Guid.TryParse(userId, out Guid id))
+                throw new UserWrongParameterException(Messages_ru.WrongUserId);
+            return CreateUser(id, name, role);
+        }
+
+        private static User CreateUser(Guid userId, string? name, string? role)
+        {
+            User user = new User();
 
             if (string.IsNullOrEmpty(name))
-                throw new UserRegisterException(Messages_ru.UserNameIsEmpty);
+                throw new UserWrongParameterException(Messages_ru.UserNameIsNotSent);
+            if (!(name.All(c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))))
+                throw new UserWrongParameterException(Messages_ru.WrongUserNameFormat);
 
-            if (! (name.All(c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))))
-                throw new UserRegisterException(Messages_ru.WrongUserNameFormat);
+            if (!(name.All(c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))))
+                throw new UserWrongParameterException(Messages_ru.WrongUserNameFormat);
+
+            if (string.IsNullOrEmpty(role))
+                throw new UserWrongParameterException(Messages_ru.UserRoleIsNotSent);
 
             if (string.IsNullOrEmpty(role) || role == "User")
-                Role = UserRolesEnum.User;
+                user.Role = UserRolesEnum.User;
             else if (role == "Admin")
-                Role = UserRolesEnum.Admin;
+                user.Role = UserRolesEnum.Admin;
             else
-                throw new UserRegisterException(string.Format(Messages_ru.WrongRole, role));
+                throw new UserWrongParameterException(string.Format(Messages_ru.WrongRole, role));
 
-            Id = userId;
-            Name = name;
-            PasswordHash = passwordHash;
+            user.Id = userId;
+            user.Name = name;
+            return user;
         }
 
         /// <summary>

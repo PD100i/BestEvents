@@ -18,7 +18,7 @@ namespace BestEvents.Domain
         /// </summary>
         /// <param name="id"></param>
         /// <param name="_event"></param>
-        public Booking(Guid id, Event _event, Guid userId)
+        public Booking(Guid id, Event _event, User user)
         {
             
             Id = id;
@@ -26,7 +26,8 @@ namespace BestEvents.Domain
             Event = _event;
             Status = BookingStatus.Pending;
             CreatedAt = DateTime.Now;
-            UserId = userId;
+            UserId = user.Id;
+            User = user;
         }
 
         /// <summary>
@@ -49,7 +50,12 @@ namespace BestEvents.Domain
         /// </summary>
         public Guid UserId { get; set; }
 
-      
+        /// <summary>
+        /// Пользователь, который сделал бронирование
+        /// </summary>
+        public User? User { get; set; }
+
+
         /// <summary>
         /// Статус брони
         /// </summary>

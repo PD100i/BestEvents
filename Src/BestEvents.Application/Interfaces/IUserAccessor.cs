@@ -9,6 +9,6 @@ namespace BestEvents.Application
 {
     public interface IUserAccessor
     {
-        public User? GetCurrentUser();
+        public User GetUser();
     }
 }

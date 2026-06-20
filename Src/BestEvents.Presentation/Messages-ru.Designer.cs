@@ -115,6 +115,15 @@ namespace BestEvents.Presentation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не удалось получить пользователя из http контекста.
+        /// </summary>
+        public static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Формат переданного Id не соответствует GUID.
         /// </summary>
         public static string WrongIdFormat {

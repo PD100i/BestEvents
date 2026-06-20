@@ -138,4 +138,7 @@
   <data name="RegisterError" xml:space="preserve">
     <value>Ошибка регистрации</value>
   </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Не удалось получить пользователя из http контекста</value>
+  </data>
 </root>

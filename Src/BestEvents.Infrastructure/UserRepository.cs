@@ -23,5 +23,16 @@ namespace BestEvents.Infrastructure
 
             return entityMapper.MapEntityToUser(userEntity);
         }
+
+        public async Task<User> GetUserAsync(Guid userId, CancellationToken ct = default)
+        {
+            var userEntity = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.Id == userId, ct);
+
+            if (userEntity == null)
+                throw new UserNotFoundException(string.Format(Messages_ru.UserNotFound, userId));
+
+            return entityMapper.MapEntityToUser(userEntity);
+        }
     }
 }

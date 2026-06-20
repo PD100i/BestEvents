@@ -61,11 +61,38 @@ namespace BestEvents.Application {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Превышен лимит бронирований - {0}.
+        /// </summary>
+        public static string BookingLimitExceeded {
+            get {
+                return ResourceManager.GetString("BookingLimitExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Бронирование не создано, так как события с идентификатором {0} не существует.
         /// </summary>
         public static string CreateBookingEventNotFound {
             get {
                 return ResourceManager.GetString("CreateBookingEventNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Событие уже началось.
+        /// </summary>
+        public static string EventBegun {
+            get {
+                return ResourceManager.GetString("EventBegun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Событие уже завершилось.
+        /// </summary>
+        public static string EventCompleted {
+            get {
+                return ResourceManager.GetString("EventCompleted", resourceCulture);
             }
         }
         

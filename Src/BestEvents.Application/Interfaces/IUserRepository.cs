@@ -1,4 +1,4 @@
-﻿using BestEvents.Domain
+﻿using BestEvents.Domain;
 
 namespace BestEvents.Application
 {
@@ -7,5 +7,7 @@ namespace BestEvents.Application
         Task AddUserAsync(User user, CancellationToken ct = default);
 
         Task<User> GetUserAsync(string userName, CancellationToken ct = default);
+
+        Task<User> GetUserAsync(Guid userId, CancellationToken ct = default);
     }
 }

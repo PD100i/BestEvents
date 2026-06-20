@@ -120,8 +120,17 @@
   <data name="CreateBookingEventNotFound" xml:space="preserve">
     <value>Бронирование не создано, так как события с идентификатором {0} не существует</value>
   </data>
+  <data name="EventBegun" xml:space="preserve">
+    <value>Событие уже началось</value>
+  </data>
+  <data name="EventCompleted" xml:space="preserve">
+    <value>Событие уже завершилось</value>
+  </data>
   <data name="MismatchIdInReplaceRequest" xml:space="preserve">
     <value>Параметр id в строке запроса {0} не совпадает с параметром id в теле запроса {1}</value>
+  </data>
+  <data name="BookingLimitExceeded" xml:space="preserve">
+    <value>Превышен лимит бронирований - {0}</value>
   </data>
   <data name="UnexpectedBookingError" xml:space="preserve">
     <value>Непредвиденная ошибка при работе сервиса бронирования</value>

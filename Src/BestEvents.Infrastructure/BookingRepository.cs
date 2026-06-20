@@ -89,5 +89,15 @@ namespace BestEvents.Infrastructure
                 throw new UpdateBookingException(string.Format(Messages_ru.UpdateBookingErrorMessage, booking.Id), ex);
             }
         }
+
+        /// <inheritdoc/>
+        public async Task<List<Booking>> GetActiveBookingsByUserAsync(Guid userId, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            var bookingEntities = await db.Bookings
+                .Where(b => b.UserId == userId && (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Confirmed))
+                .ToListAsync(ct);
+            return bookingEntities.Select(mapper.MapEntityToBooking).ToList();
+        }
     }
 }

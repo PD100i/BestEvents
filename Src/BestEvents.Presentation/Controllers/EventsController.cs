@@ -1,7 +1,8 @@
 ﻿
 
-using Microsoft.AspNetCore.Mvc;
 using BestEvents.Application;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace BestEvents.Presentation.Controllers
@@ -13,6 +14,7 @@ namespace BestEvents.Presentation.Controllers
     /// <param name="bookingService"></param>
     /// <param name="mapper"></param>
     [ApiController]
+    [Authorize]
     [Route("events")]
     public class EventsController(IEventService eventService, IBookingService bookingService, DtoMapper mapper) : ControllerBase
     {
@@ -28,6 +30,7 @@ namespace BestEvents.Presentation.Controllers
         /// <param name="ct">Токен отмены</param>
         /// <response code="200">Возвращается JSON-структура PaginationResultsDto с деталями ответа и HTTP статус-кодом 200 Ok в случае успеха</response>
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResultDto))]
         public async Task<IActionResult> GetEventsAsync([FromQuery] string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10, CancellationToken ct = default)
@@ -45,6 +48,7 @@ namespace BestEvents.Presentation.Controllers
         /// <response code="400">Если id некорректен</response>
         /// <response code="404">Если событие с таким идентификатором не найдено</response>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventInfoDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
@@ -66,6 +70,7 @@ namespace BestEvents.Presentation.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(EventInfoDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateEventAsync([FromBody] CreateEventDto eventDto, CancellationToken ct = default)
         {
             var result = await eventService.CreateEventAsync(mapper.MapCreateEventDtoToEvent(eventDto), ct);
@@ -83,6 +88,7 @@ namespace BestEvents.Presentation.Controllers
         /// <response code="400">Если параметры некорректны</response>
         /// <response code="404">Если событие с таким идентификатором не найдено</response>
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
@@ -102,6 +108,7 @@ namespace BestEvents.Presentation.Controllers
         /// <response code="400">Если id некорректен</response>
         /// <response code="404">Если событие с таким идентификатором не найдено</response>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]

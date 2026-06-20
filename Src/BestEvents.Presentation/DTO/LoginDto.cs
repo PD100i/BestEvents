@@ -3,12 +3,12 @@
 namespace BestEvents.Presentation
 {
     /// <summary>
-    /// DTO для регистрации пользователя
+    /// DTO для входа пользователя в систему
     /// </summary>
-    public class UserRegisterDto
+    public class LoginDto
     {
         /// <summary>
-        /// Логин
+        /// Имя пользователя
         /// </summary>
         [Required]
         [StringLength(20, MinimumLength = 4)]
@@ -20,10 +20,5 @@ namespace BestEvents.Presentation
         [Required]
         [StringLength(20, MinimumLength = 6)]
         public string Password { get; set; } = "";
-
-        /// <summary>
-        /// Роль. Принимает значения User и Admin. По умолчанию будет USer
-        /// </summary>
-        public string? Role {  get; set; }
     }
 }

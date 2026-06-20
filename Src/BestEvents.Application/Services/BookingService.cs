@@ -19,7 +19,6 @@ namespace BestEvents.Application
             return await bookingRepository.GetBookingAsync(bookingId, ct);
         }
 
-
         /// <inheritdoc/>
         public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken ct)
         {

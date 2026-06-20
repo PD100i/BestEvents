@@ -19,11 +19,14 @@ namespace BestEvents.Presentation
         /// <returns></returns>
         public static IServiceCollection AddPresentation(this IServiceCollection services)
         {
+            services.AddScoped<IUserAccessor, UserAccessor>();
+
             services.AddControllers(options =>
             {
                 options.SuppressAsyncSuffixInActionNames = false;
             });
 
+            
 
             services.AddSingleton<DtoMapper>();
 

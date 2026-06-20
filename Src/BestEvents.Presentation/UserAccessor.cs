@@ -9,7 +9,7 @@ namespace BestEvents.Presentation
     /// Сервис для доступа к пользователю из HttpContext
     /// </summary>
     /// <param name="httpContextAccessor"></param>
-    public class UserAccesser(IHttpContextAccessor httpContextAccessor) : IUserAccessor
+    public class UserAccessor(IHttpContextAccessor httpContextAccessor) : IUserAccessor
     {
         /// <summary>
         /// Предоставляет доступ к пользователю из HttpContext

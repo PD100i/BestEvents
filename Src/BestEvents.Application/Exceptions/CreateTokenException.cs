@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BestEvents.Application.Exceptions
 {
-    public class CreateTokenException(string message) : Exception (message);
+    public class CreateTokenException(string message) : Exception (message)
     {
     }
 }

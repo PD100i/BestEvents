@@ -108,7 +108,7 @@ namespace BestEvents.Presentation
                 await context.Response.WriteAsJsonAsync(details);
             }
 
-            catch (EventCompletedException ex)
+            catch (CreateBookingException ex)
             {
                 _logger.LogWarning($"Request: {context.Request.Path}. {ex.Message}");
                 context.Response.ContentType = "application/json";

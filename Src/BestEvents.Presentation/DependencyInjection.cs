@@ -2,7 +2,9 @@
 using BestEvents.Application;
 using BestEvents.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 
 
 namespace BestEvents.Presentation
@@ -17,16 +19,34 @@ namespace BestEvents.Presentation
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddPresentation(this IServiceCollection services)
+        public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IUserAccessor, UserAccessor>();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "JwtBearerSheme";
+            })
+            .AddJwtBearer("JwtBearerSheme", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = "MyAuthServer",
+                    ValidAudience = "MyApiClient",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SUPER_SECRET_KEY_IMPORTANT_MUST_BE_LONG_ENOUGH_12345"))
+                };
+            });
+
 
             services.AddControllers(options =>
             {
                 options.SuppressAsyncSuffixInActionNames = false;
             });
 
-            
 
             services.AddSingleton<DtoMapper>();
 

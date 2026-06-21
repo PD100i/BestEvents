@@ -46,16 +46,16 @@ namespace BestEvents.Infrastructure
                 [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             SecurityTokenDescriptor descriptor = new()
             {
-                Issuer = configuration["Jwt:Issuer"],
-                Audience = configuration["Jwt:Audience"],
+                Issuer = configuration["JwtSettings:Issuer"],
+                Audience = configuration["JwtSettings:Audience"],
                 Claims = claims,
                 NotBefore = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(15),
+                Expires = DateTime.UtcNow.AddMinutes(double.Parse(configuration["JwtSettings:ExpiryInMinutes"]!)),
                 IssuedAt = DateTime.UtcNow,
                 SigningCredentials = creds
             };

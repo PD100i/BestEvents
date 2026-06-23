@@ -102,18 +102,18 @@ namespace BestEvents.Domain
             ProcessedAt = DateTime.Now;
         }
 
+        /// <summary>
+        /// Отмена бронирования
+        /// </summary>
         public void Cancel(User user)
         {
-            if (Status == BookingStatus.Confirmed)
-                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
-            if (Status == BookingStatus.Rejected)
-                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
-            if (Status == BookingStatus.Cancelled)
-                throw new BookingDoubleProcessingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));
-            if (user.Id == UserId || user.Role == UserRolesEnum.Admin)
-                Status = BookingStatus.Cancelled;
-            else
+            if (!(user.Id == UserId || user.Role == UserRolesEnum.Admin))
                 throw new NoRightOfCancelBookingException();
+            if (Status == BookingStatus.Rejected)
+                throw new CancelBookingException(string.Format(Messages_ru.AttemptToCancelRejectedBooking, Id));
+            if (Status == BookingStatus.Cancelled)
+                throw new CancelBookingException(string.Format(Messages_ru.DoubleBookingProcessing, Id));           
+            Status = BookingStatus.Cancelled;
         }
 
         /// <inheritdoc/>

@@ -46,7 +46,7 @@ namespace BestEvents.Infrastructure
             {
                 [JwtRegisteredClaimNames.Name] = user.Name,
                 [JwtRegisteredClaimNames.Sub] = user.Id.ToString(),
-                ["role"] = user.Role,
+                ["role"] = user.Role.ToString(),
                 [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
             };
 

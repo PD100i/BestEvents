@@ -61,11 +61,38 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Бронирование уже было отменено ранее.
+        /// </summary>
+        internal static string AttemptToCancelCancelledBooking {
+            get {
+                return ResourceManager.GetString("AttemptToCancelCancelledBooking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование ранее было отклонено.
+        /// </summary>
+        internal static string AttemptToCancelRejectedBooking {
+            get {
+                return ResourceManager.GetString("AttemptToCancelRejectedBooking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Бронирование отклонено, так как событие  уже завершилось.
         /// </summary>
         internal static string BookingRejectedEventCompleted {
             get {
                 return ResourceManager.GetString("BookingRejectedEventCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование уже было отменено ранее.
+        /// </summary>
+        internal static string DoubleBookingCancel {
+            get {
+                return ResourceManager.GetString("DoubleBookingCancel", resourceCulture);
             }
         }
         

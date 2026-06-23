@@ -159,9 +159,9 @@ namespace BestEventsTest
             jwtToken.TryGetClaim(JwtRegisteredClaimNames.Sub, out Claim _sub);
             jwtToken.TryGetClaim("role", out Claim _role);
 
-            Assert.Equal(userName, _name.ToString());
-            Assert.Equal(userId.ToString(), _sub.ToString());
-            Assert.Equal(role, _role.ToString());
+            Assert.Equal(userName, _name.Value);
+            Assert.Equal(userId.ToString(), _sub.Value);
+            Assert.Equal(role, _role.Value);
             
             Assert.True((jwtToken.ValidTo - expectedExpiration).Duration() < TimeSpan.FromMinutes(1));
         }

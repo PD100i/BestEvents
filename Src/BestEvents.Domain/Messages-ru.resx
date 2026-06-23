@@ -117,8 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AttemptToCancelCancelledBooking" xml:space="preserve">
+    <value>Бронирование уже было отменено ранее</value>
+  </data>
+  <data name="AttemptToCancelRejectedBooking" xml:space="preserve">
+    <value>Бронирование ранее было отклонено</value>
+  </data>
   <data name="BookingRejectedEventCompleted" xml:space="preserve">
     <value>Бронирование отклонено, так как событие  уже завершилось</value>
+  </data>
+  <data name="DoubleBookingCancel" xml:space="preserve">
+    <value>Бронирование уже было отменено ранее</value>
   </data>
   <data name="DoubleBookingProcessing" xml:space="preserve">
     <value>Бронирование уже обработано</value>

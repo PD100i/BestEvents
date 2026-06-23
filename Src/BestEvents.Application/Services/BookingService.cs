@@ -82,9 +82,9 @@ namespace BestEvents.Application
                 if (booking.Event == null)
                     throw new EventNotExistsException(string.Format(Messages_ru.CreateBookingEventNotFound, booking.EventId));
                 if (booking.Event.EndAt < DateTime.UtcNow)
-                    throw new CreateBookingException(Messages_ru.EventCompleted);
+                    throw new BookingProcessException(Messages_ru.EventCompleted);
                 if (booking.Event.StartAt < DateTime.UtcNow)
-                    throw new CreateBookingException(Messages_ru.EventBegun);
+                    throw new BookingProcessException(Messages_ru.EventBegun);
                 booking.Confirm();
                 await bookingRepository.UpdateBookingAsync(booking, ct);
                 await transaction.CommitAsync(ct);

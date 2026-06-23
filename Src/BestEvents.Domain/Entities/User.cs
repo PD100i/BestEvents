@@ -43,9 +43,6 @@ namespace BestEvents.Domain
             if (!(name.All(c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))))
                 throw new UserWrongParameterException(Messages_ru.WrongUserNameFormat);
 
-            if (string.IsNullOrEmpty(role))
-                throw new UserWrongParameterException(Messages_ru.UserRoleIsNotSent);
-
             if (string.IsNullOrEmpty(role) || role == "User")
                 user.Role = UserRolesEnum.User;
             else if (role == "Admin")

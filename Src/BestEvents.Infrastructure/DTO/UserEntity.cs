@@ -1,9 +1,4 @@
-﻿using BestEvents.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BestEvents.Domain;
 
 namespace BestEvents.Infrastructure
 {
@@ -41,12 +36,5 @@ namespace BestEvents.Infrastructure
         public List<BookingEntity> Bookings { get; set; } = [];
     }
 
-    /// <summary>
-    /// Перечисление ролей пользователя
-    /// </summary>
-    public enum UserRolesEnum
-    {
-        User,
-        Admin
-    }
+   
 }

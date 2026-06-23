@@ -88,6 +88,15 @@ namespace BestEvents.Infrastructure {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Пароль не передан.
+        /// </summary>
+        public static string PasswordIsNotSent {
+            get {
+                return ResourceManager.GetString("PasswordIsNotSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка обновления бронирования {0}.
         /// </summary>
         public static string UpdateBookingErrorMessage {

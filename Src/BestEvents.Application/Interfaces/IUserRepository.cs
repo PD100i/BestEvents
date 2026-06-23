@@ -8,6 +8,5 @@ namespace BestEvents.Application
 
         Task<User> GetUserAsync(string userName, CancellationToken ct = default);
 
-        Task<User> GetUserAsync(Guid userId, CancellationToken ct = default);
     }
 }

@@ -18,6 +18,7 @@ namespace BestEvents.Presentation
         /// Добавляет объекты слоя Presentation
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
         public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {

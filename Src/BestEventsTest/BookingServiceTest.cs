@@ -111,7 +111,7 @@ namespace BestEventsTest
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUserRepo.Object, mockUow.Object, mockUserAccessor.Object);
             
             mockUserAccessor.Setup(accessor => accessor.GetUser()).Returns(user);
-            mockUserRepo.Setup(repo => repo.GetUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => user);
+            mockUserRepo.Setup(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => user);
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
             mockTransaction.Setup(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()));
             mockEventRepo.Setup(repo => repo.GetEventForUpdateAsync(_event.Id, CancellationToken.None)).ReturnsAsync(() => _event);
@@ -160,7 +160,7 @@ namespace BestEventsTest
             mockEventRepo.Verify(repo => repo.GetEventForUpdateAsync(_event.Id, It.IsAny<CancellationToken>()), Times.Once());
             mockBookingRepo.Verify(repo => repo.AddBookingAsync(It.Is<Booking>(b => b.Id == bookingId), It.IsAny<CancellationToken>()), Times.Never());
             mockUserAccessor.Verify(repo => repo.GetUser(), Times.Never());
-            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
+            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [Fact]
@@ -191,7 +191,7 @@ namespace BestEventsTest
             mockEventRepo.Verify(repo => repo.GetEventForUpdateAsync(_event.Id, It.IsAny<CancellationToken>()), Times.Once());
             mockBookingRepo.Verify(repo => repo.AddBookingAsync(It.Is<Booking>(b => b.Id == bookingId), It.IsAny<CancellationToken>()), Times.Never());
             mockUserAccessor.Verify(repo => repo.GetUser(), Times.Never());
-            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
+            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [Fact]
@@ -222,7 +222,7 @@ namespace BestEventsTest
             mockEventRepo.Verify(repo => repo.GetEventForUpdateAsync(_event.Id, It.IsAny<CancellationToken>()), Times.Once());
             mockBookingRepo.Verify(repo => repo.AddBookingAsync(It.Is<Booking>(b => b.Id == bookingId), It.IsAny<CancellationToken>()), Times.Never());
             mockUserAccessor.Verify(repo => repo.GetUser(), Times.Never());
-            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
+            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [Fact]
@@ -347,7 +347,7 @@ namespace BestEventsTest
 
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
             mockUserAccessor.Setup(a => a.GetUser()).Returns(user);
-            mockUserRepo.Setup(repo => repo.GetUserAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+            mockUserRepo.Setup(repo => repo.GetUserAsync(user.Name, It.IsAny<CancellationToken>())).ReturnsAsync(user);
             mockTransaction.Setup(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()));
             mockBookingRepo.Setup(repo => repo.GetBookingForUpdateAsync(bookingId, CancellationToken.None)).ReturnsAsync(booking);
             mockBookingRepo.Setup(repo => repo.UpdateBookingAsync(It.Is<Booking>(b => b.Id == bookingId &&
@@ -392,7 +392,7 @@ namespace BestEventsTest
 
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
             mockUserAccessor.Setup(a => a.GetUser()).Returns(admin);
-            mockUserRepo.Setup(repo => repo.GetUserAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+            mockUserRepo.Setup(repo => repo.GetUserAsync(user.Name, It.IsAny<CancellationToken>())).ReturnsAsync(user);
             mockTransaction.Setup(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()));
             mockBookingRepo.Setup(repo => repo.GetBookingForUpdateAsync(bookingId, CancellationToken.None)).ReturnsAsync(booking);
             mockBookingRepo.Setup(repo => repo.UpdateBookingAsync(It.Is<Booking>(b => b.Id == bookingId &&
@@ -437,7 +437,7 @@ namespace BestEventsTest
 
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
             mockUserAccessor.Setup(a => a.GetUser()).Returns(wrongUser);
-            mockUserRepo.Setup(repo => repo.GetUserAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+            mockUserRepo.Setup(repo => repo.GetUserAsync(user.Name, It.IsAny<CancellationToken>())).ReturnsAsync(user);
             mockTransaction.Setup(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()));
             mockBookingRepo.Setup(repo => repo.GetBookingForUpdateAsync(bookingId, CancellationToken.None)).ReturnsAsync(booking);
             mockBookingRepo.Setup(repo => repo.UpdateBookingAsync(It.Is<Booking>(b => b.Id == bookingId &&

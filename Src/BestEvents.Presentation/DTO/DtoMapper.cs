@@ -46,6 +46,8 @@ namespace BestEvents.Presentation
         /// <param name="booking">Доменная модель бронирования</param>
         /// <returns>DTO модель результата бронирования</returns>
         [MapperIgnoreSource(nameof(Booking.Event))]
+        [MapperIgnoreSource(nameof(Booking.User))]
+        [MapperIgnoreSource(nameof(Booking.UserId))]
         public partial BookingResultDto MapBookingToBookingResultDto(Booking booking);
 
         /// <summary>

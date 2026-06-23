@@ -17,6 +17,9 @@ namespace BestEvents.Infrastructure
         {
             ct.ThrowIfCancellationRequested();
 
+            if (string.IsNullOrEmpty(password))
+                throw new UserRegisterException(Messages_ru.PasswordIsNotSent);
+
             string hash = GetPasswordHashCode(password);
             Guid id = Guid.NewGuid();
             try
@@ -31,6 +34,7 @@ namespace BestEvents.Infrastructure
            
         }
 
+        /// <inheritdoc/>
         public async Task<string> GetTokenAsync(string userName, string password, CancellationToken ct)
         {
             var user = await userRepository.GetUserAsync(userName, ct) ??
@@ -55,7 +59,7 @@ namespace BestEvents.Infrastructure
                 Audience = configuration["JwtSettings:Audience"],
                 Claims = claims,
                 NotBefore = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(double.Parse(configuration["JwtSettings:ExpiryInMinutes"]!)),
+                Expires = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryInMinutes"]!)),
                 IssuedAt = DateTime.UtcNow,
                 SigningCredentials = creds
             };

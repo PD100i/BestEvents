@@ -75,7 +75,8 @@ namespace BestEventsIntegrationTest
             await context.SaveChangesAsync(CancellationToken.None);
             var _event = CreateEvent(eventEntity);
             var bookingId = Guid.NewGuid();
-            var booking = new Booking(bookingId, _event);
+            var user = User.CreateUser(Guid.NewGuid(), "user", "passwordhash", "");
+            var booking = new Booking(bookingId, _event, user);
 
             using var actContext = CreateContext();
             var repository = new BookingRepository(actContext, new EntityMapper());

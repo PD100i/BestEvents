@@ -106,6 +106,15 @@ namespace BestEvents.Presentation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не найден секрктный ключ для JWT аутентификации.
+        /// </summary>
+        public static string SecretKeyNotFound {
+            get {
+                return ResourceManager.GetString("SecretKeyNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Неизвестный тип ошибки.
         /// </summary>
         public static string UndefinedError {

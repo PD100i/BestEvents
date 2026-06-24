@@ -74,6 +74,21 @@ namespace BestEventsTest
         }
 
         [Fact]
+        public async Task RegisterUserAsync_UserExsists_ShoultThrowRegisterException()
+        {
+            // Arrange
+            var fixture = new UserIdentityServiceFixture();
+            string userName = "user";
+            string password = "password";
+            User user = User.CreateUser(Guid.NewGuid(), userName, "passwordHash", "");
+            string role = "";
+            fixture.MockUserRepo.Setup(repo => repo.GetUserAsync(userName, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+
+            // Act && Assert
+            await Assert.ThrowsAsync<UserRegisterException>(() => fixture.UserIdentityService.RegistrUserAsync(userName, password, role, CancellationToken.None));
+        }
+
+        [Fact]
         public async Task RegisterUserAsync_NotCorrectPassword_ShouldThrowRegisterException()
         {
             // Arrange
@@ -95,7 +110,6 @@ namespace BestEventsTest
             string userName = "user";
             string password = "";
             string role = "Superuser";
-
 
             // Act && Assert
             await Assert.ThrowsAsync<UserRegisterException>(() => fixture.UserIdentityService.RegistrUserAsync(userName, password, role, CancellationToken.None));
@@ -166,8 +180,28 @@ namespace BestEventsTest
             Assert.True((jwtToken.ValidTo - expectedExpiration).Duration() < TimeSpan.FromMinutes(1));
         }
 
+
         [Fact]
-        public async Task GetTokenAsync_WrongPassword_ThrowUserNotFound()
+        public async Task GetTokenAsync_UnregistredUser_ThrowUserNotFound()
+        {
+            // Arrange
+            var fixture = new UserIdentityServiceFixture();
+            string userName = "user";
+            string password = "password";
+            string wrongPassword = "wrongPassword";
+            string passwordHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(password)));
+            string role = "Admin";
+            Guid userId = Guid.NewGuid();
+            var user = BestEvents.Domain.User.CreateUser(userId, userName, passwordHash, role);
+
+            fixture.MockUserRepo.Setup(repo => repo.GetUserAsync(userName, It.IsAny<CancellationToken>())).ReturnsAsync(default(BestEvents.Domain.User));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<UserNotFoundException>(() => fixture.UserIdentityService.GetTokenAsync(userName, wrongPassword, CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task GetTokenAsync_WrongPassword_ShouldThrowCreateTokenException()
         {
             // Arrange
             var fixture = new UserIdentityServiceFixture();

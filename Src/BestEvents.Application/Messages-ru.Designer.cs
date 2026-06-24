@@ -115,6 +115,15 @@ namespace BestEvents.Application {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не найден пользователь с именем {0}.
+        /// </summary>
+        public static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Попытка пагинации с недопустимым значением номера страницы (page={0}).
         /// </summary>
         public static string WrongPageForPagination {

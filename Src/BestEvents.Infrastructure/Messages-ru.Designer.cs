@@ -97,6 +97,15 @@ namespace BestEvents.Infrastructure {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не найден секретный кдюч для JWT аутентификации.
+        /// </summary>
+        public static string SecretKeyNotFound {
+            get {
+                return ResourceManager.GetString("SecretKeyNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка обновления бронирования {0}.
         /// </summary>
         public static string UpdateBookingErrorMessage {
@@ -111,6 +120,15 @@ namespace BestEvents.Infrastructure {
         public static string UpdateEventErrorMessage {
             get {
                 return ResourceManager.GetString("UpdateEventErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ползователь с имененем {0} уже существует.
+        /// </summary>
+        public static string UserAlreadyExists {
+            get {
+                return ResourceManager.GetString("UserAlreadyExists", resourceCulture);
             }
         }
         

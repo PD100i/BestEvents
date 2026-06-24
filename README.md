@@ -12,7 +12,7 @@ PostgreSQL
 ## Установка и запуск
 1. Клонируйте репозиторий
 2. Перейдите в папку проекта bestevents
-3. Сгенерируйте ключ для Jwt аутентификации, например командой [Convert]::ToBase64String((1..64 | % { [byte](Get-Random -Min 0 Max 256) }))
+3. Сгенерируйте ключ для Jwt аутентификации, например командой openssl rand -base64 32
 4. Выполните команды dotnet user-secrets init и dotnet user-secrets set "JwtSettings:SecretKey" "здесь сгенерированный ключ"
 5. Запустите docker и в терминале выполните команду docker compose up -d 
 6. В терминале выполните команду dotnet run

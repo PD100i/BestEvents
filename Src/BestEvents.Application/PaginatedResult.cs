@@ -32,7 +32,7 @@
         /// <summary>
         /// Общее количество записей
         /// </summary>
-        public int TotalResultsNumber { get; set; }
+        public int TotalResultsNumber { get; set; } = 0;
 
         /// <summary>
         /// Содержание
@@ -42,12 +42,12 @@
         /// <summary>
         /// Текущая страница
         /// </summary>
-        public int CurrentPage { get; set; }
+        public int CurrentPage { get; set; } = 1;
 
         /// <summary>
         /// Количество записей на странице
         /// </summary>
-        public int ResultsNumberOnPage { get; set; } 
+        public int ResultsNumberOnPage { get; set; } = 0;
 
         
 

@@ -141,4 +141,7 @@
   <data name="WrongSizeForPagination" xml:space="preserve">
     <value>Попытка пагинации с недопустимым значением размера выборки на странице (size={0})</value>
   </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Не найден пользователь с именем {0}</value>
+  </data>
 </root>

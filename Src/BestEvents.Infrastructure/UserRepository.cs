@@ -11,15 +11,16 @@ namespace BestEvents.Infrastructure
         public async Task AddUserAsync(User user, CancellationToken ct = default)
         {
             await dbContext.Users.AddAsync(entityMapper.MapUserToEntity(user), ct);
+            await dbContext.SaveChangesAsync();
         }
 
-        public async Task<User> GetUserAsync(string userName, CancellationToken ct = default)
+        public async Task<User?> GetUserAsync(string userName, CancellationToken ct = default)
         {
             var userEntity = await dbContext.Users
                 .FirstOrDefaultAsync(u => u.Name == userName, ct);
 
             if (userEntity == null)
-                throw new UserNotFoundException(string.Format(Messages_ru.UserNotFound, userName));
+                return null;
 
             return entityMapper.MapEntityToUser(userEntity);
         }

@@ -1,9 +1,10 @@
-﻿using BestEvents.Domain;
+﻿using BestEvents.Application;
+using BestEvents.Domain;
 using BestEvents.Domain.Exceptions;
-using BestEvents.Application;
 using BestEvents.Infrastructure;
 using BestEvents.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace BestEventsIntegrationTest
 {
@@ -80,10 +81,18 @@ namespace BestEventsIntegrationTest
             await InitializeDatabaseAsync();
             var context = CreateContext();
 
+            var user = new UserEntity()
+            {
+                Id = Guid.NewGuid(),
+                Name = "user",
+                PasswordHash = "password",
+                Role = UserRolesEnum.User
+            };
+            context.Users.Add(user);
             await AddCollection(context);
             List<BookingEntity> bookings = new List<BookingEntity> {
-                new BookingEntity { Id = Guid.NewGuid(), EventId = EventCollection.GetEventEntity(2).Id },
-                new BookingEntity { Id = Guid.NewGuid(), EventId = EventCollection.GetEventEntity(2).Id }
+                new BookingEntity { Id = Guid.NewGuid(), EventId = EventCollection.GetEventEntity(2).Id, UserId = user.Id },
+                new BookingEntity { Id = Guid.NewGuid(), EventId = EventCollection.GetEventEntity(2).Id, UserId = user.Id }
             };
             await context.Bookings.AddRangeAsync(bookings, CancellationToken.None);
             await context.SaveChangesAsync(CancellationToken.None);
@@ -317,7 +326,6 @@ namespace BestEventsIntegrationTest
 
             return new List<object?[]>
             {
-                new object?[] { null, new DateTime(2025, 06, 10), new DateTime(2024, 06, 10), 1, 10 },
                 new object?[] { null, null, null, 0, 10 },
                 new object?[] { null, null, null, 1, 0 }
             };

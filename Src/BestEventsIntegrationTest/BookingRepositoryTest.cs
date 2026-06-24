@@ -2,6 +2,7 @@
 using BestEvents.Infrastructure;
 using BestEvents.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 
 namespace BestEventsIntegrationTest
@@ -37,21 +38,34 @@ namespace BestEventsIntegrationTest
                 Id = id,
                 Title = "Test Event",
                 Description = "This is a test event.",
-                StartAt = DateTime.UtcNow.AddDays(-5),
+                StartAt = DateTime.UtcNow.AddDays(1),
                 EndAt = DateTime.UtcNow.AddDays(5),
                 TotalSeats = TOTAL_SEATS,
                 AvailableSeats = TOTAL_SEATS,
             };
         }
 
-        private static BookingEntity CreateBookingEntity(EventEntity _event)
+        private static UserEntity CreateUser(Guid userId)
+        {
+            return new UserEntity()
+            {
+                Id = userId,
+                Name = "user",
+                PasswordHash = "password",
+                Role = UserRolesEnum.User
+            };
+        }
+
+        private static BookingEntity CreateBookingEntity(EventEntity _event, UserEntity user, BookingStatus status)
         {
             return new BookingEntity()
             {
                 Id = Guid.NewGuid(),
                 EventId = _event.Id,
                 Event = _event,
-                Status = BookingStatus.Pending,
+                UserId = user.Id,
+                User = user,
+                Status = status,
                 CreatedAt = DateTime.UtcNow,
             };
 
@@ -109,12 +123,16 @@ namespace BestEventsIntegrationTest
             using var context = CreateContext();
             var eventId = Guid.NewGuid();
             var _event = CreateEventEntity(eventId);
-            _event.AvailableSeats -= 1;
+            _event.AvailableSeats -= 1;          
             context.Events.Add(_event);
+            var userId = Guid.NewGuid();
+            var user = CreateUser(userId);
+            context.Users.Add(user);
             var booking = new BookingEntity
             {
                 Id = Guid.NewGuid(),
                 EventId = _event.Id,
+                UserId = userId,
                 Status = BookingStatus.Pending,
                 CreatedAt = DateTime.UtcNow
             };
@@ -131,6 +149,7 @@ namespace BestEventsIntegrationTest
             Assert.NotNull(result);
             Assert.Equal(booking.Id, result.Id);
             Assert.Equal(booking.EventId, result.EventId);
+            Assert.Equal(booking.UserId, result.UserId);
             Assert.Equal(booking.Status, result.Status);
             var dif = booking.CreatedAt - result.CreatedAt;
             Assert.True(booking.CreatedAt - result.CreatedAt <= timePrecision);
@@ -160,10 +179,14 @@ namespace BestEventsIntegrationTest
             var _event = CreateEventEntity(eventId);
             _event.AvailableSeats -= 1;
             context.Events.Add(_event);
+            var userId = Guid.NewGuid();
+            var user = CreateUser(userId);
+            context.Users.Add(user);
             var booking = new BookingEntity
             {
                 Id = Guid.NewGuid(),
                 EventId = _event.Id,
+                UserId = userId,
                 Status = BookingStatus.Pending,
                 CreatedAt = DateTime.UtcNow
             };
@@ -180,6 +203,7 @@ namespace BestEventsIntegrationTest
             Assert.NotNull(result);
             Assert.Equal(booking.Id, result.Id);
             Assert.Equal(booking.EventId, result.EventId);
+            Assert.Equal(booking.UserId, result.UserId);
             Assert.Equal(booking.Status, result.Status);
             var dif = booking.CreatedAt - result.CreatedAt;
             Assert.True(booking.CreatedAt - result.CreatedAt <= timePrecision);
@@ -209,34 +233,22 @@ namespace BestEventsIntegrationTest
             using var context = CreateContext();
             var eventId = Guid.NewGuid();
             var _event = CreateEventEntity(eventId);
-            int pendingQuentity = 10;
-            List<BookingEntity> bookings = [];
-            for (int i = 0; i < pendingQuentity; i++)
-            {
-                bookings.Add(new BookingEntity
-                {
-                    Id = Guid.NewGuid(),
-                    EventId = eventId,
-                    Event = _event,
-                    Status = BookingStatus.Pending,
-                    CreatedAt = DateTime.UtcNow
-                });
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                bookings.Add(new BookingEntity
-                {
-                    Id = Guid.NewGuid(),
-                    EventId = _event.Id,
-                    Event = _event,
-                    Status = BookingStatus.Confirmed,
-                    CreatedAt = DateTime.UtcNow.AddMinutes(-2),
-                    ProcessedAt = DateTime.UtcNow.AddMinutes(-1)
-                });
-            }
+            var userId = Guid.NewGuid();    
+            var user = CreateUser(userId);
+            int pendingQuantity = 3;
+            int confirmedQuantity = 5;
+            int cancelledQuantity = 7;
+            int rejectedQuantity = 9;
+            List<BookingEntity> pendingBookings = Enumerable.Range(0, pendingQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Pending)).ToList();
+            List<BookingEntity> confirmedBookings = Enumerable.Range(0, confirmedQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Confirmed)).ToList();
+            List<BookingEntity> cancelledBookings = Enumerable.Range(0, cancelledQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Cancelled)).ToList();
+            List<BookingEntity> rejectedBookings = Enumerable.Range(0, rejectedQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Rejected)).ToList();
 
             context.Events.Add(_event);
-            context.Bookings.AddRange(bookings);
+            context.Bookings.AddRange(pendingBookings);
+            context.Bookings.AddRange(confirmedBookings);
+            context.Bookings.AddRange(cancelledBookings);
+            context.Bookings.AddRange(rejectedBookings);
 
             await context.SaveChangesAsync(CancellationToken.None);
 
@@ -244,11 +256,11 @@ namespace BestEventsIntegrationTest
             var bookingRepository = new BookingRepository(actContext, new EntityMapper());
 
             // Act
-            List<Guid> pendingBookings = await bookingRepository.GetPendingBookingsAsync(CancellationToken.None);
+            List<Guid> result = await bookingRepository.GetPendingBookingsAsync(CancellationToken.None);
 
             // Arrange
-            Assert.NotNull(pendingBookings);
-            Assert.Equal(pendingQuentity, pendingBookings.Count);
+            Assert.NotNull(result);
+            Assert.Equal(pendingQuantity, result.Count);
         }
 
         [Fact]
@@ -260,21 +272,20 @@ namespace BestEventsIntegrationTest
             var eventId = Guid.NewGuid();
             var _event = CreateEventEntity(eventId);
             List<BookingEntity> bookings = [];
-            for (int i = 0; i < 3; i++)
-            {
-                bookings.Add(new BookingEntity
-                {
-                    Id = Guid.NewGuid(),
-                    EventId = _event.Id,
-                    Event = _event,
-                    Status = BookingStatus.Confirmed,
-                    CreatedAt = DateTime.UtcNow.AddMinutes(-2),
-                    ProcessedAt = DateTime.UtcNow.AddMinutes(-1)
-                });
-            }
+            var userId = Guid.NewGuid();
+            var user = CreateUser(userId);
+            context.Users.Add(user);
+            int confirmedQuantity = 5;
+            int cancelledQuantity = 7;
+            int rejectedQuantity = 9;
+            List<BookingEntity> confirmedBookings = Enumerable.Range(0, confirmedQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Confirmed)).ToList();
+            List<BookingEntity> cancelledBookings = Enumerable.Range(0, cancelledQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Cancelled)).ToList();
+            List<BookingEntity> rejectedBookings = Enumerable.Range(0, rejectedQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Rejected)).ToList();
 
             context.Events.Add(_event);
-            context.Bookings.AddRange(bookings);
+            context.Bookings.AddRange(confirmedBookings);
+            context.Bookings.AddRange(cancelledBookings);
+            context.Bookings.AddRange(rejectedBookings);
 
             await context.SaveChangesAsync(CancellationToken.None);
 
@@ -289,6 +300,44 @@ namespace BestEventsIntegrationTest
             Assert.Empty(pendingBookings);
         }
 
+        [Fact]
+        public async Task GetUsersActiveBooking_ThereIsSomeUsersBooking_ShouldReturnAllUsersBookings()
+        {
+            // Arrange
+            await InitializeDatabaseAsync();
+            using var context = CreateContext();
+            var eventId = Guid.NewGuid();
+            var _event = CreateEventEntity(eventId);
+            var userId = Guid.NewGuid();
+            var user = CreateUser(userId);
+            int pendingQuantity = 3;
+            int confirmedQuantity = 5;
+            int cancelledQuantity = 7;
+            int rejectedQuantity = 9;
+            List<BookingEntity> pendingBookings = Enumerable.Range(0, pendingQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Pending)).ToList();
+            List<BookingEntity> confirmedBookings = Enumerable.Range(0, confirmedQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Confirmed)).ToList();
+            List<BookingEntity> cancelledBookings = Enumerable.Range(0, cancelledQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Cancelled)).ToList();
+            List<BookingEntity> rejectedBookings = Enumerable.Range(0, rejectedQuantity).Select(_ => CreateBookingEntity(_event, user, BookingStatus.Rejected)).ToList();
+
+            context.Events.Add(_event);
+            context.Bookings.AddRange(pendingBookings);
+            context.Bookings.AddRange(confirmedBookings);
+            context.Bookings.AddRange(cancelledBookings);
+            context.Bookings.AddRange(rejectedBookings);
+
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            using var actContext = CreateContext();
+            var bookingRepository = new BookingRepository(actContext, new EntityMapper());
+
+            // Act
+            List<Booking> activeBooking = await bookingRepository.GetActiveBookingsByUserAsync(userId, CancellationToken.None);
+
+            // Arrange
+            Assert.NotNull(activeBooking);
+            Assert.Equal(activeBooking.Count, pendingQuantity + confirmedQuantity);
+        }
+
 
         [Fact]
         public async Task UpdateBookingAsync_EventAndBookingChanged_ShouldUpdateBookingAndEvent()
@@ -299,6 +348,8 @@ namespace BestEventsIntegrationTest
             var bookingId = Guid.NewGuid();
             var eventEntity = CreateEventEntity(eventId);
             var _event = CreateEvent(eventEntity);
+            var userId = Guid.NewGuid();
+            var user = CreateUser(userId);
             _event.AvailableSeats = 5;
             DateTime bookingCreatedAt = DateTime.UtcNow.AddSeconds(-2);
             DateTime bookingProcessedAt = DateTime.UtcNow;
@@ -309,10 +360,11 @@ namespace BestEventsIntegrationTest
                 CreatedAt = bookingCreatedAt,
                 Status = BookingStatus.Pending,
                 EventId = eventId,
-                Event = eventEntity
+                UserId = userId
             };
                                                         
             using var context = CreateContext();
+            context.Users.Add(user);
             context.Events.Add(eventEntity);
             context.Bookings.Add(bookingEntity);
             await context.SaveChangesAsync(CancellationToken.None);
@@ -322,6 +374,7 @@ namespace BestEventsIntegrationTest
                 CreatedAt = bookingCreatedAt,
                 Status = BookingStatus.Rejected,
                 EventId = eventId,
+                UserId = userId,
                 Event = _event,
                 ProcessedAt = DateTime.UtcNow
             };
@@ -333,12 +386,14 @@ namespace BestEventsIntegrationTest
 
             //Assert
             using var assertContext = CreateContext();
-            var bookingFromMemory = await assertContext.Bookings.Include(b => b.Event).FirstAsync(b => b.Id == bookingId, CancellationToken.None);
+            var bookingFromMemory = await assertContext.Bookings.Include(b => b.Event).Include(b => b.User).FirstAsync(b => b.Id == bookingId, CancellationToken.None);
             Assert.Equal(bookingId, bookingFromMemory.Id);
             Assert.Equal(eventId, bookingFromMemory.EventId);
+            Assert.Equal(userId, bookingFromMemory.UserId);
             Assert.Equal(booking.Status, bookingFromMemory.Status);
             Assert.True(bookingFromMemory.ProcessedAt > bookingFromMemory.CreatedAt);
             Assert.NotNull(bookingFromMemory.Event);
+            Assert.NotNull(bookingFromMemory.User);
             Assert.Equal(_event.AvailableSeats, bookingFromMemory.Event.AvailableSeats);
         }
 

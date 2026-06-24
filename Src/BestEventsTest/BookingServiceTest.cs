@@ -1,8 +1,7 @@
-﻿using BestEvents.Domain;
-using BestEvents.Application;
-using BestEvents.Domain.Exceptions;
+﻿using BestEvents.Application;
 using BestEvents.Application.Exceptions;
-using Microsoft.EntityFrameworkCore.Storage;
+using BestEvents.Domain;
+using BestEvents.Domain.Exceptions;
 using Moq;
 
 
@@ -95,12 +94,14 @@ namespace BestEventsTest
         }
 
         [Fact]
-        public async Task CreateBookingAsync_GoodCase_ReturnBooking()
+        public async Task CreateBookingAsync_CorrectData_ReturnBooking()
         {
             // Arrange
             var bookingId = Guid.NewGuid();
             var user = CreateUser();
             var _event = CreateEvent();
+            List<Booking> previosBookings = Enumerable.Range(0, 9).Select(_ => new Booking(Guid.NewGuid(), _event, user)).ToList();
+
             var mockBookingRepo = new Mock<IBookingRepository>();
             var mockEventRepo = new Mock<IEventRepository>();
             var mockUserRepo = new Mock<IUserRepository>();
@@ -111,11 +112,11 @@ namespace BestEventsTest
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUserRepo.Object, mockUow.Object, mockUserAccessor.Object);
             
             mockUserAccessor.Setup(accessor => accessor.GetUser()).Returns(user);
-            mockUserRepo.Setup(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => user);
+            mockUserRepo.Setup(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
             mockTransaction.Setup(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()));
             mockEventRepo.Setup(repo => repo.GetEventForUpdateAsync(_event.Id, CancellationToken.None)).ReturnsAsync(() => _event);
-            mockBookingRepo.Setup(repo => repo.GetActiveBookingsByUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => []);
+            mockBookingRepo.Setup(repo => repo.GetActiveBookingsByUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(previosBookings);
             mockBookingRepo.Setup(repo => repo.AddBookingAsync(It.IsAny<Booking>(), It.IsAny<CancellationToken>()));
 
             // Act
@@ -201,6 +202,7 @@ namespace BestEventsTest
             var bookingId = Guid.NewGuid();
             var _event = CreateEvent();
             _event.AvailableSeats = 0;
+            var user = CreateUser();
 
             var mockBookingRepo = new Mock<IBookingRepository>();
             var mockEventRepo = new Mock<IEventRepository>();
@@ -210,6 +212,8 @@ namespace BestEventsTest
             var mockTransaction = new Mock<ITransaction>();
             var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUserRepo.Object, mockUow.Object, mockUserAccessor.Object);
 
+            mockUserAccessor.Setup(accessor => accessor.GetUser()).Returns(user);
+            mockUserRepo.Setup(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
             mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
             mockTransaction.Setup(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()));
             mockEventRepo.Setup(repo => repo.GetEventForUpdateAsync(_event.Id, CancellationToken.None)).ReturnsAsync(() => _event);
@@ -219,10 +223,49 @@ namespace BestEventsTest
             await Assert.ThrowsAsync<NoAvailableSeatsException>(() => bookingService.CreateBookingAsync(_event.Id, CancellationToken.None));
             mockUow.Verify(uow => uow.BeginTransactionAsync(), Times.Once());
             mockTransaction.Verify(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()), Times.Never());
+            mockUserAccessor.Verify(repo => repo.GetUser(), Times.Once());
+            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once());
+            mockEventRepo.Verify(repo => repo.GetEventForUpdateAsync(_event.Id, It.IsAny<CancellationToken>()), Times.Once());
+            mockBookingRepo.Verify(repo => repo.AddBookingAsync(It.Is<Booking>(b => b.Id == bookingId), It.IsAny<CancellationToken>()), Times.Never());          
+            
+        }
+
+        [Fact]
+        public async Task CreateBookingAsync_BookingLimitExceeded_ShouldThrowBookingLimitExceededException()
+        {
+            // Arrange
+            var _event = CreateEvent();
+            int expectedAvailabelSeats = _event.AvailableSeats;
+            var user = CreateUser();
+            var bookingId = Guid.NewGuid();
+            List<Booking> previosBookings = Enumerable.Range(0, 10).Select(_ => new Booking(Guid.NewGuid(), _event, user)).ToList();
+
+            var mockBookingRepo = new Mock<IBookingRepository>();
+            var mockEventRepo = new Mock<IEventRepository>();
+            var mockUow = new Mock<IUnitOfWork>();
+            var mockUserRepo = new Mock<IUserRepository>();
+            var mockUserAccessor = new Mock<IUserAccessor>();
+            var mockTransaction = new Mock<ITransaction>();
+            var bookingService = new BookingService(mockBookingRepo.Object, mockEventRepo.Object, mockUserRepo.Object, mockUow.Object, mockUserAccessor.Object);
+
+            mockUserAccessor.Setup(accessor => accessor.GetUser()).Returns(user);
+            mockUserRepo.Setup(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
+            mockBookingRepo.Setup(repo => repo.GetActiveBookingsByUserAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(previosBookings);
+            mockUow.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(() => mockTransaction.Object);
+            mockTransaction.Setup(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()));
+            mockEventRepo.Setup(repo => repo.GetEventForUpdateAsync(_event.Id, CancellationToken.None)).ReturnsAsync(() => _event);
+            mockBookingRepo.Setup(repo => repo.AddBookingAsync(It.Is<Booking>(b => b.Id == bookingId), It.IsAny<CancellationToken>()));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<BookingLimitExceededException>(() => bookingService.CreateBookingAsync(_event.Id, CancellationToken.None));
+            Assert.Equal(expectedAvailabelSeats, _event.AvailableSeats);
+            mockUow.Verify(uow => uow.BeginTransactionAsync(), Times.Once());
+            mockTransaction.Verify(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()), Times.Never());
+            mockUserAccessor.Verify(repo => repo.GetUser(), Times.Once());
+            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
             mockEventRepo.Verify(repo => repo.GetEventForUpdateAsync(_event.Id, It.IsAny<CancellationToken>()), Times.Once());
             mockBookingRepo.Verify(repo => repo.AddBookingAsync(It.Is<Booking>(b => b.Id == bookingId), It.IsAny<CancellationToken>()), Times.Never());
-            mockUserAccessor.Verify(repo => repo.GetUser(), Times.Never());
-            mockUserRepo.Verify(repo => repo.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
+
         }
 
         [Fact]

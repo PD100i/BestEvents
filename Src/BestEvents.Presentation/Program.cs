@@ -6,6 +6,8 @@ using BestEvents.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddPresentation(builder.Configuration);
@@ -29,7 +31,7 @@ app.UseAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();  
     db.Database.Migrate();
 }
 

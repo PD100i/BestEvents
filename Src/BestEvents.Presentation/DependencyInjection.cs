@@ -1,8 +1,10 @@
 ﻿
 using BestEvents.Application;
 using BestEvents.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using System.Reflection;
 using System.Text;
 
@@ -22,11 +24,17 @@ namespace BestEvents.Presentation
         /// <returns></returns>
         public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddHttpContextAccessor();
             services.AddScoped<IUserAccessor, UserAccessor>();
+            const string BearerSheme = "JwtBearerSheme";
+
+            string? iss = configuration["JwtSettings:Issuer"];
+            string? aud = configuration["JwtSettings:Audience"];
+            string? key = configuration["JwtSettings:SecretKey"];
 
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = "JwtBearerSheme";
+                options.DefaultAuthenticateScheme = BearerSheme;
             })
             .AddJwtBearer("JwtBearerSheme", options =>
             {
@@ -36,12 +44,14 @@ namespace BestEvents.Presentation
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = "MyAuthServer",
-                    ValidAudience = "MyApiClient",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SUPER_SECRET_KEY_IMPORTANT_MUST_BE_LONG_ENOUGH_12345"))
+                    ValidIssuer = configuration["JwtSettings:Issuer"],
+                    ValidAudience = configuration["JwtSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]
+                                                ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound)))
                 };
-            });
 
+                
+            });
 
             services.AddControllers(options =>
             {
@@ -57,6 +67,20 @@ namespace BestEvents.Presentation
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
+
+                options.AddSecurityDefinition(BearerSheme, new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Scheme = BearerSheme,
+                    BearerFormat = "JWT",
+                    Type = SecuritySchemeType.Http,
+                    In = ParameterLocation.Header,
+                });
+
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference(BearerSheme, document)] = []
+                });
             });
 
             return services;

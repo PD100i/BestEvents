@@ -19,6 +19,8 @@ namespace BestEvents.Infrastructure
 
             if (string.IsNullOrEmpty(password))
                 throw new UserRegisterException(Messages_ru.PasswordIsNotSent);
+            if (await CheckIfUserExistsAsync(userName,  ct))
+                throw new UserRegisterException(string.Format(Messages_ru.UserAlreadyExists, userName));
 
             string hash = GetPasswordHashCode(password);
             Guid id = Guid.NewGuid();
@@ -38,7 +40,7 @@ namespace BestEvents.Infrastructure
         public async Task<string> GetTokenAsync(string userName, string password, CancellationToken ct)
         {
             var user = await userRepository.GetUserAsync(userName, ct) ??
-                throw new CreateTokenException(string.Format(Messages_ru.UserNotFound, userName));
+                throw new UserNotFoundException(string.Format(Messages_ru.UserNotFound, userName));
             if (user.PasswordHash != GetPasswordHashCode(password))
                 throw new CreateTokenException(Messages_ru.WrongPassword);
 
@@ -50,7 +52,9 @@ namespace BestEvents.Infrastructure
                 [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] 
+                ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound))); 
+                
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             SecurityTokenDescriptor descriptor = new()
@@ -71,6 +75,12 @@ namespace BestEvents.Infrastructure
         {
             var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
             return Convert.ToHexString(bytes);
+        }
+
+        private async Task<bool> CheckIfUserExistsAsync(string userName, CancellationToken ct)
+        {
+            return (await userRepository.GetUserAsync(userName, ct)) != null;
+            
         }
     }
 }

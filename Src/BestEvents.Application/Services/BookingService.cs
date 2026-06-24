@@ -31,9 +31,6 @@ namespace BestEvents.Application
             if (_event.StartAt < DateTime.UtcNow)
                 throw new CreateBookingException(Messages_ru.EventBegun);
 
-            // Проверяем наличие свободных мест и резервируем их
-            _event.TryReserveSeats();
-
             // Получаем информацию о пользователе из контекста запроса
             var userFromRequest = userAccessor.GetUser();
 
@@ -42,6 +39,12 @@ namespace BestEvents.Application
 
             string userName = userFromRequest.Name;
             var user = await userRepository.GetUserAsync(userName, ct);
+            if (user == null)
+                throw new CreateBookingException(string.Format(Messages_ru.UserNotFound, userName));
+
+            // Проверяем наличие свободных мест и резервируем их
+            _event.TryReserveSeats();
+
             var booking = new Booking(bookingId, _event, user);
             await eventRepository.ReplaceEventAsync(_event, ct);
             await bookingRepository.AddBookingAsync(booking, ct);
@@ -110,7 +113,9 @@ namespace BestEvents.Application
         private async Task CheckUsersBookingAvailability(Guid userId, CancellationToken ct)
         {
             var bookings = await bookingRepository.GetActiveBookingsByUserAsync(userId, ct);
-            if (bookings.Count > MaxBookingsPerUser)
+            if (bookings == null)
+                return;
+            if (bookings.Count >= MaxBookingsPerUser)
                 throw new BookingLimitExceededException(string.Format(Messages_ru.BookingLimitExceeded, MaxBookingsPerUser));
         }
     }

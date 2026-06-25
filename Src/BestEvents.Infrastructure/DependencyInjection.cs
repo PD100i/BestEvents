@@ -27,6 +27,7 @@ namespace BestEvents.Infrastructure
             services.AddSingleton<Pagination<EventEntity>>();
             services.AddSingleton<EntityMapper>();
 
+            services.AddScoped<IUserIdentityService, UserIdentityService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEventRepository, EventRepository>();

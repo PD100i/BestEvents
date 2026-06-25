@@ -129,7 +129,7 @@ namespace BestEventsTest
             var otherUser = User.CreateUser(Guid.NewGuid(), "OtherUser", "hashedpassword", "User");
             var booking = new Booking(bookingId, CreateEvent(), user);
             // Act & Assert
-            Assert.Throws<NoRightOfCancelBookingException>(() => booking.Cancel(otherUser));
+            Assert.Throws<NoRightForOperation>(() => booking.Cancel(otherUser));
         }
     }
 }

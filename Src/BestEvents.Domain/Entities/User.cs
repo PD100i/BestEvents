@@ -26,7 +26,7 @@ namespace BestEvents.Domain
         {
             if (string.IsNullOrEmpty(userId))
                 throw new UserWrongParameterException(Messages_ru.UserIdIsNotSent);
-            if (Guid.TryParse(userId, out Guid id))
+            if (!Guid.TryParse(userId, out Guid id))
                 throw new UserWrongParameterException(Messages_ru.WrongUserId);
             return CreateUser(id, name, role);
         }
@@ -37,11 +37,6 @@ namespace BestEvents.Domain
 
             if (string.IsNullOrEmpty(name))
                 throw new UserWrongParameterException(Messages_ru.UserNameIsNotSent);
-            if (!(name.All(c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))))
-                throw new UserWrongParameterException(Messages_ru.WrongUserNameFormat);
-
-            if (!(name.All(c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))))
-                throw new UserWrongParameterException(Messages_ru.WrongUserNameFormat);
 
             if (string.IsNullOrEmpty(role) || role == "User")
                 user.Role = UserRolesEnum.User;
@@ -75,7 +70,7 @@ namespace BestEvents.Domain
         /// </summary>
         public UserRolesEnum Role { get; set; }
 
-        public List<Booking> Bookings { get; set; } = [];
+        
     }
 
     /// <summary>

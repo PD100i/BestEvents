@@ -58,12 +58,11 @@ namespace BestEventsTest
                                                                                    u.Role == expectedRole), It.IsAny<CancellationToken>()));
         }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData("АБвгд")]
-        public async Task RegisterUserAsync_NotCorrectUserName_ShouldThrowRegisterException(string userName)
+        [Fact]
+        public async Task RegisterUserAsync_NotCorrectUserName_ShouldThrowRegisterException()
         {
             // Arrange
+            string userName = "";
             var fixture = new UserIdentityServiceFixture();
             string password = "password";
             string role = "";
@@ -169,7 +168,7 @@ namespace BestEventsTest
             Assert.Equal(jwtToken?.Issuer, expectedIssuer);
 
             Assert.NotNull(jwtToken);
-            jwtToken.TryGetClaim(JwtRegisteredClaimNames.Name, out Claim _name);
+            jwtToken.TryGetClaim(JwtRegisteredClaimNames.PreferredUsername, out Claim _name);
             jwtToken.TryGetClaim(JwtRegisteredClaimNames.Sub, out Claim _sub);
             jwtToken.TryGetClaim("role", out Claim _role);
 

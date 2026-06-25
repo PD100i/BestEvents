@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BestEvents.Domain.Exceptions
 {
-    public class NoRightOfCancelBookingException() : Exception (Messages_ru.NoRightOfCancelBooking)
+    public class NoRightForOperation(string message) : Exception (message)
     {
     }
 }

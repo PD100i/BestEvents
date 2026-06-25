@@ -50,6 +50,8 @@ namespace BestEvents.Infrastructure
 
         [MapperIgnoreSource(nameof(Booking.Event))]
         [MapperIgnoreTarget(nameof(BookingEntity.Event))]
+        [MapperIgnoreSource(nameof(Booking.User))]
+        [MapperIgnoreTarget(nameof(BookingEntity.User))]
         public partial BookingEntity MapBookingToEntity(Booking booking);
 
         /// <summary>
@@ -60,6 +62,8 @@ namespace BestEvents.Infrastructure
         /// 
         [MapperIgnoreSource(nameof(Booking.Event))]
         [MapperIgnoreTarget(nameof(BookingEntity.Event))]
+        [MapperIgnoreSource(nameof(Booking.User))]
+        [MapperIgnoreTarget(nameof(BookingEntity.User))]
         public partial void UpdateBookingEntity(Booking booking, BookingEntity entity);
 
         /// <summary>
@@ -74,6 +78,7 @@ namespace BestEvents.Infrastructure
         /// </summary>
         /// <param name="user">Доменная модель User, которую нужно преобразовать в сущность.</param>
         /// <returns>Сущность UserEntity, соответствующая доменной модели User.</returns>
+        [MapperIgnoreTarget(nameof(UserEntity.Bookings))]
         public partial UserEntity MapUserToEntity(User user);
 
         /// <summary>
@@ -81,6 +86,7 @@ namespace BestEvents.Infrastructure
         /// </summary>
         /// <param name="entity">Сущность UserEntity, которую нужно преобразовать в доменную модель.</param>
         /// <returns>Доменная модель User, соответствующая сущности UserEntity.</returns>
+        [MapperIgnoreSource(nameof(UserEntity.Bookings))]
         public partial User MapEntityToUser(UserEntity entity);
 
         /// <summary>

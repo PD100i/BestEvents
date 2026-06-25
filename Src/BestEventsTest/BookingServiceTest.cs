@@ -476,7 +476,7 @@ namespace BestEventsTest
             
 
             // Act & Assert
-            await Assert.ThrowsAsync<NoRightOfCancelBookingException>(() => bookingService.CancelBookingAsync(booking.Id, CancellationToken.None));
+            await Assert.ThrowsAsync<NoRightForOperation>(() => bookingService.CancelBookingAsync(booking.Id, CancellationToken.None));
             mockUow.Verify(uow => uow.BeginTransactionAsync(), Times.Once());
             mockTransaction.Verify(transaction => transaction.CommitAsync(CancellationToken.None), Times.Never());
             mockBookingRepo.Verify(repo => repo.GetBookingForUpdateAsync(bookingId, It.IsAny<CancellationToken>()), Times.Once());

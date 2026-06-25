@@ -1,6 +1,7 @@
 ﻿
 using BestEvents.Application;
 using BestEvents.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -26,20 +27,20 @@ namespace BestEvents.Presentation
         {
             services.AddHttpContextAccessor();
             services.AddScoped<IUserAccessor, UserAccessor>();
-            const string BearerSheme = "JwtBearerSheme";
-
-            string? iss = configuration["JwtSettings:Issuer"];
-            string? aud = configuration["JwtSettings:Audience"];
-            string? key = configuration["JwtSettings:SecretKey"];
+            
 
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = BearerSheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer("JwtBearerSheme", options =>
+            .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    RoleClaimType = "role",
+                    NameClaimType = "sub",
+
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
@@ -50,7 +51,7 @@ namespace BestEvents.Presentation
                                                 ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound)))
                 };
 
-                
+                options.MapInboundClaims = false;
             });
 
             services.AddControllers(options =>
@@ -67,6 +68,8 @@ namespace BestEvents.Presentation
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
+
+                const string BearerSheme = "Bearer";
 
                 options.AddSecurityDefinition(BearerSheme, new OpenApiSecurityScheme
                 {

@@ -108,7 +108,7 @@ namespace BestEvents.Domain
         public void Cancel(User user)
         {
             if (!(user.Id == UserId || user.Role == UserRolesEnum.Admin))
-                throw new NoRightOfCancelBookingException();
+                throw new NoRightForOperation(Messages_ru.NoRightOfCancelBooking);
             if (Status == BookingStatus.Rejected)
                 throw new CancelBookingException(string.Format(Messages_ru.AttemptToCancelRejectedBooking, Id));
             if (Status == BookingStatus.Cancelled)

@@ -20,8 +20,8 @@ namespace BestEvents.Presentation
             var user = httpContextAccessor.HttpContext?.User;
             if (user == null)
                 throw new GetUserFromRequestException(Messages_ru.UserNotFound);
-            string? id = user.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
-            string? name = user.FindFirst("sub")?.Value;
+            string? id = user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            string? name = user.FindFirst(JwtRegisteredClaimNames.PreferredUsername)?.Value;
             string? role = user.FindFirst("role")?.Value;
             try
             {

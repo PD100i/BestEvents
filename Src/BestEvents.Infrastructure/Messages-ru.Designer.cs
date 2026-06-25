@@ -142,11 +142,11 @@ namespace BestEvents.Infrastructure {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Неправильный пароль.
+        ///   Looks up a localized string similar to Неверные учетные данные.
         /// </summary>
-        public static string WrongPassword {
+        public static string WrongIdentityData {
             get {
-                return ResourceManager.GetString("WrongPassword", resourceCulture);
+                return ResourceManager.GetString("WrongIdentityData", resourceCulture);
             }
         }
         

@@ -66,10 +66,14 @@ namespace BestEvents.Presentation.Controllers
         /// <param name="ct">Токен отмены</param>
         /// <response code="201">В случае успешного создания события</response>
         /// <response code="400">Если параметры некорректны</response>
+        /// <response code="401">Если пользователь не авторизован</response>
+        /// <response code="403">Если у пользователя нет прав на операцию</response>
         [HttpPost]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(EventInfoDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorDetails))]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateEventAsync([FromBody] CreateEventDto eventDto, CancellationToken ct = default)
         {
@@ -86,12 +90,16 @@ namespace BestEvents.Presentation.Controllers
         /// <param name="ct">Токен отмены</param>
         /// <response code="204">В случае успешной записи</response>
         /// <response code="400">Если параметры некорректны</response>
+        /// <response code="401">Если пользователь не авторизован</response>
+        /// <response code="403">Если у пользователя нет прав на операцию</response>
         /// <response code="404">Если событие с таким идентификатором не найдено</response>
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> ReplaceEventAsync([FromRoute] string id, [FromBody] EventInfoDto eventDto, CancellationToken ct = default)
         {
@@ -106,12 +114,16 @@ namespace BestEvents.Presentation.Controllers
         /// <param name="ct">Токен отмены</param>
         /// <response code="204">В случае успешного удаления</response>
         /// <response code="400">Если id некорректен</response>
+        /// <response code="401">Если пользователь не авторизован</response>
+        /// <response code="403">Если у пользователя нет прав на операцию</response>
         /// <response code="404">Если событие с таким идентификатором не найдено</response>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> DeleteEventAsync([FromRoute] string id, CancellationToken ct = default)
         {
@@ -125,13 +137,17 @@ namespace BestEvents.Presentation.Controllers
         /// <param name="id">Идентификатор события</param>
         /// <param name="ct">Токен отмены</param>
         /// <response code="202">В случае успешного бронирования возвращает URL для получения статуса бронирования</response>
-        /// <response code="400">Если id некорректен</response>
+        /// <response code="400">Если id некорректен, событие началось или завершилось</response>
+        /// <response code="401">Если пользователь не авторизован</response>
+        /// <response code="403">Если у пользователя нет прав на операцию</response>
         /// <response code="404">Если событие с таким идентификатором не найдено</response>
-        /// <response code="409">В случае отклонения бронирования, например, если нет свободных мест или событие уже завершилось</response>
+        /// <response code="409">В случае отклонения бронирования, например, если нет свободных мест или лимит бронирования для пользователя исчерпан</response>
         [HttpPost("{id}/book")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorDetails))]
         public async Task<IActionResult> CreateBookingAsync([FromRoute] string id, CancellationToken ct = default)

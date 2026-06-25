@@ -40,13 +40,13 @@ namespace BestEvents.Infrastructure
         public async Task<string> GetTokenAsync(string userName, string password, CancellationToken ct)
         {
             var user = await userRepository.GetUserAsync(userName, ct) ??
-                throw new UserNotFoundException(string.Format(Messages_ru.UserNotFound, userName));
+                 throw new CreateTokenException(Messages_ru.WrongIdentityData);
             if (user.PasswordHash != GetPasswordHashCode(password))
-                throw new CreateTokenException(Messages_ru.WrongPassword);
+                throw new CreateTokenException(Messages_ru.WrongIdentityData);
 
             var claims = new Dictionary<string, object>
             {
-                [JwtRegisteredClaimNames.Name] = user.Name,
+                [JwtRegisteredClaimNames.PreferredUsername] = user.Name,
                 [JwtRegisteredClaimNames.Sub] = user.Id.ToString(),
                 ["role"] = user.Role.ToString(),
                 [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),

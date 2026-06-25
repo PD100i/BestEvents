@@ -61,6 +61,15 @@ namespace BestEvents.Presentation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ошибка авторизации.
+        /// </summary>
+        public static string AuthorizationError {
+            get {
+                return ResourceManager.GetString("AuthorizationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Бронирование не подтверждено.
         /// </summary>
         public static string BookingNotConfirmed {

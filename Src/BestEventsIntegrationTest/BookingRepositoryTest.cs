@@ -45,7 +45,7 @@ namespace BestEventsIntegrationTest
             };
         }
 
-        private static UserEntity CreateUser(Guid userId)
+        private static UserEntity CreateUserEntity(Guid userId)
         {
             return new UserEntity()
             {
@@ -85,11 +85,15 @@ namespace BestEventsIntegrationTest
             using var context = CreateContext();
             var eventId = Guid.NewGuid();
             var eventEntity = CreateEventEntity(eventId);
-            context.Events.Add(eventEntity);
+            var userId = Guid.NewGuid();
+            var userEntity = CreateUserEntity(userId);
+
+            await context.Events.AddAsync(eventEntity, CancellationToken.None);
+            await context.Users.AddAsync(userEntity, CancellationToken.None);
             await context.SaveChangesAsync(CancellationToken.None);
             var _event = CreateEvent(eventEntity);
             var bookingId = Guid.NewGuid();
-            var user = User.CreateUser(Guid.NewGuid(), "user", "passwordhash", "");
+            var user = User.CreateUser(userEntity.Id, userEntity.Name, userEntity.PasswordHash, userEntity.Role.ToString());
             var booking = new Booking(bookingId, _event, user);
 
             using var actContext = CreateContext();
@@ -126,7 +130,7 @@ namespace BestEventsIntegrationTest
             _event.AvailableSeats -= 1;          
             context.Events.Add(_event);
             var userId = Guid.NewGuid();
-            var user = CreateUser(userId);
+            var user = CreateUserEntity(userId);
             context.Users.Add(user);
             var booking = new BookingEntity
             {
@@ -180,7 +184,7 @@ namespace BestEventsIntegrationTest
             _event.AvailableSeats -= 1;
             context.Events.Add(_event);
             var userId = Guid.NewGuid();
-            var user = CreateUser(userId);
+            var user = CreateUserEntity(userId);
             context.Users.Add(user);
             var booking = new BookingEntity
             {
@@ -234,7 +238,7 @@ namespace BestEventsIntegrationTest
             var eventId = Guid.NewGuid();
             var _event = CreateEventEntity(eventId);
             var userId = Guid.NewGuid();    
-            var user = CreateUser(userId);
+            var user = CreateUserEntity(userId);
             int pendingQuantity = 3;
             int confirmedQuantity = 5;
             int cancelledQuantity = 7;
@@ -273,7 +277,7 @@ namespace BestEventsIntegrationTest
             var _event = CreateEventEntity(eventId);
             List<BookingEntity> bookings = [];
             var userId = Guid.NewGuid();
-            var user = CreateUser(userId);
+            var user = CreateUserEntity(userId);
             context.Users.Add(user);
             int confirmedQuantity = 5;
             int cancelledQuantity = 7;
@@ -309,7 +313,7 @@ namespace BestEventsIntegrationTest
             var eventId = Guid.NewGuid();
             var _event = CreateEventEntity(eventId);
             var userId = Guid.NewGuid();
-            var user = CreateUser(userId);
+            var user = CreateUserEntity(userId);
             int pendingQuantity = 3;
             int confirmedQuantity = 5;
             int cancelledQuantity = 7;
@@ -349,7 +353,7 @@ namespace BestEventsIntegrationTest
             var eventEntity = CreateEventEntity(eventId);
             var _event = CreateEvent(eventEntity);
             var userId = Guid.NewGuid();
-            var user = CreateUser(userId);
+            var user = CreateUserEntity(userId);
             _event.AvailableSeats = 5;
             DateTime bookingCreatedAt = DateTime.UtcNow.AddSeconds(-2);
             DateTime bookingProcessedAt = DateTime.UtcNow;

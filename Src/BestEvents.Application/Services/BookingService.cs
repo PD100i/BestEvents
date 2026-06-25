@@ -40,7 +40,7 @@ namespace BestEvents.Application
             string userName = userFromRequest.Name;
             var user = await userRepository.GetUserAsync(userName, ct);
             if (user == null)
-                throw new CreateBookingException(string.Format(Messages_ru.UserNotFound, userName));
+                throw new NoRightForOperation(string.Format(Messages_ru.UserNotFound, userName));
 
             // Проверяем наличие свободных мест и резервируем их
             _event.TryReserveSeats();

@@ -196,7 +196,7 @@ namespace BestEventsTest
             fixture.MockUserRepo.Setup(repo => repo.GetUserAsync(userName, It.IsAny<CancellationToken>())).ReturnsAsync(default(BestEvents.Domain.User));
 
             // Act & Assert
-            await Assert.ThrowsAsync<UserNotFoundException>(() => fixture.UserIdentityService.GetTokenAsync(userName, wrongPassword, CancellationToken.None));
+            await Assert.ThrowsAsync<CreateTokenException>(() => fixture.UserIdentityService.GetTokenAsync(userName, wrongPassword, CancellationToken.None));
         }
 
         [Fact]

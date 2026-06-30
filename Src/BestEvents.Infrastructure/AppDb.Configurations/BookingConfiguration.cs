@@ -25,6 +25,10 @@ namespace BestEvents.Infrastructure
                 .HasColumnName("event_id")
                 .IsRequired();
 
+            builder.Property(b => b.UserId)
+                .HasColumnName("user_id")
+                .IsRequired();
+
             builder.Property(b => b.Status)
                 .HasColumnName("status")
                 .IsRequired();
@@ -40,6 +44,13 @@ namespace BestEvents.Infrastructure
                 .WithMany(e => e.Bookings)
                 .HasForeignKey(b => b.EventId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(b => b.User)
+                .WithMany(u => u.Bookings)
+                .HasForeignKey(b => b.UserId) 
+                .OnDelete(DeleteBehavior.Cascade);
+
+            
         }
     }
 }

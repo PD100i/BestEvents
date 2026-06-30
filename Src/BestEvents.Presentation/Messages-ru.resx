@@ -135,4 +135,16 @@
   <data name="WrongIdFormat" xml:space="preserve">
     <value>Формат переданного Id не соответствует GUID</value>
   </data>
+  <data name="RegisterError" xml:space="preserve">
+    <value>Ошибка регистрации</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Не удалось получить пользователя из http контекста</value>
+  </data>
+  <data name="SecretKeyNotFound" xml:space="preserve">
+    <value>Не найден секрктный ключ для JWT аутентификации</value>
+  </data>
+  <data name="AuthorizationError" xml:space="preserve">
+    <value>Ошибка авторизации</value>
+  </data>
 </root>

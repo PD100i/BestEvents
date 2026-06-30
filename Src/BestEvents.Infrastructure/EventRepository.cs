@@ -65,13 +65,14 @@ namespace BestEvents.Infrastructure
         public async Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-                    
+            var events = db.Events;
+
             var filtredResult = filters.FilterEventsByTitle(db.Events, title);
             filtredResult = filters.FilterEventsByDateFrom(filtredResult, from);
             filtredResult = filters.FilterEventsByDateTo(filtredResult, to);
             var orderedResult = filtredResult.OrderBy(e => e.StartAt);
             var result = pagination.GetResult(orderedResult, page, size);
-
+            
             return await Task.FromResult(mapper.MapPaginatedResultToEntity(result));
         }
 

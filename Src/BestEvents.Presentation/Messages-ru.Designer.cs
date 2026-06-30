@@ -61,6 +61,15 @@ namespace BestEvents.Presentation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ошибка авторизации.
+        /// </summary>
+        public static string AuthorizationError {
+            get {
+                return ResourceManager.GetString("AuthorizationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Бронирование не подтверждено.
         /// </summary>
         public static string BookingNotConfirmed {
@@ -88,6 +97,15 @@ namespace BestEvents.Presentation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ошибка регистрации.
+        /// </summary>
+        public static string RegisterError {
+            get {
+                return ResourceManager.GetString("RegisterError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Недопустимые параметры в запросе.
         /// </summary>
         public static string RequestWrongParameters {
@@ -97,11 +115,29 @@ namespace BestEvents.Presentation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не найден секрктный ключ для JWT аутентификации.
+        /// </summary>
+        public static string SecretKeyNotFound {
+            get {
+                return ResourceManager.GetString("SecretKeyNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Неизвестный тип ошибки.
         /// </summary>
         public static string UndefinedError {
             get {
                 return ResourceManager.GetString("UndefinedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось получить пользователя из http контекста.
+        /// </summary>
+        public static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
             }
         }
         

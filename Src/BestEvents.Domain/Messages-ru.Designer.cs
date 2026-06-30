@@ -61,6 +61,24 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Бронирование уже было отменено ранее.
+        /// </summary>
+        internal static string AttemptToCancelCancelledBooking {
+            get {
+                return ResourceManager.GetString("AttemptToCancelCancelledBooking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование ранее было отклонено.
+        /// </summary>
+        internal static string AttemptToCancelRejectedBooking {
+            get {
+                return ResourceManager.GetString("AttemptToCancelRejectedBooking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Бронирование отклонено, так как событие  уже завершилось.
         /// </summary>
         internal static string BookingRejectedEventCompleted {
@@ -70,20 +88,20 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Попытка подтверждения брони {0}, которая уже подтверждена.
+        ///   Looks up a localized string similar to Бронирование уже было отменено ранее.
         /// </summary>
-        internal static string DoubleBookingConfirm {
+        internal static string DoubleBookingCancel {
             get {
-                return ResourceManager.GetString("DoubleBookingConfirm", resourceCulture);
+                return ResourceManager.GetString("DoubleBookingCancel", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Попытка отклонения брони {0}, которая уже отклонена.
+        ///   Looks up a localized string similar to Бронирование уже обработано.
         /// </summary>
-        internal static string DoubleBookingReject {
+        internal static string DoubleBookingProcessing {
             get {
-                return ResourceManager.GetString("DoubleBookingReject", resourceCulture);
+                return ResourceManager.GetString("DoubleBookingProcessing", resourceCulture);
             }
         }
         
@@ -160,6 +178,15 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Нет прав на отмену бронирования.
+        /// </summary>
+        internal static string NoRightOfCancelBooking {
+            get {
+                return ResourceManager.GetString("NoRightOfCancelBooking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка при отмене бронирования. Предано неверное количество мест.
         /// </summary>
         internal static string RealiseBokingWrongCount {
@@ -169,20 +196,47 @@ namespace BestEvents.Domain {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Попытка подтверждения уже отклоненной брони {0}.
+        ///   Looks up a localized string similar to Id пользователя не был передан.
         /// </summary>
-        internal static string TryConfirmRejectedBooking {
+        internal static string UserIdIsNotSent {
             get {
-                return ResourceManager.GetString("TryConfirmRejectedBooking", resourceCulture);
+                return ResourceManager.GetString("UserIdIsNotSent", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Повторная отклонения уже подтвержденной брони {0}.
+        ///   Looks up a localized string similar to Не задано имя пользователя.
         /// </summary>
-        internal static string TryRedjectConfirmedBooking {
+        internal static string UserNameIsEmpty {
             get {
-                return ResourceManager.GetString("TryRedjectConfirmedBooking", resourceCulture);
+                return ResourceManager.GetString("UserNameIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не было передано имя пользователя.
+        /// </summary>
+        internal static string UserNameIsNotSent {
+            get {
+                return ResourceManager.GetString("UserNameIsNotSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Пользователь {0} не найден.
+        /// </summary>
+        internal static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Роль пользователя не была передана.
+        /// </summary>
+        internal static string UserRoleIsNotSent {
+            get {
+                return ResourceManager.GetString("UserRoleIsNotSent", resourceCulture);
             }
         }
         
@@ -201,6 +255,33 @@ namespace BestEvents.Domain {
         internal static string WrongEventTotalSeats {
             get {
                 return ResourceManager.GetString("WrongEventTotalSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Роль {0} не подддерживается сервисом.
+        /// </summary>
+        internal static string WrongRole {
+            get {
+                return ResourceManager.GetString("WrongRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Неверный формат идентификатора пользователя.
+        /// </summary>
+        internal static string WrongUserId {
+            get {
+                return ResourceManager.GetString("WrongUserId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Логин должен содержать только латинские символы.
+        /// </summary>
+        internal static string WrongUserNameFormat {
+            get {
+                return ResourceManager.GetString("WrongUserNameFormat", resourceCulture);
             }
         }
     }

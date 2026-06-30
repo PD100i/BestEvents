@@ -45,5 +45,13 @@ namespace BestEvents.Application
         /// </summary>
         /// <returns></returns>
         Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct = default);
+
+        /// <summary>
+        /// Возвращает список бронирований пользователя
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<List<Booking>> GetActiveBookingsByUserAsync(Guid userId, CancellationToken ct = default);
     }
 }

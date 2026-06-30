@@ -126,10 +126,28 @@
   <data name="EventNotFound" xml:space="preserve">
     <value>Событие с идентификатором {0} не найдено</value>
   </data>
+  <data name="PasswordIsNotSent" xml:space="preserve">
+    <value>Пароль не передан</value>
+  </data>
+  <data name="SecretKeyNotFound" xml:space="preserve">
+    <value>Не найден секретный кдюч для JWT аутентификации</value>
+  </data>
   <data name="UpdateBookingErrorMessage" xml:space="preserve">
     <value>Ошибка обновления бронирования {0}</value>
   </data>
   <data name="UpdateEventErrorMessage" xml:space="preserve">
     <value>Ошибка обновления события {0}</value>
+  </data>
+  <data name="UserAlreadyExists" xml:space="preserve">
+    <value>Ползователь с имененем {0} уже существует</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Не найден пользователь с логином {0}</value>
+  </data>
+  <data name="WrongIdentityData" xml:space="preserve">
+    <value>Неверные учетные данные</value>
+  </data>
+  <data name="WrongRole" xml:space="preserve">
+    <value>Роль {0} не поддерживается сервисом</value>
   </data>
 </root>

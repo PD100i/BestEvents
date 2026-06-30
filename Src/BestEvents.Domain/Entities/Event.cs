@@ -105,12 +105,11 @@ namespace BestEvents.Domain
         /// </summary>
         /// <param name="count">Количество запрашиваемых для резервирования мест</param>
         /// <returns></returns>
-        public bool TryReserveSeats(int count = 1)
+        public void TryReserveSeats(int count = 1)
         {
             if (AvailableSeats < count)
-                return false;
+                throw new NoAvailableSeatsException();
             AvailableSeats -= count; 
-            return true;
         }
 
 

@@ -88,6 +88,24 @@ namespace BestEvents.Infrastructure {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Пароль не передан.
+        /// </summary>
+        public static string PasswordIsNotSent {
+            get {
+                return ResourceManager.GetString("PasswordIsNotSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не найден секретный кдюч для JWT аутентификации.
+        /// </summary>
+        public static string SecretKeyNotFound {
+            get {
+                return ResourceManager.GetString("SecretKeyNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка обновления бронирования {0}.
         /// </summary>
         public static string UpdateBookingErrorMessage {
@@ -102,6 +120,42 @@ namespace BestEvents.Infrastructure {
         public static string UpdateEventErrorMessage {
             get {
                 return ResourceManager.GetString("UpdateEventErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ползователь с имененем {0} уже существует.
+        /// </summary>
+        public static string UserAlreadyExists {
+            get {
+                return ResourceManager.GetString("UserAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не найден пользователь с логином {0}.
+        /// </summary>
+        public static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Неверные учетные данные.
+        /// </summary>
+        public static string WrongIdentityData {
+            get {
+                return ResourceManager.GetString("WrongIdentityData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Роль {0} не поддерживается сервисом.
+        /// </summary>
+        public static string WrongRole {
+            get {
+                return ResourceManager.GetString("WrongRole", resourceCulture);
             }
         }
     }

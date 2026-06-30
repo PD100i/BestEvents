@@ -43,5 +43,13 @@ namespace BestEvents.Application
         /// <param name="ct"></param>
         /// <returns></returns>
         Task TryProcessBooking(Guid id, CancellationToken ct);
+
+        /// <summary>
+        /// Отменяет бронирование. При успешной изменяет статус бронирования на Cancelled и освобождает зарезервированные места на событии
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task CancelBookingAsync(Guid id, CancellationToken ct);
     }
 }

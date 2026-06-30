@@ -19,6 +19,11 @@ namespace BestEvents.Infrastructure
         public DbSet<BookingEntity> Bookings { get; set; }
 
         /// <summary>
+        /// Таблица для хранения пользователей
+        /// </summary>
+        public DbSet<UserEntity> Users { get; set; }
+
+        /// <summary>
         /// Применяет конфигурацию сущностей к модели данных
         /// </summary>
         /// <param name="modelBuilder">Объект ModelBuilder, используемый для настройки модели данных.</param>
@@ -26,6 +31,7 @@ namespace BestEvents.Infrastructure
         {
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new BookingConfiguration());
+            modelBuilder.ApplyConfiguration(new UsersConfiguration());
         }
     }
 }

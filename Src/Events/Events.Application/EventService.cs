@@ -1,8 +1,8 @@
-﻿using BestEvents.Domain.Exceptions;
-using BestEvents.Domain;
+﻿using Events.Domain.Exceptions;
+using Events.Domain;
 
 
-namespace BestEvents.Application
+namespace Events.Application
 {
     /// <summary>
     /// Сервис событий, реализующий интерфейс IEventService. 

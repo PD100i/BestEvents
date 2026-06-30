@@ -1,6 +1,6 @@
-﻿using BestEvents.Domain.Exceptions;
+﻿using Events.Domain.Exceptions;
 
-namespace BestEvents.Domain
+namespace Events.Domain
 {
     /// <summary>
     /// Модель события

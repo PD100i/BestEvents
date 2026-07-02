@@ -42,6 +42,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Messages-ru - Copy.Designer.cs">
+      <DependentUpon>Messages-ru - Copy.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Messages-ru.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -50,6 +55,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Messages-ru - Copy.resx">
+      <LastGenOutput>Messages-ru - Copy.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Messages-ru.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages-ru.Designer.cs</LastGenOutput>

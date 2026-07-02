@@ -1,6 +1,6 @@
-﻿using BestEvents.Domain;
+﻿using Users.Domain;
 
-namespace BestEvents.Application
+namespace Users.Application
 {
     public interface IUserRepository
     {

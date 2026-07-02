@@ -1,12 +1,7 @@
-﻿using BestEvents.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Users.Domain.Exceptions;
 
-namespace BestEvents.Domain
+
+namespace Users.Domain
 {
     /// <summary>
     /// Пользователь

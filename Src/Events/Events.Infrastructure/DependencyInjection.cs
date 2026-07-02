@@ -26,7 +26,7 @@ namespace Events.Infrastructure
             services.AddSingleton<EventFilters>();
             services.AddSingleton<Pagination<EventEntity>>();
             services.AddSingleton<EntityMapper>();
-
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEventRepository, EventRepository>();
 
             return services;

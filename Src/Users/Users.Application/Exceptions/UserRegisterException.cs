@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BestEvents.Domain.Exceptions
+namespace Users.Application.Exceptions
 {
-    public class UserWrongParameterException(string message) : Exception (message)
+    public class UserRegisterException(string message) : Exception (message)
     {
     }
 }

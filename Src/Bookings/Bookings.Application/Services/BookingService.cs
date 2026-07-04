@@ -1,5 +1,8 @@
 ﻿using Bookings.Domain;
+using Bookings.Domain.Exceptions;
 using Bookings.Application.Exceptions;
+using Common;
+
 
 
 namespace Bookings.Application
@@ -7,7 +10,7 @@ namespace Bookings.Application
     /// <summary>
     /// Реализация сервиса бронирования
     /// </summary>
-    public class BookingService(IBookingRepository bookingRepository,  IUserAccessor userAccessor) : IBookingService
+    public class BookingService(IBookingRepository repository,  IUserAccessor userAccessor, IUnitOfWork uow) : IBookingService
     {
         const int MaxBookingsPerUser = 10;
 
@@ -15,7 +18,7 @@ namespace Bookings.Application
         public async Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-            return await bookingRepository.GetBookingAsync(bookingId, ct);
+            return await repository.GetBookingAsync(bookingId, ct);
         }
 
         /// <inheritdoc/>
@@ -32,70 +35,61 @@ namespace Bookings.Application
             await CheckUsersBookingAvailability(user.Id, ct);
 
             var booking = new Booking(bookingId, eventId, user.Id);           
-            await bookingRepository.AddBookingAsync(booking, ct);
-            
-            //ЗДЕСЬ НУЖНО ОПУБЛИКОВАТЬ СОБЫТИЕ
-
+            await repository.AddBookingAsync(booking, ct);
+            var message = new CreatedBookingMessage()
+            {
+                BookingId = bookingId,
+                EventId = eventId,
+                CreatedAt = DateTime.UtcNow,
+            };
+            await repository.EnqueueBookingCreatedAsync(message, ct);
+            await uow.SaveChangesAsync();
             return booking;
         }
 
-        
-        /// <inheritdoc/>
-        public async Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct)
+
+        public async Task ConfirmBooking(Guid bookingId, CancellationToken ct)
         {
-            return await bookingRepository.GetPendingBookingsAsync(ct);
+            ct.ThrowIfCancellationRequested();
+            using var transaction = await uow.BeginTransactionAsync();
+            Booking? booking = null;
+            booking = await repository.GetBookingForUpdateAsync(bookingId, ct);
+            booking.Confirm();
+            await repository.UpdateBookingAsync(booking, ct);
+            await uow.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
         }
 
-        ///// <inheritdoc/>
-        //public async Task TryProcessBooking(Guid bookingId, CancellationToken ct)
-        //{
-        //    ct.ThrowIfCancellationRequested();
-        //    using var transaction = await uow.BeginTransactionAsync();
-        //    Booking? booking = null;
-        //    try
-        //    {               
-        //        booking = await bookingRepository.GetBookingForUpdateAsync(bookingId, ct);
-        //        if (booking.Event == null)
-        //            throw new EventNotExistsException(string.Format(Messages_ru.CreateBookingEventNotFound, booking.EventId));
-        //        if (booking.Event.EndAt < DateTime.UtcNow)
-        //            throw new BookingProcessException(Messages_ru.EventCompleted);
-        //        if (booking.Event.StartAt < DateTime.UtcNow)
-        //            throw new BookingProcessException(Messages_ru.EventBegun);
-        //        booking.Confirm();
-        //        await bookingRepository.UpdateBookingAsync(booking, ct);
-        //        await transaction.CommitAsync(ct);
-        //    }
-        //    catch (BookingDoubleProcessingException)
-        //    {
-        //        throw;
-        //    }         
-        //    catch
-        //    {
-        //        if (booking == null) 
-        //            throw;
-        //        booking.Reject();
-        //        if (booking.Event != null)
-        //            booking.Event.ReleaseSeats();
-        //        await bookingRepository.UpdateBookingAsync(booking, ct);
-        //        await transaction.CommitAsync(ct);
-        //        throw;
-        //    }
-            
-        //}
+        public async Task RejectedBooking(Guid bookingId, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            using var transaction = await uow.BeginTransactionAsync();
+            Booking? booking = null;
+            booking = await repository.GetBookingForUpdateAsync(bookingId, ct);
+            booking.Reject();
+            await repository.UpdateBookingAsync(booking, ct);
+            await uow.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+        }
+
+        public async Task CancelBookingAsync(Guid id, CancellationToken ct)
+        {
+            using var transaction = await uow.BeginTransactionAsync();
+            var booking = await repository.GetBookingForUpdateAsync(id, ct);
+            var user = userAccessor.GetUser();
+            booking.Cancel(user);
+            await repository.UpdateBookingAsync(booking, ct);
+            await uow.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+        }
 
         private async Task CheckUsersBookingAvailability(Guid userId, CancellationToken ct)
         {
-            var bookings = await bookingRepository.GetActiveBookingsByUserAsync(userId, ct);
+            var bookings = await repository.GetActiveBookingsByUserAsync(userId, ct);
             if (bookings == null)
                 return;
             if (bookings.Count >= MaxBookingsPerUser)
                 throw new BookingLimitExceededException(string.Format(Messages_ru.BookingLimitExceeded, MaxBookingsPerUser));
-        }
-
-        public async Task CancelBookingAsync(Guid id, User user, CancellationToken ct)
-        {
-            Booking booking = await bookingRepository.GetBookingAsync(id, ct);
-            booking.Cancel(user);
         }
     }
 }

@@ -7,11 +7,7 @@ namespace Bookings.Application
     /// </summary>
     public interface IBookingService
     {
-        /// <summary>
-        /// Минимальное время до конца события, когда еще разрешено бронирование.
-        /// </summary>
-        static TimeSpan AllowedTimeUntilEventEnd { get; set; }
-
+       
         /// <summary>
         /// Бронирование события по его идентификатору.
         /// </summary>
@@ -29,13 +25,21 @@ namespace Bookings.Application
         Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct);
 
         /// <summary>
-        /// Возвращает список бронирований, ожидающих обработки
+        /// Подтверждает бронирование. Изменяет статус бронирования на Confirmed
         /// </summary>
+        /// <param name="bookingId"></param>
         /// <returns></returns>
-        Task<List<Guid>> GetPendingBookingsAsync(CancellationToken ct);
+        Task ConfirmBooking(Guid bookingId, CancellationToken ct);
 
         /// <summary>
-        /// Отменяет бронирование. При успешной изменяет статус бронирования на Cancelled и освобождает зарезервированные места на событии
+        /// Jnrkjyztn бронирование. Изменяет статус бронирования на Rejected
+        /// </summary>
+        /// <param name="bookingId"></param>
+        /// <returns></returns>
+        Task RejectedBooking(Guid bookingId, CancellationToken ct);
+
+        /// <summary>
+        /// Отменяет бронирование. Изменяет статус бронирования на Cancelled
         /// </summary>
         /// <param name="id"></param>
         /// <param name="ct"></param>

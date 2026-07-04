@@ -106,6 +106,15 @@ namespace Bookings.Application {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to У пользователя нет прав отменить бронирование.
+        /// </summary>
+        public static string NoRightForCancellation {
+            get {
+                return ResourceManager.GetString("NoRightForCancellation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Непредвиденная ошибка при работе сервиса бронирования.
         /// </summary>
         public static string UnexpectedBookingError {

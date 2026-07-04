@@ -135,4 +135,7 @@
   <data name="UnexpectedBookingError" xml:space="preserve">
     <value>Непредвиденная ошибка при работе сервиса бронирования</value>
   </data>
+  <data name="NoRightForCancellation" xml:space="preserve">
+    <value>У пользователя нет прав отменить бронирование</value>
+  </data>
 </root>

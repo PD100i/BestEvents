@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BestEvents.Application\BestEvents.Application.csproj" />
     <ProjectReference Include="..\BestEvents.Domain\BestEvents.Domain.csproj" />
+    <ProjectReference Include="..\Common\Common\Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

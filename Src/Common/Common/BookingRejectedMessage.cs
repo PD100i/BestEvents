@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
-    public class RejectedBookingMessage
+    public class BookingRejectedMessage
     {
         public Guid BookingId { get; set; }
 

@@ -14,6 +14,7 @@ namespace Bookings.Infrastructure
         /// </summary>
         public DbSet<BookingEntity> Bookings { get; set; }
 
+        public DbSet<BookingMessage> BookingCreatedOutbox {  get; set; }
 
         /// <summary>
         /// Применяет конфигурацию сущностей к модели данных
@@ -21,9 +22,8 @@ namespace Bookings.Infrastructure
         /// <param name="modelBuilder">Объект ModelBuilder, используемый для настройки модели данных.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new EventConfiguration());
-            modelBuilder.ApplyConfiguration(new BookingConfiguration());
-            modelBuilder.ApplyConfiguration(new UsersConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingsConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingCreatedOutboxConfiguration());
         }
     }
 }

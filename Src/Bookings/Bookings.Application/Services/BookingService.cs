@@ -36,7 +36,7 @@ namespace Bookings.Application
 
             var booking = new Booking(bookingId, eventId, user.Id);           
             await repository.AddBookingAsync(booking, ct);
-            var message = new CreatedBookingMessage()
+            var message = new BookingCreatedMessage()
             {
                 BookingId = bookingId,
                 EventId = eventId,

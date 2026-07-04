@@ -26,6 +26,8 @@ namespace Users.Infrastructure
                 .HasColumnName("role")
                 .IsRequired();
 
+            builder.HasIndex(u => u.Name)
+                .IsUnique();
         }
     }
 }

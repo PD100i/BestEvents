@@ -1,6 +1,6 @@
 ﻿namespace Common
 {
-    public record CreatedBookingMessage
+    public record BookingCreatedMessage
     {
         public Guid BookingId { get; set; }
 

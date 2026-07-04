@@ -42,15 +42,29 @@ namespace Bookings.Application
         Task UpdateBookingAsync(Booking booking, CancellationToken ct = default);
 
 
+        /// <summary>
+        /// Добавляет сообщение о создании бронирования в очередь на публикацию
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task EnqueueBookingCreatedAsync(BookingCreatedMessage message, CancellationToken ct = default);
 
-        Task EnqueueBookingCreatedAsync(CreatedBookingMessage message, CancellationToken ct = default);
+        /// <summary>
+        /// Удаляет сообщение о создании бронирования из очереди на публикацию
+        /// </summary>
+        /// <param name="bookingId"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task DequeueBookingCreatedAsync(Guid bookingId, CancellationToken ct = default);
 
 
         /// <summary>
         /// Возвращает список id необработанных броней
         /// </summary>
         /// <returns></returns>
-        Task<List<CreatedBookingMessage>> GetUnpublishedBookingsAsync(CancellationToken ct = default);
+        Task<List<BookingCreatedMessage>> GetUnpublishedBookingsAsync(int quantity, CancellationToken ct = default);
+
 
         /// <summary>
         /// Возвращает список бронирований пользователя
@@ -59,5 +73,8 @@ namespace Bookings.Application
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<List<Booking>> GetActiveBookingsByUserAsync(Guid userId, CancellationToken ct = default);
+
+
+        
     }
 }

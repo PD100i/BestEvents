@@ -2,6 +2,7 @@
 using Bookings.Domain;
 using Bookings.Application;
 using Bookings.Infrastructure.Exceptions;
+using Common;
 
 namespace Bookings.Infrastructure
 {
@@ -28,7 +29,6 @@ namespace Bookings.Infrastructure
 
             var bookingEntity = mapper.MapBookingToEntity(booking);
             await db.Bookings.AddAsync(bookingEntity, ct);
-            await db.SaveChangesAsync(ct);
         }
 
         /// <inheritdoc/>
@@ -47,13 +47,6 @@ namespace Bookings.Infrastructure
             if (bookingEntity == null)
                 throw new BookingNotFoundException(string.Format(Messages_ru.BookingNotFound, bookingId));
 
-            var eventEntity = await db.Events.FromSqlRaw(
-                "SELECT * FROM events WHERE id = {0} FOR UPDATE", bookingEntity.EventId)
-                .FirstOrDefaultAsync(ct);
-            if (eventEntity == null)
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, bookingEntity.EventId));
-
-            bookingEntity.Event = eventEntity;
 
             return mapper.MapEntityToBooking(bookingEntity);
         }
@@ -72,17 +65,9 @@ namespace Bookings.Infrastructure
         {
             try
             {
-                ct.ThrowIfCancellationRequested();
-                if (booking.Event != null)
-                {
-                    var existingEvent = await db.Events.FirstAsync(e => e.Id == booking.Event.Id);
-                    if (existingEvent == null)
-                        throw new EventNotFoundException(Messages_ru.EventNotFound);
-                    mapper.UpdateEventEntity(booking.Event, existingEvent);
-                }
+                ct.ThrowIfCancellationRequested();                
                 var bookingEntity = await db.Bookings.FirstAsync(b => b.Id == booking.Id, ct);
                 mapper.UpdateBookingEntity(booking, bookingEntity);
-                await db.SaveChangesAsync(ct);
             }
             catch (Exception ex)
             {
@@ -98,6 +83,27 @@ namespace Bookings.Infrastructure
                 .Where(b => b.UserId == userId && (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Confirmed))
                 .ToListAsync(ct);
             return bookingEntities.Select(mapper.MapEntityToBooking).ToList();
+        }
+
+        public async Task EnqueueBookingCreatedAsync(BookingCreatedMessage message, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            await db.BookingCreatedOutbox.AddAsync(mapper.MapBookingCreatedMessageToEntity(message), ct);
+        }
+
+        public async Task<List<BookingCreatedMessage>> GetUnpublishedBookingsAsync(int quentity, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            var messageEntities = await db.BookingCreatedOutbox
+                .OrderBy(m => m.CreatedAt)
+                .Take(quentity)
+                .ToListAsync(ct);
+            return messageEntities.Select(m => mapper.MapBookingCreatedEntityToMessage(m)).ToList();
+        }
+
+        public async Task DequeueBookingCreatedAsync(Guid bookingId, CancellationToken ct = default)
+        {
+            await db.BookingCreatedOutbox.Where(m => m.BookingId == bookingId).ExecuteDeleteAsync(ct);
         }
     }
 }

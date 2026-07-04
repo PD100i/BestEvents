@@ -8,6 +8,6 @@ namespace Common
 {
     public interface IConsumer<T>
     {
-        Task<T> GetMessage();
+        Task Listen(Action<T> process);
     }
 }

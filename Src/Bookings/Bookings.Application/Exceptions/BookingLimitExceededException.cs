@@ -1,0 +1,8 @@
+﻿
+
+namespace Bookings.Application.Exceptions
+{
+    public class BookingLimitExceededException(string message) : Exception(message)
+    {
+    }
+}

@@ -1,7 +1,7 @@
-﻿using BestEvents.Domain.Exceptions;
+﻿using Bookings.Domain.Exceptions;
 
 
-namespace BestEvents.Domain
+namespace Bookings.Domain
 {
     /// <summary>
     /// Модель бронирования, которая содержит информацию о бронировании события
@@ -18,16 +18,14 @@ namespace BestEvents.Domain
         /// </summary>
         /// <param name="id"></param>
         /// <param name="_event"></param>
-        public Booking(Guid id, Event _event, User user)
+        public Booking(Guid id, Guid eventId, Guid userId)
         {
             
             Id = id;
-            EventId = _event.Id;
-            Event = _event;
+            EventId = eventId;
             Status = BookingStatus.Pending;
             CreatedAt = DateTime.Now;
-            UserId = user.Id;
-            User = user;
+            UserId = userId;
         }
 
         /// <summary>
@@ -40,20 +38,11 @@ namespace BestEvents.Domain
         /// </summary>
         public Guid EventId { get; set; }
 
-        /// <summary>
-        /// Событие, на которое сделано бронирование
-        /// </summary>
-        public Event? Event { get; set; }
 
         /// <summary>
         /// Идентификатор пользователя, зарезервировавшего событие
         /// </summary>
         public Guid UserId { get; set; }
-
-        /// <summary>
-        /// Пользователь, который сделал бронирование
-        /// </summary>
-        public User? User { get; set; }
 
 
         /// <summary>

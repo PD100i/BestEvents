@@ -1,14 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Bookings.Application.Exceptions;
+using System.Collections;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace BestEvents.Application
+namespace Bookings.Application
 {
     /// <summary>
     /// Фоновый сервис для обработки бронирований
     /// </summary>
     public class BookingProcesser(IServiceScopeFactory scopeFactory, ILogger<BookingProcesser> logger) : BackgroundService
     {
+        private readonly SemaphoreSlim semaphore = new(1, 1);
+
         private int pollingDelay = 100;
         private int processingDelay = 2000;
 
@@ -28,7 +32,7 @@ namespace BestEvents.Application
                     var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 
 
-                    List<Guid> pendingBookings = await bookingService.GetPendingBookingsAsync(stoppingToken);
+                    List<Guid> pendingBookings = bookingService.GetPendingBookings();
                     if (pendingBookings == null || pendingBookings.Count == 0)
                     {
                         await Task.Delay(pollingDelay, stoppingToken);

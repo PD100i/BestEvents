@@ -3,8 +3,6 @@ using Bookings.Domain.Exceptions;
 using Bookings.Application.Exceptions;
 using Common;
 
-
-
 namespace Bookings.Application
 {
     /// <summary>
@@ -13,7 +11,7 @@ namespace Bookings.Application
     public class BookingService(IBookingRepository repository,  IUserAccessor userAccessor, IUnitOfWork uow) : IBookingService
     {
         const int MaxBookingsPerUser = 10;
-
+        const int PublishedMessagesQuantity = 100;
         /// <inheritdoc/>
         public async Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct)
         {
@@ -91,5 +89,7 @@ namespace Bookings.Application
             if (bookings.Count >= MaxBookingsPerUser)
                 throw new BookingLimitExceededException(string.Format(Messages_ru.BookingLimitExceeded, MaxBookingsPerUser));
         }
+
+       
     }
 }

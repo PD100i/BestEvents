@@ -8,10 +8,11 @@ namespace Common
 {
     public class BookingRejectedMessage
     {
+        public Guid Key { get; set; }
+
         public Guid BookingId { get; set; }
 
         public DateTime RejectedAt { get; set; }
-
 
     }
 }

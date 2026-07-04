@@ -91,19 +91,20 @@ namespace Bookings.Infrastructure
             await db.BookingCreatedOutbox.AddAsync(mapper.MapBookingCreatedMessageToEntity(message), ct);
         }
 
-        public async Task<List<BookingCreatedMessage>> GetUnpublishedBookingsAsync(int quentity, CancellationToken ct = default)
+        public async Task DequeueBookingCreatedAsync(IEnumerable<Guid> bookingIds, CancellationToken ct = default)
+        {
+            await db.BookingCreatedOutbox
+                .Where(m => bookingIds.Contains(m.BookingId))
+                .ExecuteDeleteAsync();
+        }
+
+        public async Task<List<BookingCreatedMessage>> GetUnpublishedCreatedBookingsAsync(int quantity, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var messageEntities = await db.BookingCreatedOutbox
                 .OrderBy(m => m.CreatedAt)
-                .Take(quentity)
+                .Take(quantity)
                 .ToListAsync(ct);
-            return messageEntities.Select(m => mapper.MapBookingCreatedEntityToMessage(m)).ToList();
+            return [.. messageEntities.Select(m => mapper.MapBookingMessageEntityToMessage(m))];
         }
-
-        public async Task DequeueBookingCreatedAsync(Guid bookingId, CancellationToken ct = default)
-        {
-            await db.BookingCreatedOutbox.Where(m => m.BookingId == bookingId).ExecuteDeleteAsync(ct);
-        }
-    }
 }

@@ -37,6 +37,7 @@ namespace Bookings.Infrastructure
         /// </summary>
         /// <param name="entity">Модель сообщения</param>
         /// <returns></returns>
+        [MapperIgnoreSource(nameof(BookingCreatedMessage.Key))]
         public partial BookingMessage MapBookingCreatedMessageToEntity (BookingCreatedMessage entity);
 
         /// <summary>
@@ -44,7 +45,18 @@ namespace Bookings.Infrastructure
         /// </summary>
         /// <param name="entity">Сущность базы данных</param>
         /// <returns></returns>
-        public partial BookingCreatedMessage MapBookingCreatedEntityToMessage(BookingMessage entity);
+        public partial BookingCreatedMessage MapBookingMessageEntityToMessage(BookingMessage entity)
+        {
+            BookingCreatedMessage result = new BookingCreatedMessage()
+            {
+                Key = entity.BookingId,
+                BookingId = entity.BookingId,
+                EventId = entity.EventId,
+                CreatedAt = entity.CreatedAt
+            };
+
+            return result;
+        }
 
         /// <summary>
         /// Приведение DateTime к UTC для корректного сохранения в базе данных и обеспечения единообразия при работе с датами и временем.

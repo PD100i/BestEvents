@@ -56,14 +56,14 @@ namespace Bookings.Application
         /// <param name="bookingId"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task DequeueBookingCreatedAsync(Guid bookingId, CancellationToken ct = default);
+        Task DequeueBookingCreatedAsync(IEnumerable<Guid> bookingIds, CancellationToken ct = default);
 
 
         /// <summary>
-        /// Возвращает список id необработанных броней
+        /// Возвращает список неопубликованных сообщений о создании брони
         /// </summary>
         /// <returns></returns>
-        Task<List<BookingCreatedMessage>> GetUnpublishedBookingsAsync(int quantity, CancellationToken ct = default);
+        Task<List<BookingCreatedMessage>> GetUnpublishedCreatedBookingsAsync(int quantity, CancellationToken ct = default);
 
 
         /// <summary>
@@ -74,7 +74,5 @@ namespace Bookings.Application
         /// <returns></returns>
         Task<List<Booking>> GetActiveBookingsByUserAsync(Guid userId, CancellationToken ct = default);
 
-
-        
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Bookings.Domain;
+using Common;
 
 namespace Bookings.Application
 {
@@ -45,5 +46,7 @@ namespace Bookings.Application
         /// <param name="ct"></param>
         /// <returns></returns>
         Task CancelBookingAsync(Guid id, CancellationToken ct);
+
+        
     }
 }

@@ -59,13 +59,12 @@ namespace Bookings.Infrastructure
                 .Select(b => b.Id).ToListAsync(ct);
         }
 
-
         /// <inheritdoc/>
         public async Task UpdateBookingAsync(Booking booking, CancellationToken ct = default)
         {
             try
             {
-                ct.ThrowIfCancellationRequested();                
+                ct.ThrowIfCancellationRequested();
                 var bookingEntity = await db.Bookings.FirstAsync(b => b.Id == booking.Id, ct);
                 mapper.UpdateBookingEntity(booking, bookingEntity);
             }
@@ -85,26 +84,31 @@ namespace Bookings.Infrastructure
             return bookingEntities.Select(mapper.MapEntityToBooking).ToList();
         }
 
+        /// <inheritdoc/>
         public async Task EnqueueBookingCreatedAsync(BookingCreatedMessage message, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             await db.BookingCreatedOutbox.AddAsync(mapper.MapBookingCreatedMessageToEntity(message), ct);
         }
 
-        public async Task DequeueBookingCreatedAsync(IEnumerable<Guid> bookingIds, CancellationToken ct = default)
+        /// <inheritdoc/>
+        public async Task DequeueBookingCreatedAsync(Guid bookingId, CancellationToken ct = default)
         {
             await db.BookingCreatedOutbox
-                .Where(m => bookingIds.Contains(m.BookingId))
-                .ExecuteDeleteAsync();
+                .Where(m => m.BookingId == bookingId)
+                .ExecuteDeleteAsync(ct);
         }
 
-        public async Task<List<BookingCreatedMessage>> GetUnpublishedCreatedBookingsAsync(int quantity, CancellationToken ct = default)
+        /// <inheritdoc/>
+        public async Task<BookingCreatedMessage?> GetUnpublishedCreatedBookingAsync(CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-            var messageEntities = await db.BookingCreatedOutbox
+            var message = await db.BookingCreatedOutbox
                 .OrderBy(m => m.CreatedAt)
-                .Take(quantity)
-                .ToListAsync(ct);
-            return [.. messageEntities.Select(m => mapper.MapBookingMessageEntityToMessage(m))];
+                .FirstOrDefaultAsync(ct);
+            if (message == null)
+                return null;
+            return mapper.MapBookingMessageEntityToMessage(message);
         }
+    }
 }

@@ -2,7 +2,6 @@
 {
     public record BookingCreatedMessage
     {
-        public Guid Key { get; set; }
 
         public Guid BookingId { get; set; }
 

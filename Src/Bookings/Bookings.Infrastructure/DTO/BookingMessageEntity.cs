@@ -2,7 +2,7 @@
 
 namespace Bookings.Infrastructure
 {
-    public class BookingMessage
+    public class BookingMessageEntity
     {
         public Guid BookingId { get; set; }
 

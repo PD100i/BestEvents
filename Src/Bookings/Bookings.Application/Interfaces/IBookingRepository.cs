@@ -56,15 +56,28 @@ namespace Bookings.Application
         /// <param name="bookingId"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task DequeueBookingCreatedAsync(IEnumerable<Guid> bookingIds, CancellationToken ct = default);
+        Task DequeueBookingCreatedAsync(Guid bookingId, CancellationToken ct = default);
 
 
         /// <summary>
-        /// Возвращает список неопубликованных сообщений о создании брони
+        /// Возвращает самое старое неопубликованное сообщение о создании брони
         /// </summary>
         /// <returns></returns>
-        Task<List<BookingCreatedMessage>> GetUnpublishedCreatedBookingsAsync(int quantity, CancellationToken ct = default);
+        Task<BookingCreatedMessage?> GetUnpublishedCreatedBookingAsync(CancellationToken ct = default);
 
+        /// <summary>
+        /// Удаляет сообщение об отмене бронирования из очереди на публикацию
+        /// </summary>
+        /// <param name="bookingId"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task DequeueBookingCancelledAsync(Guid bookingId, CancellationToken ct = default);
+
+        /// <summary>
+        /// Возвращает самое старое неопубликованное сообщение об отмене брони
+        /// </summary>
+        /// <returns></returns>
+        Task<BookingCreatedMessage?> GetUnpublishedCancelledBookingAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Возвращает список бронирований пользователя
@@ -73,6 +86,8 @@ namespace Bookings.Application
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<List<Booking>> GetActiveBookingsByUserAsync(Guid userId, CancellationToken ct = default);
+
+        
 
     }
 }

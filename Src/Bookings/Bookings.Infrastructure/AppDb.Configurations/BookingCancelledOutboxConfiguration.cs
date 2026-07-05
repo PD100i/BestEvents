@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Bookings.Infrastructure
 {
-    public class BookingCreatedOutboxConfiguration : IEntityTypeConfiguration<BookingMessageEntity>
+    public class BookingCancelledOutboxConfiguration : IEntityTypeConfiguration<BookingMessageEntity>
     {
         /// <summary>
         /// Конфигурирует сущность BookingEntity, задавая имя таблицы, ключи, свойства и связи

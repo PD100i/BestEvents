@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Common
 {
-    public abstract class AbstractConsumer<TKey, TValue>(string topic, string groupId, ILogger logger) : BackgroundService
+    public abstract class BaseConsumer<TKey, TValue>(string topic, string groupId, ILogger logger) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

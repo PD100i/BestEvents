@@ -11,8 +11,8 @@ namespace Bookings.Infrastructure
     /// <summary>
     /// Фоновый сервис для обработки бронирований
     /// </summary>
-    public class BookingCreatedPublisher(IServiceScopeFactory scopeFactory, BaseProducer<string, BookingCreatedMessage> producer, ILogger<BookingCreatedPublisher> logger) 
-        : AbstractPublisher(logger)
+    public class BookingCreatedPublisher(IServiceScopeFactory scopeFactory, BookingCreatedProducer producer, ILogger<BookingCreatedPublisher> logger) 
+        : BasePublisher(logger)
     {
         protected override async Task Publiсation(CancellationToken stoppingToken)
         {

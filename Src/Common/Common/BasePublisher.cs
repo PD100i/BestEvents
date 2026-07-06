@@ -1,18 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Common
 {
-    public abstract class AbstractPublisher(ILogger<AbstractPublisher> logger) : BackgroundService
+    public abstract class BasePublisher(ILogger<BasePublisher> logger) : BackgroundService
     {
-        private readonly SemaphoreSlim semaphore = new(1, 1);
-
         const int PollingDelay = 100;
 
         /// <summary>

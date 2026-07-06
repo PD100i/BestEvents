@@ -5,7 +5,7 @@ using Common;
 namespace Bookings.Infrastructure
 {
     public class BookingRejectedConsumer(IBookingService service, ILogger<BookingConfirmedConsumer> logger) 
-        : AbstractConsumer<string, BookingConfirmedMessage>("booking_rejected", "booking_rejected_group", logger)
+        : BaseConsumer<string, BookingConfirmedMessage>("booking_rejected", "booking_rejected_group", logger)
     {
         protected override async Task ProcessMessageAsync(string key, BookingConfirmedMessage value, CancellationToken ct)
         {

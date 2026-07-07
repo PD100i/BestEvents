@@ -1,7 +1,8 @@
-﻿using Bookings.Domain;
+﻿using Bookings.Application.Exceptions;
+using Bookings.Domain;
 using Bookings.Domain.Exceptions;
-using Bookings.Application.Exceptions;
 using Common;
+using Microsoft.Extensions.Logging;
 
 namespace Bookings.Application
 {
@@ -11,7 +12,6 @@ namespace Bookings.Application
     public class BookingService(IBookingRepository repository,  IUserAccessor userAccessor, IUnitOfWork uow) : IBookingService
     {
         const int MaxBookingsPerUser = 10;
-        const int PublishedMessagesQuantity = 100;
         /// <inheritdoc/>
         public async Task<Booking> GetBookingAsync(Guid bookingId, CancellationToken ct)
         {
@@ -34,7 +34,7 @@ namespace Bookings.Application
 
             var booking = new Booking(bookingId, eventId, user.Id);           
             await repository.AddBookingAsync(booking, ct);
-            var message = new BookingCreatedMessage()
+            var message = new BookingMessage()
             {
                 BookingId = bookingId,
                 EventId = eventId,
@@ -77,6 +77,13 @@ namespace Bookings.Application
             var user = userAccessor.GetUser();
             booking.Cancel(user);
             await repository.UpdateBookingAsync(booking, ct);
+            var message = new BookingMessage()
+            {
+                BookingId = booking.Id,
+                EventId = booking.EventId,
+                CreatedAt = DateTime.UtcNow,
+            };
+            await repository.EnqueueBookingCancelledAsync(message, ct);
             await uow.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
         }

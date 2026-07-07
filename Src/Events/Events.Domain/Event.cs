@@ -21,20 +21,20 @@ namespace Events.Domain
         {
            
             if (string.IsNullOrEmpty(title))
-                throw new EventWrongParameterException(Messages_ru.No_Title);
+                throw new EventWrongParameterException(Messages_ru.Not_Sent_Title);
            
             if (startAt == null)
-                throw new EventWrongParameterException(Messages_ru.No_StartAt);
+                throw new EventWrongParameterException(Messages_ru.Not_Sent_StartAt);
             if (endAt == null)
-                throw new EventWrongParameterException(Messages_ru.No_EndAt);
+                throw new EventWrongParameterException(Messages_ru.Not_Sent_EndAt);
             if (startAt > endAt)
                 throw new EventWrongParameterException(Messages_ru.EndAt_Less_StartAt);
             if (totalSeats == null)
-                throw new EventWrongParameterException(Messages_ru.No_TotalSeats);
+                throw new EventWrongParameterException(Messages_ru.Not_Sent_TotalSeats);
             if (totalSeats < 1)
                 throw new EventWrongParameterException(Messages_ru.WrongEventTotalSeats);
             if (availableSeats == null)
-                throw new EventWrongParameterException(Messages_ru.No_AvailableSeats);
+                throw new EventWrongParameterException(Messages_ru.Not_Sent_AvailableSeats);
             if (availableSeats < 0 || availableSeats > totalSeats)
                 throw new EventWrongParameterException(Messages_ru.WrongEventAvailableSeats);
             return new Event()
@@ -107,6 +107,10 @@ namespace Events.Domain
         /// <returns></returns>
         public void TryReserveSeats(int count = 1)
         {
+            if (EndAt < DateTime.UtcNow)
+                throw new EventCompletedException(string.Format(Messages_ru.TryReserveEventCompleted, Id));
+            if (StartAt < DateTime.UtcNow)
+                throw new EventBegunException(string.Format(Messages_ru.TryReserveEventBegun, Id));
             if (AvailableSeats < count)
                 throw new NoAvailableSeatsException();
             AvailableSeats -= count; 
@@ -119,6 +123,10 @@ namespace Events.Domain
         /// <param name="count"></param>
         public void ReleaseSeats(int count = 1)
         {
+            if (EndAt < DateTime.UtcNow)
+                throw new EventCompletedException(string.Format(Messages_ru.TryReleseEventCompleted, Id));
+            if (StartAt < DateTime.UtcNow)
+                throw new EventBegunException(string.Format(Messages_ru.TryReleseEventBegun, Id));
             if ((AvailableSeats + count) > TotalSeats)
                 throw new ReleaseBookingException(Messages_ru.RealiseBokingWrongCount);
             AvailableSeats += count;

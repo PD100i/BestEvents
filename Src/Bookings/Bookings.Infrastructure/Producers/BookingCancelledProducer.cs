@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace Bookings.Infrastructure
 {
-    public class BookingCancelledProducer(ILogger<BookingCancelledProducer> logger) : BaseProducer<string, BookingCancelledMessage>("booking_cancelled", logger)
+    public class BookingCancelledProducer(ILogger<BookingCancelledProducer> logger)
+        : BaseProducer<BookingMessage>(Topics.BookingCancelledTopic, logger)
     {
     }
 }

@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common
+namespace Events.Infrastructure
 {
-    public class BookingConfirmedMessage
+    public class BookingMessageEntity
     {
-        public Guid Key { get; set; }
-
         public Guid BookingId { get; set; }
 
-        public DateTime ConfirmedAt { get; set; }
+        public Guid EventId { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }

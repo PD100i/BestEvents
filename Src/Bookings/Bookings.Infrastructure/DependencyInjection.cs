@@ -29,8 +29,8 @@ namespace Bookings.Infrastructure
 
             services.AddHostedService<BookingCreatedPublisher>();
             services.AddHostedService<BookingCancelledPublisher>();
-            services.AddHostedService<BookingConfirmedConsumer>();
-            services.AddHostedService<BookingRejectedConsumer>();
+            services.AddHostedService<SeatsReservedConsumer>();
+            services.AddHostedService<SeatsReservationErrorConsumer>();
            
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();

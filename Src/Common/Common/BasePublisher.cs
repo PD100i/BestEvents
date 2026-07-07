@@ -6,7 +6,7 @@ namespace Common
 {
     public abstract class BasePublisher(ILogger<BasePublisher> logger) : BackgroundService
     {
-        const int PollingDelay = 100;
+        const int PollingDelay = 1000;
 
         /// <summary>
         /// Фоновый процесс обработки бронирования
@@ -15,19 +15,20 @@ namespace Common
         /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await Task.Yield();
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     await Publiсation(stoppingToken);
-                    await Task.Delay(PollingDelay, stoppingToken);
                 }
                 catch (OperationCanceledException) { throw; }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, ex.Message);
-                    await Task.Delay(PollingDelay, stoppingToken);
                 }
+                await Task.Delay(PollingDelay, stoppingToken);
             }
         }
 

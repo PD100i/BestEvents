@@ -117,8 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrorReleaseSeats" xml:space="preserve">
+    <value>Не удалось освободить место на событие {0}, зарезервированное для бронирования {1}.</value>
+  </data>
+  <data name="ErrorReserveSeats" xml:space="preserve">
+    <value>Не удалось зарезервировать место на событие {0} для бронирования {1}.</value>
+  </data>
   <data name="MismatchIdInReplaceRequest" xml:space="preserve">
     <value>Параметр id в строке запроса {0} не совпадает с параметром id в теле запроса {1}</value>
+  </data>
+  <data name="SeatsReleased" xml:space="preserve">
+    <value>Освобождено место на событие {0}, зарезервированное для бронирования {1}</value>
+  </data>
+  <data name="SeatsReserved" xml:space="preserve">
+    <value>Зарезервировано место на событие {0} для бронирования {1}</value>
   </data>
   <data name="WrongPageForPagination" xml:space="preserve">
     <value>Попытка пагинации с недопустимым значением номера страницы (page={0})</value>

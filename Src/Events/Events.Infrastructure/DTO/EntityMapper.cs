@@ -1,5 +1,6 @@
-﻿using Events.Domain;
+﻿using Common;
 using Events.Application;
+using Events.Domain;
 using Riok.Mapperly.Abstractions;
 
 namespace Events.Infrastructure
@@ -57,5 +58,19 @@ namespace Events.Infrastructure
         {
             return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
         }
+
+        /// <summary>
+        /// Мапинг из модели сообщения в сущность для сохранения в базе данных
+        /// </summary>
+        /// <param name="entity">Модель сообщения</param>
+        /// <returns></returns>
+        public partial BookingMessageEntity MapBookingMessageToEntity(BookingMessage entity);
+
+        /// <summary>
+        /// Мапинг их сущности базы данных в модель
+        /// </summary>
+        /// <param name="entity">Сущность базы данных</param>
+        /// <returns></returns>
+        public partial BookingMessage MapBookingMessageEntityToMessage(BookingMessageEntity entity);
     }
 }

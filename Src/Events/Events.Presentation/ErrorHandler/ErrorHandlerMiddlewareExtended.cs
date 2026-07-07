@@ -1,4 +1,4 @@
-﻿namespace BestEvents.Presentation
+﻿namespace Events.Presentation
 {
     /// <summary>
     /// Метод расширения для добавления ErrorHandlerMiddleware в конвейер обработки HTTP запросов

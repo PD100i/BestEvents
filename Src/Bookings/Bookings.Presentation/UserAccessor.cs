@@ -9,7 +9,7 @@ namespace Bookings.Presentation
     /// Сервис для доступа к пользователю из HttpContext
     /// </summary>
     /// <param name="httpContextAccessor"></param>
-    public class UserAccessor(IHttpContextAccessor httpContextAccessor, DtoMapper dtoMapper) : IUserAccessor
+    public class UserAccessor(IHttpContextAccessor httpContextAccessor) : IUserAccessor
     {
         /// <summary>
         /// Предоставляет доступ к пользователю из HttpContext

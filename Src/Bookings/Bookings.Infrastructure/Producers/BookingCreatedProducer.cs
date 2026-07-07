@@ -9,7 +9,8 @@ using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Bookings.Infrastructure
 {
-    public class BookingCreatedProducer(ILogger<BookingCreatedProducer> logger) : BaseProducer<string, BookingCreatedMessage>("booking_created", logger)
+    public class BookingCreatedProducer(ILogger<BookingCreatedProducer> logger) 
+        : BaseProducer<BookingMessage>(Topics.BookingCreatedTopic, logger)
     {
     }
 }

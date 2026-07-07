@@ -70,60 +70,6 @@ namespace Events.Domain {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не передано количество доступных для бронирования мест .
-        /// </summary>
-        internal static string No_AvailableSeats {
-            get {
-                return ResourceManager.GetString("No_AvailableSeats", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Не была передана дата завершения события.
-        /// </summary>
-        internal static string No_EndAt {
-            get {
-                return ResourceManager.GetString("No_EndAt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Не был передан параметр ID .
-        /// </summary>
-        internal static string No_Id {
-            get {
-                return ResourceManager.GetString("No_Id", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Не была передана дата начала события.
-        /// </summary>
-        internal static string No_StartAt {
-            get {
-                return ResourceManager.GetString("No_StartAt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Не было передано наименование события.
-        /// </summary>
-        internal static string No_Title {
-            get {
-                return ResourceManager.GetString("No_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Не передано общее количество мест для бронирования.
-        /// </summary>
-        internal static string No_TotalSeats {
-            get {
-                return ResourceManager.GetString("No_TotalSeats", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Нет доступных мест для этого события.
         /// </summary>
         internal static string NoAvailableSeats {
@@ -133,11 +79,101 @@ namespace Events.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не передано количество доступных для бронирования мест .
+        /// </summary>
+        internal static string Not_Sent_AvailableSeats {
+            get {
+                return ResourceManager.GetString("Not_Sent_AvailableSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не была передана дата завершения события.
+        /// </summary>
+        internal static string Not_Sent_EndAt {
+            get {
+                return ResourceManager.GetString("Not_Sent_EndAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не был передан параметр ID .
+        /// </summary>
+        internal static string Not_Sent_Id {
+            get {
+                return ResourceManager.GetString("Not_Sent_Id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не была передана дата начала события.
+        /// </summary>
+        internal static string Not_Sent_StartAt {
+            get {
+                return ResourceManager.GetString("Not_Sent_StartAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не было передано наименование события.
+        /// </summary>
+        internal static string Not_Sent_Title {
+            get {
+                return ResourceManager.GetString("Not_Sent_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не передано общее количество мест для бронирования.
+        /// </summary>
+        internal static string Not_Sent_TotalSeats {
+            get {
+                return ResourceManager.GetString("Not_Sent_TotalSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка при отмене бронирования. Предано неверное количество мест.
         /// </summary>
         internal static string RealiseBokingWrongCount {
             get {
                 return ResourceManager.GetString("RealiseBokingWrongCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Невозможно освободить места события {0}. Событие уже началось.
+        /// </summary>
+        internal static string TryReleseEventBegun {
+            get {
+                return ResourceManager.GetString("TryReleseEventBegun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Невозможно освободить места события {0}. Событие уже завершилось.
+        /// </summary>
+        internal static string TryReleseEventCompleted {
+            get {
+                return ResourceManager.GetString("TryReleseEventCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование мест недоступно. Событие {0} уже началось.
+        /// </summary>
+        internal static string TryReserveEventBegun {
+            get {
+                return ResourceManager.GetString("TryReserveEventBegun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бронирование мест недоступно. Событие {0} уже закончилось.
+        /// </summary>
+        internal static string TryReserveEventCompleted {
+            get {
+                return ResourceManager.GetString("TryReserveEventCompleted", resourceCulture);
             }
         }
         

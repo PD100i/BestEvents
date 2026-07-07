@@ -48,7 +48,7 @@ namespace Bookings.Application
         /// <param name="message"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task EnqueueBookingCreatedAsync(BookingCreatedMessage message, CancellationToken ct = default);
+        Task EnqueueBookingCreatedAsync(BookingMessage message, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет сообщение о создании бронирования из очереди на публикацию
@@ -63,7 +63,16 @@ namespace Bookings.Application
         /// Возвращает самое старое неопубликованное сообщение о создании брони
         /// </summary>
         /// <returns></returns>
-        Task<BookingCreatedMessage?> GetUnpublishedCreatedBookingAsync(CancellationToken ct = default);
+        Task<BookingMessage?> GetUnpublishedCreatedBookingAsync(CancellationToken ct = default);
+
+
+        /// <summary>
+        /// Добавляет сообщение об отмене бронирования в очередь на публикацию
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task EnqueueBookingCancelledAsync(BookingMessage message, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет сообщение об отмене бронирования из очереди на публикацию
@@ -77,7 +86,7 @@ namespace Bookings.Application
         /// Возвращает самое старое неопубликованное сообщение об отмене брони
         /// </summary>
         /// <returns></returns>
-        Task<BookingCreatedMessage?> GetUnpublishedCancelledBookingAsync(CancellationToken ct = default);
+        Task<BookingMessage?> GetUnpublishedCancelledBookingAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Возвращает список бронирований пользователя

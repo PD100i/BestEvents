@@ -2,6 +2,7 @@
 using Events.Domain;
 using Events.Application;
 using Events.Application.Exceptions;
+using Common;
 
 
 namespace Events.Infrastructure
@@ -20,6 +21,7 @@ namespace Events.Infrastructure
             await db.SaveChangesAsync(ct);
             return _event;
         }
+        
 
         /// <inheritdoc/>
         public async Task DeleteEventAsync(Guid id, CancellationToken ct = default)
@@ -75,7 +77,7 @@ namespace Events.Infrastructure
             return await Task.FromResult(mapper.MapPaginatedResultToEntity(result));
         }
 
-
+        
         /// <inheritdoc/>
         public async Task<Event> ReplaceEventAsync(Event _event, CancellationToken ct = default)
         {
@@ -93,6 +95,73 @@ namespace Events.Infrastructure
             {
                 throw new UpdateEventException(string.Format(Messages_ru.UpdateEventErrorMessage, _event.Id), ex);
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task AddToCancelledBookingInboxAsync(BookingMessage message, CancellationToken ct = default)
+        {
+            await db.BookingCancelledInbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
+        }
+        /// <inheritdoc/>
+        public async Task AddToCratedBookingInboxAsync(BookingMessage message, CancellationToken ct = default)
+        {
+            await db.BookingCreatedInbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<BookingMessage?> GetUnpublishedSeatsReservationErrorAsync(CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            var message = await db.SeatsReservationErrorOutbox
+                .OrderBy(m => m.CreatedAt)
+                .FirstOrDefaultAsync(ct);
+            if (message == null)
+                return null;
+            return mapper.MapBookingMessageEntityToMessage(message);
+        }
+
+        /// <inheritdoc/>
+        public async Task<BookingMessage?> GetUnpublishedSeatsReservedAsync(CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            var message = await db.SeatsReservedOutbox
+                .OrderBy(m => m.CreatedAt)
+                .FirstOrDefaultAsync(ct);
+            if (message == null)
+                return null;
+            return mapper.MapBookingMessageEntityToMessage(message);
+        }
+
+        /// <inheritdoc/>
+        public async Task DequeueSeatsReservationErrorAsync(Guid bookingId, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            await db.SeatsReservationErrorOutbox
+                .Where(m => m.BookingId == bookingId)
+                .ExecuteDeleteAsync(ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task DequeueSeatsReservedAsync(Guid bookingId, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            await db.SeatsReservedOutbox
+                .Where(m => m.BookingId == bookingId)
+                .ExecuteDeleteAsync(ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task EnqueueSeatsReservationErrorAsync(BookingMessage message, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            await db.SeatsReservationErrorOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task EnqueueSeatsReservedAsync(BookingMessage message, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            await db.SeatsReservationErrorOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
         }
 
     }

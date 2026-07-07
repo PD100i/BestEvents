@@ -5,14 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Common
 {
-    public class BaseProducer<TKey, TValue>
+    public class BaseProducer<T>
     {
         readonly ProducerConfig config;
-        readonly IProducer<TKey, TValue> producer;
+        readonly IProducer<string, string> producer;
         readonly string topic;
         readonly ILogger logger;
 
@@ -24,17 +25,18 @@ namespace Common
                 Acks = Acks.All,
                 EnableIdempotence = true
             };
-            producer = new ProducerBuilder<TKey, TValue>(config).Build();
+            producer = new ProducerBuilder<string, string>(config).Build();
             this.topic = topic;
             this.logger = logger;
         }
 
-        public async Task PublicationAsync(TKey key, TValue value)
+        public async Task PublicationAsync(string key, T value)
         {
-            var message = new Message<TKey, TValue>()
+            string _value = JsonSerializer.Serialize(value);
+            var message = new Message<string, string>()
             {
                 Key = key,
-                Value = value
+                Value = _value
             };
             var results = await producer.ProduceAsync(topic, message);
             logger.LogInformation($"Сообщение {results.Key} опубликовано в топик {results.Topic} в партицию {results.Partition}");

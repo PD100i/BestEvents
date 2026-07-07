@@ -48,5 +48,22 @@ namespace Events.Application
         /// <param name="id"></param>
         /// <param name="ct"></param>
         Task DeleteEventAsync(Guid id, CancellationToken ct = default);
+
+        /// <summary>
+        /// Резервирует места в событии с идентификатором eventId для бронирования bookingId
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <param name="bookingId"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task TryReserveSeats(Guid eventId, Guid bookingId, CancellationToken ct = default);
+
+        /// <summary>
+        /// Освобождает места в событии с идентификатором eventId резервированые ранее для бронирования bookingId
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task TryReleseSeats(Guid eventId, Guid bookingId, CancellationToken ct = default);
     }
 }

@@ -61,11 +61,47 @@ namespace Events.Application {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не удалось освободить место на событие {0}, зарезервированное для бронирования {1}..
+        /// </summary>
+        public static string ErrorReleaseSeats {
+            get {
+                return ResourceManager.GetString("ErrorReleaseSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось зарезервировать место на событие {0} для бронирования {1}..
+        /// </summary>
+        public static string ErrorReserveSeats {
+            get {
+                return ResourceManager.GetString("ErrorReserveSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Параметр id в строке запроса {0} не совпадает с параметром id в теле запроса {1}.
         /// </summary>
         public static string MismatchIdInReplaceRequest {
             get {
                 return ResourceManager.GetString("MismatchIdInReplaceRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Освобождено место на событие {0}, зарезервированное для бронирования {1}.
+        /// </summary>
+        public static string SeatsReleased {
+            get {
+                return ResourceManager.GetString("SeatsReleased", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Зарезервировано место на событие {0} для бронирования {1}.
+        /// </summary>
+        public static string SeatsReserved {
+            get {
+                return ResourceManager.GetString("SeatsReserved", resourceCulture);
             }
         }
         

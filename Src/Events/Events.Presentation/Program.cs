@@ -1,5 +1,4 @@
-﻿using BestEvents.Presentation;
-using Events.Application;
+﻿using Events.Application;
 using Events.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 

@@ -3,6 +3,7 @@ using Bookings.Application;
 using Bookings.Infrastructure;
 using Bookings.Presentation;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);

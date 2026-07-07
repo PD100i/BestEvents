@@ -11,7 +11,7 @@ namespace Events.Infrastructure.AppDb.Configurations
         /// <param name="booking_created_outbox"></param>
         public void Configure(EntityTypeBuilder<BookingMessageEntity> builder)
         {
-            builder.ToTable("error_seats_reserve_outbox");
+            builder.ToTable("seats_reservation_error_outbox");
             builder.HasKey(b => b.BookingId);
 
             builder.Property(e => e.BookingId)

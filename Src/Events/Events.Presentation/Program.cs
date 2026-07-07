@@ -1,5 +1,6 @@
 ﻿using Events.Application;
 using Events.Infrastructure;
+using Events.Presentation;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddPresentation(builder.Configuration);
 
 builder.Services.AddControllers();
 

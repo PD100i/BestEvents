@@ -11,7 +11,6 @@ namespace Events.Presentation.Controllers
     /// Контроллер событий
     /// </summary>
     /// <param name="eventService"></param>
-    /// <param name="bookingService"></param>
     /// <param name="mapper"></param>
     [ApiController]
     [Authorize]

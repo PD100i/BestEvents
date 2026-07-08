@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddPresentation(builder.Configuration);
 
 
@@ -17,7 +19,13 @@ if (app.Environment.IsDevelopment())
 }
 
 
+app.UseErrorHandler();
+
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 using (var scope = app.Services.CreateScope())
 {

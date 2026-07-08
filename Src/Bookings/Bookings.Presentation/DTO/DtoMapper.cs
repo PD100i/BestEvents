@@ -27,7 +27,6 @@ namespace Bookings.Presentation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="EventWrongParameterException"></exception>
         public Guid StringToGuid(string id)
         {
             return Guid.TryParse(id, out Guid result) ? result : throw new BookingWrongParameterException(Messages_ru.WrongIdFormat);

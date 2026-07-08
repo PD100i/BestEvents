@@ -3,7 +3,7 @@ using Bookings.Application;
 
 
 
-namespace BestEvents.Application
+namespace Bookings.Application
 {
     /// <summary>
     ///  Содержит метод расширения для добавления объектов через DI

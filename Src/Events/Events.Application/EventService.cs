@@ -4,6 +4,7 @@ using Events.Application.Exceptions;
 using Events.Domain;
 using Events.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
 
 
 namespace Events.Application
@@ -50,52 +51,72 @@ namespace Events.Application
         }
 
         /// <inheritdoc/>
-        public async Task TryReleseSeats(Guid eventId, Guid bookingId, CancellationToken ct = default)
+        public async Task TryReleseSeats(Message message, CancellationToken ct = default)
         {
-            Event? _event = null;
-            
-
             try
             {
-                _event = await repository.GetEventAsync(eventId, ct);
-                _event.TryReserveSeats();
+                ct.ThrowIfCancellationRequested();
+                using var transaction = await uow.BeginTransactionAsync();
+                await repository.AddToCancelledBookingInboxAsync(message, ct);
+                var _event = await repository.GetEventForUpdateAsync(message.EventId, ct);
+                _event.ReleaseSeats();
                 await repository.ReplaceEventAsync(_event, ct);
                 await uow.SaveChangesAsync(ct);
-                logger.LogInformation(string.Format(Messages_ru.SeatsReleased, eventId, bookingId));
+                await transaction.CommitAsync(ct);
+                logger.LogInformation(string.Format(Messages_ru.SeatsReleased, message.EventId, message.BookingId));
 
             }
             catch (Exception ex)
             {
-                logger.LogWarning(string.Format(Messages_ru.ErrorReserveSeats, eventId, bookingId) + " " + ex.Message);
+                logger.LogWarning(string.Format(Messages_ru.ErrorReserveSeats, message.EventId, message.BookingId) + " " + ex.Message);
             }
         }
+
+       
 
         /// <inheritdoc/>
-        public async Task TryReserveSeats(Guid eventId, Guid bookingId, CancellationToken ct = default)
+        public async Task TryReserveSeats(Message message, CancellationToken ct = default)
         {
-            var message = new BookingMessage
-            {
-                BookingId = bookingId,
-                EventId = eventId,
-                CreatedAt = DateTime.UtcNow
-            };
-
             try
             {
-                var _event = await repository.GetEventAsync(eventId, ct);
+                ct.ThrowIfCancellationRequested();
+                using var transaction = await uow.BeginTransactionAsync();
+                await repository.AddToCreatedBookingInboxAsync(message, ct);
+                var _event = await repository.GetEventForUpdateAsync(message.EventId, ct);
                 _event.TryReserveSeats();
-                await repository.EnqueueSeatsReservedAsync(message, ct);
+                await repository.EnqueueSeatsReservedAsync(new Message() { 
+                                                                Id = Guid.NewGuid(),
+                                                                BookingId = message.BookingId,
+                                                                EventId = message.EventId,
+                                                                CreatedAt = DateTime.UtcNow}, ct);
                 await repository.ReplaceEventAsync(_event, ct);
                 await uow.SaveChangesAsync(ct);
-                logger.LogInformation(string.Format(Messages_ru.SeatsReserved, eventId, bookingId));
+                await transaction.CommitAsync(ct);
+                logger.LogInformation(string.Format(Messages_ru.SeatsReserved, message.EventId, message.BookingId));
 
             }
-            catch (Exception ex)
-            {              
+            catch (EventNotFoundException ex)
+            {
+                uow.CleanContext();
                 await repository.EnqueueSeatsReservationErrorAsync(message, ct);
-                logger.LogWarning(string.Format(Messages_ru.ErrorReserveSeats, eventId, bookingId) + " " + ex.Message);
+                await uow.SaveChangesAsync(ct);
+                logger.LogInformation(string.Format(Messages_ru.ErrorReserveSeats, message.EventId, message.BookingId) + " " + ex.Message);
             }
+            catch (ReserveSeatsException ex)
+            {
+                uow.CleanContext();
+                await repository.EnqueueSeatsReservationErrorAsync(message, ct);
+                await uow.SaveChangesAsync(ct);
+                logger.LogInformation(string.Format(Messages_ru.ErrorReserveSeats, message.EventId, message.BookingId) + " " + ex.Message);
+            }
+            catch(Exception ex)
+            {
+                logger.LogInformation(string.Format(Messages_ru.ErrorReserveSeats, message.EventId, message.BookingId) + " " + ex.Message);
+            }
+           
             
         }
+
+       
     }
 }

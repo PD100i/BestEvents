@@ -64,13 +64,13 @@ namespace Events.Infrastructure
         /// </summary>
         /// <param name="entity">Модель сообщения</param>
         /// <returns></returns>
-        public partial BookingMessageEntity MapBookingMessageToEntity(BookingMessage entity);
+        public partial BookingEventMessageEntity MapBookingMessageToEntity(Message entity);
 
         /// <summary>
         /// Мапинг их сущности базы данных в модель
         /// </summary>
         /// <param name="entity">Сущность базы данных</param>
         /// <returns></returns>
-        public partial BookingMessage MapBookingMessageEntityToMessage(BookingMessageEntity entity);
+        public partial Message MapBookingMessageEntityToMessage(BookingEventMessageEntity entity);
     }
 }

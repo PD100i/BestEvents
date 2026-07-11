@@ -19,5 +19,11 @@ namespace Events.Application
         /// </summary>
         /// <returns></returns>
         Task<ITransaction> BeginTransactionAsync();
+
+        /// <summary>
+        /// Очищает контекст базы данных
+        /// </summary>
+        /// <returns></returns>
+        void CleanContext();
     }
 }

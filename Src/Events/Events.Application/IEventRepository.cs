@@ -63,7 +63,7 @@ namespace Events.Application
         /// <param name="message"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task AddToCratedBookingInboxAsync(BookingMessage message, CancellationToken ct = default);
+        Task AddToCreatedBookingInboxAsync(Message message, CancellationToken ct = default);
 
         /// <summary>
         /// Добавляет в инбокс таблицу сообщение об отмене бронирования
@@ -71,7 +71,7 @@ namespace Events.Application
         /// <param name="message"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task AddToCancelledBookingInboxAsync(BookingMessage message, CancellationToken ct = default);
+        Task AddToCancelledBookingInboxAsync(Message message, CancellationToken ct = default);
 
         /// <summary>
         /// Добавляет сообщение о резервировании мест в очередь на публикацию
@@ -79,7 +79,7 @@ namespace Events.Application
         /// <param name="message"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task EnqueueSeatsReservedAsync(BookingMessage message, CancellationToken ct = default);
+        Task EnqueueSeatsReservedAsync(Message message, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет сообщение о резервировании мест из очереди на публикацию
@@ -93,7 +93,7 @@ namespace Events.Application
         /// Возвращает самое старое неопубликованное сообщение о резервировании мест
         /// </summary>
         /// <returns></returns>
-        Task<BookingMessage?> GetUnpublishedSeatsReservedAsync(CancellationToken ct = default);
+        Task<Message?> GetUnpublishedSeatsReservedAsync(CancellationToken ct = default);
 
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Events.Application
         /// <param name="message"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task EnqueueSeatsReservationErrorAsync(BookingMessage message, CancellationToken ct = default);
+        Task EnqueueSeatsReservationErrorAsync(Message message, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет сообщение об ошибке резервирования мест из очереди на публикацию
@@ -116,6 +116,6 @@ namespace Events.Application
         /// Возвращает самое старое неопубликованное сообщение об ошибке резервирования мест
         /// </summary>
         /// <returns></returns>
-        Task<BookingMessage?> GetUnpublishedSeatsReservationErrorAsync(CancellationToken ct = default);
+        Task<Message?> GetUnpublishedSeatsReservationErrorAsync(CancellationToken ct = default);
     }
 }

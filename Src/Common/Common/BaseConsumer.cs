@@ -6,17 +6,15 @@ using Common.Exceptions;
 
 namespace Common
 {
-    public abstract class BaseConsumer<T>(string topic, string groupId, ILogger logger) : BackgroundService
+    public abstract class BaseConsumer<T>(KafkaSettings settings, string topic, string groupId, ILogger logger) : BackgroundService
     {
         const int PollingDelay = 1000;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await Task.Yield();
-
             var config = new ConsumerConfig
             {
-                BootstrapServers = "localhost:9092",
+                BootstrapServers = settings.BootstrapServers,
                 GroupId = groupId,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 EnableAutoCommit = false

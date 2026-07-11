@@ -23,8 +23,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseErrorHandler();
 
-app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
+﻿using Common;
 using Events.Application;
 using Events.Infrastructure.Consumers;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 
 
@@ -21,9 +22,11 @@ namespace Events.Infrastructure
         /// <returns></returns>
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration сonfiguration)
         {
+            services.Configure<KafkaSettings>(сonfiguration.GetSection("Kafka"));
+
             var connectionString = сonfiguration.GetConnectionString("Default");
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
-            
+
             services.AddSingleton<SeatsReservedProducer>();
             services.AddSingleton<SeatsReservationErrorProducer>();
             services.AddSingleton<EventFilters>();

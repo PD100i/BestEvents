@@ -83,12 +83,10 @@ namespace Events.Infrastructure
         {
             try
             {
-                var existingEvent = await db.Events.FirstAsync(e => e.Id == _event.Id);
+                var existingEvent = await db.Events.FirstOrDefaultAsync(e => e.Id == _event.Id, ct);
                 if (existingEvent == null)
                     throw new EventNotFoundException(Messages_ru.EventNotFound);
                 mapper.UpdateEventEntity(_event, existingEvent);
-
-                await db.SaveChangesAsync(ct);
                 return _event;
             }
             catch (Exception ex)
@@ -98,18 +96,18 @@ namespace Events.Infrastructure
         }
 
         /// <inheritdoc/>
-        public async Task AddToCancelledBookingInboxAsync(BookingMessage message, CancellationToken ct = default)
+        public async Task AddToCancelledBookingInboxAsync(Message message, CancellationToken ct = default)
         {
             await db.BookingCancelledInbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
         }
         /// <inheritdoc/>
-        public async Task AddToCratedBookingInboxAsync(BookingMessage message, CancellationToken ct = default)
+        public async Task AddToCreatedBookingInboxAsync(Message message, CancellationToken ct = default)
         {
             await db.BookingCreatedInbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
         }
 
         /// <inheritdoc/>
-        public async Task<BookingMessage?> GetUnpublishedSeatsReservationErrorAsync(CancellationToken ct = default)
+        public async Task<Message?> GetUnpublishedSeatsReservationErrorAsync(CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var message = await db.SeatsReservationErrorOutbox
@@ -121,7 +119,7 @@ namespace Events.Infrastructure
         }
 
         /// <inheritdoc/>
-        public async Task<BookingMessage?> GetUnpublishedSeatsReservedAsync(CancellationToken ct = default)
+        public async Task<Message?> GetUnpublishedSeatsReservedAsync(CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var message = await db.SeatsReservedOutbox
@@ -151,17 +149,17 @@ namespace Events.Infrastructure
         }
 
         /// <inheritdoc/>
-        public async Task EnqueueSeatsReservationErrorAsync(BookingMessage message, CancellationToken ct = default)
+        public async Task EnqueueSeatsReservationErrorAsync(Message message, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             await db.SeatsReservationErrorOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
         }
 
         /// <inheritdoc/>
-        public async Task EnqueueSeatsReservedAsync(BookingMessage message, CancellationToken ct = default)
+        public async Task EnqueueSeatsReservedAsync(Message message, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
-            await db.SeatsReservationErrorOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
+            await db.SeatsReservedOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
         }
 
     }

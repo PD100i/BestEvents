@@ -40,7 +40,7 @@ namespace Users.Infrastructure
         public async Task<string> GetTokenAsync(string userName, string password, CancellationToken ct)
         {
             var user = await userRepository.GetUserAsync(userName, ct) ??
-                 throw new CreateTokenException(Messages_ru.WrongIdentityData);
+                  throw new CreateTokenException(Messages_ru.WrongIdentityData);
             if (user.PasswordHash != GetPasswordHashCode(password))
                 throw new CreateTokenException(Messages_ru.WrongIdentityData);
 
@@ -52,9 +52,9 @@ namespace Users.Infrastructure
                 [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] 
-                ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound))); 
-                
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]
+                ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound)));
+
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             SecurityTokenDescriptor descriptor = new()

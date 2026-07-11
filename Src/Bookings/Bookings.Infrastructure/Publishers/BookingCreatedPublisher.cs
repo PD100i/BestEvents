@@ -24,7 +24,7 @@ namespace Bookings.Infrastructure
             if (message == null)
                 return;
 
-            await producer.PublicationAsync(message.BookingId.ToString(), message);
+            await producer.PublicationAsync(message.EventId.ToString(), message);
             await repo.DequeueBookingCreatedAsync(message.BookingId, stoppingToken);
         }
     }

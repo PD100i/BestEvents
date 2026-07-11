@@ -21,32 +21,34 @@ namespace Users.Presentation
         /// <returns></returns>
         public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
+            var key = configuration["JwtSettings:SecretKey"];
+
             services.AddHttpContextAccessor();
            
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    RoleClaimType = "role",
-                    NameClaimType = "sub",
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //})
+            //.AddJwtBearer(options =>
+            //{
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        RoleClaimType = "role",
+            //        NameClaimType = "sub",
 
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["JwtSettings:Issuer"],
-                    ValidAudience = configuration["JwtSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]
-                                                ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound)))
-                };
+            //        ValidateIssuer = true,
+            //        ValidateAudience = true,
+            //        ValidateLifetime = true,
+            //        ValidateIssuerSigningKey = true,
+            //        ValidIssuer = configuration["JwtSettings:Issuer"],
+            //        ValidAudience = configuration["JwtSettings:Audience"],
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]
+            //                                    ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound)))
+            //    };
 
-                options.MapInboundClaims = false;
-            });
+            //    options.MapInboundClaims = false;
+            //});
 
             services.AddControllers(options =>
             {
@@ -71,10 +73,10 @@ namespace Users.Presentation
                     In = ParameterLocation.Header,
                 });
 
-                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-                {
-                    [new OpenApiSecuritySchemeReference(BearerSheme, document)] = []
-                });
+                //options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                //{
+                //    [new OpenApiSecuritySchemeReference(BearerSheme, document)] = []
+                //});
             });
 
             return services;

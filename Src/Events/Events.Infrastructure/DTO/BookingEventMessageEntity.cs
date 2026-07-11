@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Events.Infrastructure
 {
-    public class BookingMessageEntity
+    public class BookingEventMessageEntity
     {
+        public required Guid Id { get; set; }
+
         public Guid BookingId { get; set; }
 
         public Guid EventId { get; set; }

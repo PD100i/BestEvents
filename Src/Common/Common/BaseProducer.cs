@@ -17,11 +17,11 @@ namespace Common
         readonly string topic;
         readonly ILogger logger;
 
-        public BaseProducer(string topic, ILogger logger) 
+        public BaseProducer(KafkaSettings settings, string topic, ILogger logger) 
         {
             config = new ProducerConfig()
             {
-                BootstrapServers = "localhost:9092",
+                BootstrapServers = settings.BootstrapServers,
                 Acks = Acks.All,
                 EnableIdempotence = true
             };

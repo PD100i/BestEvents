@@ -34,8 +34,9 @@ namespace Bookings.Application
 
             var booking = new Booking(bookingId, eventId, user.Id);           
             await repository.AddBookingAsync(booking, ct);
-            var message = new BookingMessage()
+            var message = new Message()
             {
+                Id = Guid.NewGuid(),
                 BookingId = bookingId,
                 EventId = eventId,
                 CreatedAt = DateTime.UtcNow,
@@ -77,8 +78,9 @@ namespace Bookings.Application
             var user = userAccessor.GetUser();
             booking.Cancel(user);
             await repository.UpdateBookingAsync(booking, ct);
-            var message = new BookingMessage()
+            var message = new Message()
             {
+                Id = Guid.NewGuid(),
                 BookingId = booking.Id,
                 EventId = booking.EventId,
                 CreatedAt = DateTime.UtcNow,

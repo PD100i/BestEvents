@@ -85,7 +85,7 @@ namespace Bookings.Infrastructure
         }
 
         /// <inheritdoc/>
-        public async Task EnqueueBookingCreatedAsync(BookingMessage message, CancellationToken ct = default)
+        public async Task EnqueueBookingCreatedAsync(Message message, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             await db.BookingCreatedOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
@@ -101,7 +101,7 @@ namespace Bookings.Infrastructure
         }
 
         /// <inheritdoc/>
-        public async Task<BookingMessage?> GetUnpublishedCreatedBookingAsync(CancellationToken ct = default)
+        public async Task<Message?> GetUnpublishedCreatedBookingAsync(CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var message = await db.BookingCreatedOutbox
@@ -112,7 +112,7 @@ namespace Bookings.Infrastructure
             return mapper.MapBookingMessageEntityToMessage(message);
         }
 
-        public async Task EnqueueBookingCancelledAsync(BookingMessage message, CancellationToken ct = default)
+        public async Task EnqueueBookingCancelledAsync(Message message, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             await db.BookingCancelledOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
@@ -128,7 +128,7 @@ namespace Bookings.Infrastructure
         }
 
         /// <inheritdoc/>
-        public async Task<BookingMessage?> GetUnpublishedCancelledBookingAsync(CancellationToken ct = default)
+        public async Task<Message?> GetUnpublishedCancelledBookingAsync(CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var message = await db.BookingCreatedOutbox

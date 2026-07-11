@@ -3,25 +3,32 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Events.Infrastructure.AppDb.Configurations
 {
-    public class SeatsReservationErrorOutboxConfiguration : IEntityTypeConfiguration<BookingMessageEntity>
+    public class SeatsReservationErrorOutboxConfiguration : IEntityTypeConfiguration<BookingEventMessageEntity>
     {
         /// <summary>
         /// Конфигурирует таблицу оутбокс для публикации сообщений об ошибках резервирования
         /// </summary>
-        /// <param name="booking_created_outbox"></param>
-        public void Configure(EntityTypeBuilder<BookingMessageEntity> builder)
+
+        public void Configure(EntityTypeBuilder<BookingEventMessageEntity> builder)
         {
             builder.ToTable("seats_reservation_error_outbox");
-            builder.HasKey(b => b.BookingId);
+            builder.HasKey(m => m.Id);
 
-            builder.Property(e => e.BookingId)
+            builder.Property(m => m.Id)
                 .HasColumnName("id");
 
-            builder.Property(b => b.EventId)
+            builder.Property(m => m.BookingId)
+                .HasColumnName("booking_id")
+                .IsRequired();
+
+            builder.HasIndex(m => m.BookingId)
+                .IsUnique();
+
+            builder.Property(m => m.EventId)
                 .HasColumnName("event_id")
                 .IsRequired();
 
-            builder.Property(b => b.CreatedAt)
+            builder.Property(m => m.CreatedAt)
                 .HasColumnName("created_at");
         }
     }

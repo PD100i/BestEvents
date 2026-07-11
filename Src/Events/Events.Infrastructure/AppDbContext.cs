@@ -17,22 +17,22 @@ namespace Events.Infrastructure
         /// <summary>
         /// Инбокс таблица для сообщений о создании события
         /// </summary>
-        public DbSet<BookingMessageEntity> BookingCreatedInbox { get; set; }
+        public DbSet<BookingEventMessageEntity> BookingCreatedInbox { get; set; }
 
         /// <summary>
         /// Инбокс таблица для сообщений об отмене события
         /// </summary>
-        public DbSet<BookingMessageEntity> BookingCancelledInbox { get; set; }
+        public DbSet<BookingEventMessageEntity> BookingCancelledInbox { get; set; }
 
         /// <summary>
         /// Оутбокс таблица для сообщений об успешном резервировании
         /// </summary>
-        public DbSet<BookingMessageEntity> SeatsReservedOutbox { get; set; }
+        public DbSet<BookingEventMessageEntity> SeatsReservedOutbox { get; set; }
 
         /// <summary>
         /// Оутбокс таблица для сообщений об ошибках резервирования
         /// </summary>
-        public DbSet<BookingMessageEntity> SeatsReservationErrorOutbox { get; set; }
+        public DbSet<BookingEventMessageEntity> SeatsReservationErrorOutbox { get; set; }
 
         /// <summary>
         /// Применяет конфигурацию сущностей к модели данных

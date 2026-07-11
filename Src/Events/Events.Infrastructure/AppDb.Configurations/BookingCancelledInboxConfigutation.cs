@@ -8,25 +8,33 @@ using System.Threading.Tasks;
 
 namespace Events.Infrastructure
 {
-    public class BookingCancelledInboxConfigutation : IEntityTypeConfiguration<BookingMessageEntity>
+    public class BookingCancelledInboxConfigutation : IEntityTypeConfiguration<BookingEventMessageEntity>
     {
         /// <summary>
         /// Конфигурирует таблицу инбокс для принятых сообщений отмены бронирования
         /// </summary>
-        /// <param name="booking_created_outbox"></param>
-        public void Configure(EntityTypeBuilder<BookingMessageEntity> builder)
+
+        public void Configure(EntityTypeBuilder<BookingEventMessageEntity> builder)
         {
             builder.ToTable("booking_cancelled_inbox");
             builder.HasKey(b => b.BookingId);
 
-            builder.Property(e => e.BookingId)
+            
+            builder.Property(m => m.Id)
                 .HasColumnName("id");
 
-            builder.Property(b => b.EventId)
+            builder.Property(m => m.BookingId)
+                .HasColumnName("booking_id")
+                .IsRequired();
+
+            builder.HasIndex(m => m.BookingId)
+                .IsUnique();
+
+            builder.Property(m => m.EventId)
                 .HasColumnName("event_id")
                 .IsRequired();
 
-            builder.Property(b => b.CreatedAt)
+            builder.Property(m => m.CreatedAt)
                 .HasColumnName("created_at");
         }
     }

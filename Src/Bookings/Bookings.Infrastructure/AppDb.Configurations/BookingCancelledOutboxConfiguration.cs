@@ -8,25 +8,32 @@ using System.Threading.Tasks;
 
 namespace Bookings.Infrastructure
 {
-    public class BookingCancelledOutboxConfiguration : IEntityTypeConfiguration<BookingMessageEntity>
+    public class BookingCancelledOutboxConfiguration : IEntityTypeConfiguration<BookingEventMessageEntity>
     {
         /// <summary>
         /// Конфигурирует сущность BookingEntity, задавая имя таблицы, ключи, свойства и связи
         /// </summary>
         /// <param name="booking_created_outbox"></param>
-        public void Configure(EntityTypeBuilder<BookingMessageEntity> builder)
+        public void Configure(EntityTypeBuilder<BookingEventMessageEntity> builder)
         {
-            builder.ToTable("booking_created_outbox");
-            builder.HasKey(b => b.BookingId);
+            builder.ToTable("booking_cancelled_outbox");
+            builder.HasKey(m => m.Id);
 
-            builder.Property(e => e.BookingId)
+            builder.Property(m => m.Id)
                 .HasColumnName("id");
 
-            builder.Property(b => b.EventId)
+            builder.Property(m => m.BookingId)
+                .HasColumnName("booking_id")
+                .IsRequired();
+
+            builder.HasIndex(m => m.BookingId)
+                .IsUnique();
+
+            builder.Property(m => m.EventId)
                 .HasColumnName("event_id")
                 .IsRequired();
 
-            builder.Property(b => b.CreatedAt)
+            builder.Property(m => m.CreatedAt)
                 .HasColumnName("created_at");
         }
     }

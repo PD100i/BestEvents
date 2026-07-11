@@ -19,7 +19,7 @@ namespace Events.Infrastructure
             if (message == null)
                 return;
 
-            await producer.PublicationAsync(message.BookingId.ToString(), message);
+            await producer.PublicationAsync(message.EventId.ToString(), message);
             await repo.DequeueSeatsReservationErrorAsync(message.BookingId, stoppingToken);
         }
     }

@@ -1,5 +1,6 @@
 ﻿
 using Events.Application;
+using Microsoft.EntityFrameworkCore;
 
 namespace Events.Infrastructure
 {
@@ -26,6 +27,12 @@ namespace Events.Infrastructure
         public void Dispose()
         {
             context.Dispose();
+        }
+
+        /// <inheritdoc/>
+        public void CleanContext()
+        {
+            context.ChangeTracker.Clear();
         }
     }
 }

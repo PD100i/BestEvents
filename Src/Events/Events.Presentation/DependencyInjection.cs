@@ -21,11 +21,13 @@ namespace Events.Presentation
         /// <returns></returns>
         public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
+            var key = configuration["JwtSettings:SecretKey"];
 
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
@@ -41,10 +43,20 @@ namespace Events.Presentation
                     ValidIssuer = configuration["JwtSettings:Issuer"],
                     ValidAudience = configuration["JwtSettings:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]
-                                                ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound)))
+                                                 ?? throw new InvalidOperationException(Messages_ru.SecretKeyNotFound)))
                 };
 
                 options.MapInboundClaims = false;
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        // Здесь в context.Exception будет написана точная причина (например, не совпал ключ)
+                        Console.WriteLine("Ошибка аутентификации: " + context.Exception.Message);
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             services.AddControllers(options =>

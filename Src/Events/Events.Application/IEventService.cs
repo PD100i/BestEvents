@@ -1,4 +1,5 @@
 ﻿using Events.Domain;
+using Common;
 
 namespace Events.Application
 {
@@ -56,7 +57,7 @@ namespace Events.Application
         /// <param name="bookingId"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task TryReserveSeats(Guid eventId, Guid bookingId, CancellationToken ct = default);
+        Task TryReserveSeats(Message message, CancellationToken ct = default);
 
         /// <summary>
         /// Освобождает места в событии с идентификатором eventId резервированые ранее для бронирования bookingId
@@ -64,6 +65,6 @@ namespace Events.Application
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task TryReleseSeats(Guid eventId, Guid bookingId, CancellationToken ct = default);
+        Task TryReleseSeats(Message message, CancellationToken ct = default);
     }
 }

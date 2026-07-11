@@ -14,10 +14,10 @@ namespace Bookings.Infrastructure
         /// </summary>
         public DbSet<BookingEntity> Bookings { get; set; }
 
-        public DbSet<BookingMessageEntity> BookingCreatedOutbox {  get; set; }
+        public DbSet<BookingEventMessageEntity> BookingCreatedOutbox {  get; set; }
 
 
-        public DbSet<BookingMessageEntity> BookingCancelledOutbox { get; set; }
+        public DbSet<BookingEventMessageEntity> BookingCancelledOutbox { get; set; }
 
         /// <summary>
         /// Применяет конфигурацию сущностей к модели данных

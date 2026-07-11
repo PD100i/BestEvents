@@ -21,11 +21,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseErrorHandler();
 
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
 
 using (var scope = app.Services.CreateScope())
 {

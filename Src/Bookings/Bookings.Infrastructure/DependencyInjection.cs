@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Bookings.Application;
+using Common;
 
 
 
@@ -20,6 +21,8 @@ namespace Bookings.Infrastructure
         /// <returns></returns>
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration сonfiguration)
         {
+            services.Configure<KafkaSettings>(сonfiguration.GetSection("Kafka")); 
+
             var connectionString = сonfiguration.GetConnectionString("Default");
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
             
@@ -29,9 +32,10 @@ namespace Bookings.Infrastructure
 
             services.AddHostedService<BookingCreatedPublisher>();
             services.AddHostedService<BookingCancelledPublisher>();
+
             services.AddHostedService<SeatsReservedConsumer>();
             services.AddHostedService<SeatsReservationErrorConsumer>();
-           
+
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IBookingRepository, BookingRepository>();

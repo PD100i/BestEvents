@@ -16,6 +16,7 @@ namespace Bookings.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    booking_id = table.Column<Guid>(type: "uuid", nullable: false),
                     event_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -39,6 +40,12 @@ namespace Bookings.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_bookings", x => x.id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_booking_created_outbox_booking_id",
+                table: "booking_created_outbox",
+                column: "booking_id",
+                unique: true);
         }
 
         /// <inheritdoc />

@@ -1,6 +1,0 @@
-@Event.Presentation_HostAddress = http://localhost:5043
-
-GET {{Event.Presentation_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -37,14 +37,14 @@ namespace Bookings.Infrastructure
         /// </summary>
         /// <param name="entity">Модель сообщения</param>
         /// <returns></returns>
-        public partial BookingEventMessageEntity MapBookingMessageToEntity (Message entity);
+        public partial OutboxMessageEntity MapBookingMessageToEntity (Message entity);
 
         /// <summary>
         /// Мапинг их сущности базы данных в модель
         /// </summary>
         /// <param name="entity">Сущность базы данных</param>
         /// <returns></returns>
-        public partial Message MapBookingMessageEntityToMessage(BookingEventMessageEntity entity);
+        public partial Message MapBookingMessageEntityToMessage(OutboxMessageEntity entity);
         
 
         /// <summary>

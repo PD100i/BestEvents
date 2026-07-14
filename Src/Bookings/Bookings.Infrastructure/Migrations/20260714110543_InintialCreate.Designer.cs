@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Bookings.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260710180500_InitCreate")]
-    partial class InitCreate
+    [Migration("20260714110543_InintialCreate")]
+    partial class InintialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,7 +57,7 @@ namespace Bookings.Infrastructure.Migrations
                     b.ToTable("bookings", (string)null);
                 });
 
-            modelBuilder.Entity("Bookings.Infrastructure.BookingEventMessageEntity", b =>
+            modelBuilder.Entity("Bookings.Infrastructure.OutboxMessageEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -76,12 +76,13 @@ namespace Bookings.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("event_id");
 
+                    b.Property<int>("MessageType")
+                        .HasColumnType("integer")
+                        .HasColumnName("message_type");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId")
-                        .IsUnique();
-
-                    b.ToTable("booking_created_outbox", (string)null);
+                    b.ToTable("outbox", (string)null);
                 });
 #pragma warning restore 612, 618
         }

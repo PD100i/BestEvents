@@ -12,5 +12,15 @@ namespace Common
 
         public required DateTime CreatedAt { get; set; }
 
+        public MessageTypeEnum MessageType { get; set; }
+
+    }
+
+    public enum MessageTypeEnum
+    {
+        BookingCreated,
+        BookingCancelled,
+        SeatsReserved,
+        ReservationSeatsError
     }
 }

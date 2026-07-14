@@ -22,33 +22,6 @@ namespace Events.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Events.Infrastructure.BookingEventMessageEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("BookingId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("booking_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("event_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookingId")
-                        .IsUnique();
-
-                    b.ToTable("seats_reservation_error_outbox", (string)null);
-                });
-
             modelBuilder.Entity("Events.Infrastructure.EventEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -86,6 +59,34 @@ namespace Events.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("events", (string)null);
+                });
+
+            modelBuilder.Entity("Events.Infrastructure.MessageEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("booking_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("event_id");
+
+                    b.Property<int>("MessageType")
+                        .HasColumnType("integer")
+                        .HasColumnName("message_type");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("outbox", (string)null);
                 });
 #pragma warning restore 612, 618
         }

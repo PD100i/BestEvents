@@ -84,61 +84,31 @@ namespace Bookings.Infrastructure
             return bookingEntities.Select(mapper.MapEntityToBooking).ToList();
         }
 
+
         /// <inheritdoc/>
-        public async Task EnqueueBookingCreatedAsync(Message message, CancellationToken ct = default)
+        public async Task EnqueueMessageAsync(Message message, CancellationToken ct = default)
         {
-            ct.ThrowIfCancellationRequested();
-            await db.BookingCreatedOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
+            await db.Outbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
         }
 
         /// <inheritdoc/>
-        public async Task DequeueBookingCreatedAsync(Guid bookingId, CancellationToken ct = default)
+        public async Task DequeueMessageAsync(Guid id, CancellationToken ct = default)
         {
-            ct.ThrowIfCancellationRequested();
-            await db.BookingCreatedOutbox
-                .Where(m => m.BookingId == bookingId)
+            await db.Outbox
+                .Where(m => m.Id == id)
                 .ExecuteDeleteAsync(ct);
         }
 
         /// <inheritdoc/>
-        public async Task<Message?> GetUnpublishedCreatedBookingAsync(CancellationToken ct = default)
+        public async Task<Message?> GetOldestUnpublishedMessageAsync(MessageTypeEnum messageType, CancellationToken ct = default)
         {
-            ct.ThrowIfCancellationRequested();
-            var message = await db.BookingCreatedOutbox
-                .OrderBy(m => m.CreatedAt)
-                .FirstOrDefaultAsync(ct);
+            var message = await db.Outbox
+               .Where(m => m.MessageType == messageType)
+               .OrderBy(m => m.CreatedAt)
+               .FirstOrDefaultAsync(ct);
             if (message == null)
                 return null;
             return mapper.MapBookingMessageEntityToMessage(message);
         }
-
-        public async Task EnqueueBookingCancelledAsync(Message message, CancellationToken ct = default)
-        {
-            ct.ThrowIfCancellationRequested();
-            await db.BookingCancelledOutbox.AddAsync(mapper.MapBookingMessageToEntity(message), ct);
-        }
-
-        /// <inheritdoc/>
-        public async Task DequeueBookingCancelledAsync(Guid bookingId, CancellationToken ct = default)
-        {
-            ct.ThrowIfCancellationRequested();
-            await db.BookingCancelledOutbox
-                .Where(m => m.BookingId == bookingId)
-                .ExecuteDeleteAsync(ct);
-        }
-
-        /// <inheritdoc/>
-        public async Task<Message?> GetUnpublishedCancelledBookingAsync(CancellationToken ct = default)
-        {
-            ct.ThrowIfCancellationRequested();
-            var message = await db.BookingCreatedOutbox
-                .OrderBy(m => m.CreatedAt)
-                .FirstOrDefaultAsync(ct);
-            if (message == null)
-                return null;
-            return mapper.MapBookingMessageEntityToMessage(message);
-        }
-
-        
     }
 }

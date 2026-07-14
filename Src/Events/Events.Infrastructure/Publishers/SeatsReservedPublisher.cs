@@ -19,12 +19,13 @@ namespace Events.Infrastructure
             var repo = scope.ServiceProvider.GetRequiredService<IEventRepository>();
 
 
-            var message = await repo.GetUnpublishedSeatsReservedAsync(stoppingToken);
+            var message = await repo.GetOldestUnpublishedMessageAsync(MessageTypeEnum.SeatsReserved, stoppingToken);
             if (message == null)
                 return;
-
+            logger.LogInformation("Найдена запись о резервировании мест: EventId - {EventId}, BookingId - {BookingId}", message.EventId, message.BookingId);
             await producer.PublicationAsync(message.EventId.ToString(), message);
-            await repo.DequeueSeatsReservedAsync(message.BookingId, stoppingToken);
+            await repo.DequeueMessageAsync(message.Id, stoppingToken);
+            logger.LogInformation("Обработана запись о резервировании мест: EventId - {EventId}, BookingId - {BookingId}", message.EventId, message.BookingId);
         }
     }
 }

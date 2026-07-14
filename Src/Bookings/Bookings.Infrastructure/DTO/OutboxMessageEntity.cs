@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-namespace Events.Infrastructure
+using Common;
+
+namespace Bookings.Infrastructure
 {
-    public class BookingEventMessageEntity
+    public class OutboxMessageEntity
     {
         public required Guid Id { get; set; }
 
@@ -15,5 +13,8 @@ namespace Events.Infrastructure
         public Guid EventId { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public MessageTypeEnum MessageType { get; set; }
+
     }
 }

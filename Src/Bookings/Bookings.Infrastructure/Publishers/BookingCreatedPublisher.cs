@@ -20,12 +20,12 @@ namespace Bookings.Infrastructure
             var repo = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
 
 
-            var message = await repo.GetUnpublishedCreatedBookingAsync(stoppingToken);
+            var message = await repo.GetOldestUnpublishedMessageAsync(MessageTypeEnum.BookingCreated, stoppingToken);
             if (message == null)
                 return;
-
+            logger.LogInformation("Найдена запись о создании бронирования: EventId - {EventId}, BookingId - {BookingId}", message.EventId, message.BookingId);
             await producer.PublicationAsync(message.EventId.ToString(), message);
-            await repo.DequeueBookingCreatedAsync(message.BookingId, stoppingToken);
+            await repo.DequeueMessageAsync(message.Id, stoppingToken);
         }
     }
 }

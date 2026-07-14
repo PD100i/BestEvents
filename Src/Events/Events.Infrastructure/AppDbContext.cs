@@ -1,5 +1,4 @@
-﻿using Events.Infrastructure.AppDb.Configurations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Events.Infrastructure
 { 
@@ -14,25 +13,16 @@ namespace Events.Infrastructure
         /// </summary>
         public DbSet<EventEntity> Events { get; set; } 
 
-        /// <summary>
-        /// Инбокс таблица для сообщений о создании события
-        /// </summary>
-        public DbSet<BookingEventMessageEntity> BookingCreatedInbox { get; set; }
 
         /// <summary>
-        /// Инбокс таблица для сообщений об отмене события
+        /// Инбокс таблица для сообщений
         /// </summary>
-        public DbSet<BookingEventMessageEntity> BookingCancelledInbox { get; set; }
+        public DbSet<MessageEntity> Inbox { get; set; }
 
         /// <summary>
-        /// Оутбокс таблица для сообщений об успешном резервировании
+        /// Оутбокс таблица для сообщений
         /// </summary>
-        public DbSet<BookingEventMessageEntity> SeatsReservedOutbox { get; set; }
-
-        /// <summary>
-        /// Оутбокс таблица для сообщений об ошибках резервирования
-        /// </summary>
-        public DbSet<BookingEventMessageEntity> SeatsReservationErrorOutbox { get; set; }
+        public DbSet<MessageEntity> Outbox { get; set; }
 
         /// <summary>
         /// Применяет конфигурацию сущностей к модели данных
@@ -41,10 +31,8 @@ namespace Events.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new EventConfiguration());
-            modelBuilder.ApplyConfiguration(new BookingCreatedInboxConfiguration());
-            modelBuilder.ApplyConfiguration(new BookingCancelledInboxConfigutation());
-            modelBuilder.ApplyConfiguration(new SeatsReservedOutboxConfiguration());
-            modelBuilder.ApplyConfiguration(new SeatsReservationErrorOutboxConfiguration());
+            modelBuilder.ApplyConfiguration(new InboxConfigutation());
+            modelBuilder.ApplyConfiguration(new OutboxConfiguration());
         }
     }
 }

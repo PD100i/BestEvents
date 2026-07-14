@@ -38,11 +38,7 @@ namespace Bookings.Infrastructure
                 .IsRequired();
 
             builder.Property(b => b.ProcessedAt)
-                .HasColumnName("processed_at");
-
-           
-
-            
+                .HasColumnName("processed_at");           
         }
     }
 }

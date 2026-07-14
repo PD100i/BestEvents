@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Events.Infrastructure.Consumers
 {
     public class BookingCancelledConsumer(IServiceScopeFactory scopeFactory, IOptions<KafkaSettings> options, ILogger<BookingCancelledConsumer> logger)
-        : BaseConsumer<Message>(options.Value, Topics.BookingCreatedTopic, "booking_cancelled_group", logger)
+        : BaseConsumer<Message>(options.Value, Topics.BookingCancelledTopic, "booking_cancelled_group", logger)
     {
         protected override async Task ProcessMessageAsync(string key, Message value, CancellationToken ct)
         {

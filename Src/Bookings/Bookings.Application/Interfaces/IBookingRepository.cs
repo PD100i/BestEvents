@@ -43,50 +43,28 @@ namespace Bookings.Application
 
 
         /// <summary>
-        /// Добавляет сообщение о создании бронирования в очередь на публикацию
+        /// Добавляет сообщение в очередь на публикацию
         /// </summary>
         /// <param name="message"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task EnqueueBookingCreatedAsync(Message message, CancellationToken ct = default);
+        Task EnqueueMessageAsync(Message message, CancellationToken ct = default);
 
         /// <summary>
-        /// Удаляет сообщение о создании бронирования из очереди на публикацию
+        /// Удаляет сообщение из очереди на публикацию
         /// </summary>
-        /// <param name="bookingId"></param>
+        /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task DequeueBookingCreatedAsync(Guid bookingId, CancellationToken ct = default);
-
-
-        /// <summary>
-        /// Возвращает самое старое неопубликованное сообщение о создании брони
-        /// </summary>
-        /// <returns></returns>
-        Task<Message?> GetUnpublishedCreatedBookingAsync(CancellationToken ct = default);
-
+        Task DequeueMessageAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
-        /// Добавляет сообщение об отмене бронирования в очередь на публикацию
+        /// Возвращает самое старое неопубликованное сообщение из outbox по типу сообщения
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="messageType"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task EnqueueBookingCancelledAsync(Message message, CancellationToken ct = default);
-
-        /// <summary>
-        /// Удаляет сообщение об отмене бронирования из очереди на публикацию
-        /// </summary>
-        /// <param name="bookingId"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task DequeueBookingCancelledAsync(Guid bookingId, CancellationToken ct = default);
-
-        /// <summary>
-        /// Возвращает самое старое неопубликованное сообщение об отмене брони
-        /// </summary>
-        /// <returns></returns>
-        Task<Message?> GetUnpublishedCancelledBookingAsync(CancellationToken ct = default);
+        Task<Message?> GetOldestUnpublishedMessageAsync(MessageTypeEnum messageType, CancellationToken ct = default);
 
         /// <summary>
         /// Возвращает список бронирований пользователя

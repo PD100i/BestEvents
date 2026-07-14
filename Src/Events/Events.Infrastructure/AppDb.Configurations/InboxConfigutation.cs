@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace Events.Infrastructure
 {
-    public class SeatsReservedOutboxConfiguration : IEntityTypeConfiguration<BookingEventMessageEntity>
+    public class InboxConfigutation : IEntityTypeConfiguration<MessageEntity>
     {
         /// <summary>
-        /// Конфигурирует таблицу оутбокс для публикации сообщения резервирования мест
+        /// Конфигурирует таблицу инбокс для принятых сообщений отмены бронирования
         /// </summary>
 
-        public void Configure(EntityTypeBuilder<BookingEventMessageEntity> builder)
+        public void Configure(EntityTypeBuilder<MessageEntity> builder)
         {
-            builder.ToTable("seats_reserved_outbox");
+            builder.ToTable("inbox");
+            builder.HasKey(b => b.BookingId);
 
-            builder.HasKey(m => m.Id);
-
+            
             builder.Property(m => m.Id)
                 .HasColumnName("id");
 
@@ -27,15 +27,17 @@ namespace Events.Infrastructure
                 .HasColumnName("booking_id")
                 .IsRequired();
 
-            builder.HasIndex(m => m.BookingId)
-                .IsUnique();
-
             builder.Property(m => m.EventId)
                 .HasColumnName("event_id")
                 .IsRequired();
 
             builder.Property(m => m.CreatedAt)
-                .HasColumnName("created_at");
+                .HasColumnName("created_at")
+                .IsRequired();
+
+            builder.Property(m => m.MessageType)
+                .HasColumnName("message_type")
+                .IsRequired();
         }
     }
 }

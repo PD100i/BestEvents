@@ -3,59 +3,55 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Bookings.Infrastructure.Migrations
+namespace Events.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitCreate : Migration
+    public partial class InintialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "booking_created_outbox",
+                name: "events",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    start_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    end_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    total_seats = table.Column<int>(type: "integer", nullable: false),
+                    available_seats = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_events", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "outbox",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     booking_id = table.Column<Guid>(type: "uuid", nullable: false),
                     event_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_booking_created_outbox", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "bookings",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    event_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    status = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    processed_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    message_type = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_bookings", x => x.id);
+                    table.PrimaryKey("PK_outbox", x => x.id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_booking_created_outbox_booking_id",
-                table: "booking_created_outbox",
-                column: "booking_id",
-                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "booking_created_outbox");
+                name: "events");
 
             migrationBuilder.DropTable(
-                name: "bookings");
+                name: "outbox");
         }
     }
 }

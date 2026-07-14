@@ -16,6 +16,7 @@ namespace Common
             {
                 BootstrapServers = settings.BootstrapServers,
                 GroupId = groupId,
+                AllowAutoCreateTopics = true,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 EnableAutoCommit = false
             };
@@ -43,6 +44,11 @@ namespace Common
                         await ProcessMessageAsync(result.Message.Key, _value, stoppingToken);
 
                         consumer.Commit(result);
+                    }
+                    catch (ConsumeException ex) when (ex.Error.Reason.Contains("Subscribed topic not available"))
+                    {
+                        logger.LogInformation("Топик еще создается брокером. Повторная попытка через 2 секунды...");
+                        await Task.Delay(2000);
                     }
                     catch (ConsumeException e)
                     {

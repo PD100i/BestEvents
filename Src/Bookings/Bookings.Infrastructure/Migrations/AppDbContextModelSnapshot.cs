@@ -54,7 +54,7 @@ namespace Bookings.Infrastructure.Migrations
                     b.ToTable("bookings", (string)null);
                 });
 
-            modelBuilder.Entity("Bookings.Infrastructure.BookingEventMessageEntity", b =>
+            modelBuilder.Entity("Bookings.Infrastructure.OutboxMessageEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -73,12 +73,13 @@ namespace Bookings.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("event_id");
 
+                    b.Property<int>("MessageType")
+                        .HasColumnType("integer")
+                        .HasColumnName("message_type");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId")
-                        .IsUnique();
-
-                    b.ToTable("booking_created_outbox", (string)null);
+                    b.ToTable("outbox", (string)null);
                 });
 #pragma warning restore 612, 618
         }

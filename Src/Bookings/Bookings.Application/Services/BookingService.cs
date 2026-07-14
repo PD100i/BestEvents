@@ -9,7 +9,7 @@ namespace Bookings.Application
     /// <summary>
     /// Реализация сервиса бронирования
     /// </summary>
-    public class BookingService(IBookingRepository repository,  IUserAccessor userAccessor, IUnitOfWork uow) : IBookingService
+    public class BookingService(IBookingRepository repository,  IUserAccessor userAccessor, IUnitOfWork uow, ILogger<BookingService> logger) : IBookingService
     {
         const int MaxBookingsPerUser = 10;
         /// <inheritdoc/>
@@ -40,9 +40,11 @@ namespace Bookings.Application
                 BookingId = bookingId,
                 EventId = eventId,
                 CreatedAt = DateTime.UtcNow,
+                MessageType = MessageTypeEnum.BookingCreated
             };
-            await repository.EnqueueBookingCreatedAsync(message, ct);
+            await repository.EnqueueMessageAsync(message, ct);
             await uow.SaveChangesAsync();
+            logger.LogInformation("Создано бронирование: {BookingId} для события: {EventId}", bookingId, eventId);
             return booking;
         }
 
@@ -57,6 +59,7 @@ namespace Bookings.Application
             await repository.UpdateBookingAsync(booking, ct);
             await uow.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
+            logger.LogInformation("Подтверждено бронирование: {BookingId} для события: {EventId}", bookingId, booking.EventId);
         }
 
         public async Task RejectedBooking(Guid bookingId, CancellationToken ct)
@@ -69,6 +72,7 @@ namespace Bookings.Application
             await repository.UpdateBookingAsync(booking, ct);
             await uow.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
+            logger.LogInformation("Отклонено бронирование: {BookingId} для события: {EventId}", bookingId, booking.EventId);
         }
 
         public async Task CancelBookingAsync(Guid id, CancellationToken ct)
@@ -84,10 +88,12 @@ namespace Bookings.Application
                 BookingId = booking.Id,
                 EventId = booking.EventId,
                 CreatedAt = DateTime.UtcNow,
+                MessageType = MessageTypeEnum.BookingCancelled
             };
-            await repository.EnqueueBookingCancelledAsync(message, ct);
+            await repository.EnqueueMessageAsync(message, ct);
             await uow.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
+            logger.LogInformation("Отменено бронирование: {BookingId} для события: {EventId}", booking.Id, booking.EventId);
         }
 
         private async Task CheckUsersBookingAvailability(Guid userId, CancellationToken ct)

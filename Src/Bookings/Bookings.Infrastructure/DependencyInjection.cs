@@ -1,0 +1,46 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Bookings.Application;
+using Common;
+
+
+
+namespace Bookings.Infrastructure
+{
+    /// <summary>
+    ///  Содержит метод расширения для добавления объектов через DI
+    /// </summary>
+    public static class DependencyInjection
+    {
+        /// <summary>
+        /// Добавляет объекты слоя Infrastructure
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="сonfiguration"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration сonfiguration)
+        {
+            services.Configure<KafkaSettings>(сonfiguration.GetSection("Kafka")); 
+
+            var connectionString = сonfiguration.GetConnectionString("Default");
+            services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+            
+            services.AddSingleton<EntityMapper>();
+            services.AddSingleton<BookingCreatedProducer>();
+            services.AddSingleton<BookingCancelledProducer>();
+
+            services.AddHostedService<BookingCreatedPublisher>();
+            services.AddHostedService<BookingCancelledPublisher>();
+
+            services.AddHostedService<SeatsReservedConsumer>();
+            services.AddHostedService<SeatsReservationErrorConsumer>();
+
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IBookingRepository, BookingRepository>();
+
+            return services;
+        }
+    }
+}

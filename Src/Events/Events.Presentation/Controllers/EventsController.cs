@@ -38,6 +38,22 @@ namespace Events.Presentation.Controllers
             return Ok(result);
         }
 
+
+        /// <summary>
+        /// Возвращает топ 10 популярных событий. Возвращает HTTP статус-код 200 Ok в случае успеха
+        /// </summary>
+        /// <param name="ct">Токен отмены</param>
+        /// <response code="200">Возвращается JSON-структура PaginationResultsDto с деталями ответа и HTTP статус-кодом 200 Ok в случае успеха</response>
+        [HttpGet]
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EventInfoDto>))]
+        public async Task<IActionResult> GetTopEventsAsync(CancellationToken ct = default)
+        {
+            var result = await eventService.GetTopPopularEventsAsync(ct);
+            return Ok(mapper.MapEventListToEventInfoDtoList(result));
+        }
+
         /// <summary>
         /// Возвращает событие по его идентификатору
         /// </summary>

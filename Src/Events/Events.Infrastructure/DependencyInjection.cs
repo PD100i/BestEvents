@@ -36,17 +36,25 @@ namespace Events.Infrastructure
             services.AddSingleton<EntityMapper>();           
             services.AddSingleton<IEventsCache, EventsCache>();
 
+
+            
             var redisSection = сonfiguration.GetSection("RedisSettings");
             var redisSettings = redisSection.Get<RedisSettings>() ?? throw new InvalidOperationException(Messages_ru.RedisSettingsNotFound);
+            
+
             var redisConfigurationOptions = new ConfigurationOptions
             {
-                EndPoints = redisSettings.EndPoints,
-                Password = redisSettings.Password,
                 ConnectTimeout = redisSettings.ConnectTimeout,
                 AbortOnConnectFail = redisSettings.AbortOnConnectFail,
                 SyncTimeout = redisSettings.SyncTimeout
             };
-            services.Configure<RedisSettings>(redisSection);
+            string? endpoint = сonfiguration["RedisSettings:Endpoints"];
+            string? password = сonfiguration["RedisSettings:Password"];
+            if (!string.IsNullOrEmpty(endpoint))
+                redisConfigurationOptions.EndPoints.Add(endpoint);
+            if (!string.IsNullOrEmpty(password))
+                redisConfigurationOptions.Password = password;
+
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfigurationOptions));
 
             services.AddHostedService<SeatsReservedPublisher>();

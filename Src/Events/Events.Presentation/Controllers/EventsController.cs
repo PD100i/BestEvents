@@ -44,7 +44,7 @@ namespace Events.Presentation.Controllers
         /// </summary>
         /// <param name="ct">Токен отмены</param>
         /// <response code="200">Возвращается JSON-структура PaginationResultsDto с деталями ответа и HTTP статус-кодом 200 Ok в случае успеха</response>
-        [HttpGet]
+        [HttpGet("top")]
         [AllowAnonymous]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EventInfoDto>))]

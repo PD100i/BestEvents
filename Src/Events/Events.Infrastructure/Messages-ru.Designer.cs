@@ -79,6 +79,15 @@ namespace Events.Infrastructure {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не найдены настройки RedisSettings.
+        /// </summary>
+        public static string RedisSettingsNotFound {
+            get {
+                return ResourceManager.GetString("RedisSettingsNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не найден секретный кдюч для JWT аутентификации.
         /// </summary>
         public static string SecretKeyNotFound {

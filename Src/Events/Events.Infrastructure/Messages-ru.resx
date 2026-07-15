@@ -129,4 +129,7 @@
   <data name="SecretKeyNotFound" xml:space="preserve">
     <value>Не найден секретный кдюч для JWT аутентификации</value>
   </data>
+  <data name="RedisSettingsNotFound" xml:space="preserve">
+    <value>Не найдены настройки RedisSettings</value>
+  </data>
 </root>

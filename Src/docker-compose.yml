@@ -32,6 +32,8 @@
         condition: service_started
       db-events:
         condition: service_healthy
+      events-redis:
+        condition: service_healthy
 
   bookings.presentation:
     image: ${DOCKER_REGISTRY-}bookingspresentation
@@ -106,3 +108,13 @@
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: events-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s

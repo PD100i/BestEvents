@@ -5,7 +5,6 @@ using Events.Application.Exceptions;
 using Common;
 using Microsoft.Extensions.Logging;
 
-
 namespace Events.Infrastructure
 {
     /// <summary>
@@ -120,7 +119,6 @@ namespace Events.Infrastructure
         /// <inheritdoc/>
         public async Task<Message?> GetOldestUnpublishedMessageAsync(MessageTypeEnum messageType, CancellationToken ct = default)
         {
-            ct.ThrowIfCancellationRequested();
             var message = await db.Outbox
                 .Where(m => m.MessageType == messageType)
                 .OrderBy(m => m.CreatedAt)
@@ -128,6 +126,15 @@ namespace Events.Infrastructure
             if (message == null)
                 return null;
             return mapper.MapBookingMessageEntityToMessage(message);
+        }
+
+        public async Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default)
+        {
+            var events = await db.Events
+                .OrderByDescending(e => (e.TotalSeats - e.AvailableSeats)/(double)e.TotalSeats)
+                .Take(10)
+                .ToListAsync(ct);
+            return mapper.MapEntityListToEventList(events);
         }
     }
 }

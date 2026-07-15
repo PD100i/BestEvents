@@ -8,8 +8,8 @@ namespace Events.Infrastructure
 {
     public class EventsCache(IConnectionMultiplexer connectionMultiplexery, IServiceScopeFactory scopeFactory) : IEventsCache
     {
-        
 
+        /// <inheritdoc/>
         public async Task<Event> GetEventAsync(Guid id, CancellationToken ct = default)
         {
             string key = $"event:{id}";
@@ -32,6 +32,7 @@ namespace Events.Infrastructure
             }
         }
 
+        /// <inheritdoc/>
         public async Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default)
         {
             const string key = "events:top";
@@ -53,6 +54,7 @@ namespace Events.Infrastructure
 
         }
 
+        /// <inheritdoc/>
         public async Task InvalidateEventAsync(Guid id, CancellationToken ct = default)
         {
             string key = $"event:{id}";

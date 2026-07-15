@@ -27,7 +27,7 @@ namespace Events.Infrastructure
                 using var scope = scopeFactory.CreateScope();
                 var eventRepository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
                 var _event = await eventRepository.GetEventAsync(id, ct);
-                await db.StringSetAsync(key, System.Text.Json.JsonSerializer.Serialize(_event), TimeSpan.FromMinutes(5));
+                await db.StringSetAsync(key, System.Text.Json.JsonSerializer.Serialize(_event), TimeSpan.FromSeconds(5));
                 return _event;
             }
         }
@@ -47,7 +47,7 @@ namespace Events.Infrastructure
                 using var scope = scopeFactory.CreateScope();
                 var eventRepository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
                 var events = await eventRepository.GetTopPopularEventsAsync(ct);
-                await db.StringSetAsync(key, System.Text.Json.JsonSerializer.Serialize(events), TimeSpan.FromMinutes(5));
+                await db.StringSetAsync(key, System.Text.Json.JsonSerializer.Serialize(events), TimeSpan.FromMinutes(1));
                 return events;
             }
 

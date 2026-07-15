@@ -36,13 +36,46 @@ namespace Events.Application
         /// <inheritdoc/>
         public async Task<Event> GetEventAsync(Guid id, CancellationToken ct = default)
         {
-            return await cache.GetEventAsync(id, ct);
+            try
+            {
+                return await cache.GetEventAsync(id, ct);
+            }
+            catch(OperationCanceledException)
+            {
+                throw;
+            }
+            catch (EventNotFoundException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(string.Format(Messages_ru.ErrorGetEventFromCache, id) + " " + ex.Message, ex);
+                return await repository.GetEventAsync(id, ct);
+            }
         }
 
         /// <inheritdoc/>
         public async Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default)
         {
             return await repository.GetEventsAsync(title, from, to, page, size, ct);
+        }
+
+        public Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default)
+        {
+            try
+            {                 
+                return cache.GetTopPopularEventsAsync(ct);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(string.Format(Messages_ru.ErrorGetTopPopularEventsFromCache) + " " + ex.Message, ex);
+                return repository.GetTopPopularEventsAsync(ct);
+            }
         }
 
         /// <inheritdoc/>

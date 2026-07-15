@@ -21,6 +21,13 @@ namespace Events.Application
         Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default);
 
         /// <summary>
+        /// Возвращает список самых популярных событий
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default);
+
+        /// <summary>
         /// Возвращает событие по его идентификатору. 
         /// </summary>
         /// <param name="id"></param>

@@ -4,7 +4,10 @@ using Events.Application.Exceptions;
 using Events.Domain;
 using Events.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+
 
 
 namespace Events.Application
@@ -12,7 +15,7 @@ namespace Events.Application
     /// <summary>
     /// Сервис событий, реализующий интерфейс IEventService. 
     /// </summary>
-    public class EventService(IEventRepository repository, IUnitOfWork uow, ILogger<EventService> logger) : IEventService
+    public class EventService(IEventRepository repository, IUnitOfWork uow, IEventsCache cache, ILogger<EventService> logger) : IEventService
     {
         /// <inheritdoc/>
         public async Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default)
@@ -26,13 +29,14 @@ namespace Events.Application
         public async Task DeleteEventAsync(Guid id, CancellationToken ct = default)
         {
             await repository.DeleteEventAsync(id, ct);
+            await cache.InvalidateEventAsync(id, ct);
             await uow.SaveChangesAsync(ct);
         }
 
         /// <inheritdoc/>
         public async Task<Event> GetEventAsync(Guid id, CancellationToken ct = default)
         {
-            return await repository.GetEventAsync(id, ct);
+            return await cache.GetEventAsync(id, ct);
         }
 
         /// <inheritdoc/>
@@ -47,6 +51,7 @@ namespace Events.Application
             if (id != _event.Id)
                 throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, _event.Id));  
             await repository.ReplaceEventAsync(_event, ct);
+            await cache.InvalidateEventAsync(id, ct);
             await uow.SaveChangesAsync(ct);
         }
 
@@ -61,6 +66,7 @@ namespace Events.Application
                 var _event = await repository.GetEventForUpdateAsync(message.EventId, ct);
                 _event.ReleaseSeats();
                 await repository.ReplaceEventAsync(_event, ct);
+                await cache.InvalidateEventAsync(message.EventId, ct);
                 await uow.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
                 logger.LogInformation(string.Format(Messages_ru.SeatsReleased, message.EventId, message.BookingId));
@@ -82,7 +88,7 @@ namespace Events.Application
                 ct.ThrowIfCancellationRequested();
                 using var transaction = await uow.BeginTransactionAsync();
                 await repository.AddMessageToInboxAsync(message, ct);
-                var _event = await repository.GetEventForUpdateAsync(message.EventId, ct);
+                Event _event = await repository.GetEventForUpdateAsync(message.EventId, ct);
                 _event.TryReserveSeats();
                 await repository.EnqueueMessageAsync(new Message() 
                 {
@@ -93,6 +99,7 @@ namespace Events.Application
                     MessageType = MessageTypeEnum.SeatsReserved
                 }, ct);
                 await repository.ReplaceEventAsync(_event, ct);
+                await cache.InvalidateEventAsync(message.EventId, ct);
                 await uow.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
                 logger.LogInformation(string.Format(Messages_ru.SeatsReserved, message.EventId, message.BookingId));
@@ -130,10 +137,6 @@ namespace Events.Application
             {
                 logger.LogInformation(string.Format(Messages_ru.ErrorReserveSeats, message.EventId, message.BookingId) + " " + ex.Message);
             }
-           
-            
         }
-
-       
     }
 }

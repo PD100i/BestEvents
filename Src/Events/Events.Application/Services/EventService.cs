@@ -1,12 +1,9 @@
 ﻿using Common;
-using Confluent.Kafka;
 using Events.Application.Exceptions;
 using Events.Domain;
 using Events.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+
 
 
 
@@ -116,7 +113,7 @@ namespace Events.Application
         }
 
         /// <inheritdoc/>
-        public async Task TryReleseSeats(Message message, CancellationToken ct = default)
+        public async Task TryReleaseSeats(Message message, CancellationToken ct = default)
         {
             try
             {

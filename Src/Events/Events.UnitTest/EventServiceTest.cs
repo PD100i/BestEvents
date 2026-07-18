@@ -3,7 +3,7 @@ using Events.Application;
 using Events.Application.Exceptions;
 using Events.Domain;
 using Microsoft.Extensions.Logging;
-using System.Runtime.CompilerServices;
+using Common;
 
 namespace Events.UnitTest
 {
@@ -16,6 +16,7 @@ namespace Events.UnitTest
             public Mock<IUnitOfWork> MockUnitOfWork { get; }
             public Mock<IEventsCache> MockCache { get; }
             public Mock<ILogger<EventService>> MockLogger { get; }
+            public Mock<ITransaction> MockTransaction { get; }
 
             public EventServiceFixture()
             {
@@ -24,11 +25,12 @@ namespace Events.UnitTest
                 MockCache = new Mock<IEventsCache>();
                 MockLogger = new Mock<ILogger<EventService>>();
                 EventService = new EventService(MockRepository.Object, MockUnitOfWork.Object, MockCache.Object, MockLogger.Object);
+                MockTransaction = new Mock<ITransaction>();
             }
 
             public Event GetEvent()
             {
-                return Event.CreateInstanceEvent(Guid.NewGuid(), "Title", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2), "Description", 10, 10);
+                return Event.CreateInstanceEvent(Guid.NewGuid(), "Title", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2), "Description", 10, 8);
             }
 
             public void SetupDatabaseGetEvent(Guid eventId, Event? eventData)
@@ -37,10 +39,32 @@ namespace Events.UnitTest
                     .ReturnsAsync(eventData);
             }
 
+
+            public void SetupDatabaseGetEventForUpdate(Guid eventId, Event? eventData)
+            {
+                MockRepository.Setup(repo => repo.GetEventForUpdateAsync(eventId, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(eventData);
+            }
+
             public void SetupCacheGetEvent(Guid eventId, Event? eventData)
             {
                 MockCache.Setup(cache => cache.GetEventAsync(eventId, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(eventData);
+            }
+
+
+
+
+            public Message GetMessage(Guid eventId, MessageTypeEnum messageType)
+            {
+                return new Message()
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    EventId = eventId,
+                    Id = Guid.NewGuid(),
+                    BookingId = Guid.NewGuid(),
+                    MessageType = messageType
+                };
             }
         }
 
@@ -68,7 +92,7 @@ namespace Events.UnitTest
             // Arrange
             var fixture = new EventServiceFixture();
             var eventData = fixture.GetEvent();
-            fixture.SetupCacheGetEvent(eventData.Id, null); 
+            fixture.SetupCacheGetEvent(eventData.Id, null);
             fixture.SetupDatabaseGetEvent(eventData.Id, eventData);
             // Act
             var result = await fixture.EventService.GetEventAsync(eventData.Id, CancellationToken.None);
@@ -83,8 +107,8 @@ namespace Events.UnitTest
         {
             var fixture = new EventServiceFixture();
             var eventId = Guid.NewGuid();
-            fixture.SetupCacheGetEvent(eventId, null);  
-            fixture.SetupDatabaseGetEvent(eventId, null); 
+            fixture.SetupCacheGetEvent(eventId, null);
+            fixture.SetupDatabaseGetEvent(eventId, null);
 
             // Act & Assert
             await Assert.ThrowsAsync<EventNotFoundException>(() => fixture.EventService.GetEventAsync(eventId, CancellationToken.None));
@@ -298,6 +322,144 @@ namespace Events.UnitTest
             await Assert.ThrowsAsync<Exception>(() => fixture.EventService.GetTopPopularEventsAsync(CancellationToken.None));
         }
 
-        
+        [Fact]
+        public async Task TryReserveSeats_ShouldReserveSeatsAndAddToDbAndUnvalidateCache()
+        {
+            // Arrange
+            var fixture = new EventServiceFixture();
+            var eventData = fixture.GetEvent();
+            int expectedAvailableSeats = eventData.AvailableSeats - 1;
+            var message = fixture.GetMessage(eventData.Id, MessageTypeEnum.BookingCreated);
+            fixture.SetupDatabaseGetEventForUpdate(eventData.Id, eventData);
+            fixture.MockCache.Setup(cache => cache.InvalidateEventAsync(eventData.Id, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            fixture.MockUnitOfWork.Setup(uof => uof.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            fixture.MockUnitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(fixture.MockTransaction.Object);
+            // Act
+            await fixture.EventService.TryReserveSeats(message, CancellationToken.None);
+            // Assert
+            fixture.MockRepository.Verify(repo => repo.GetEventForUpdateAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.ReplaceEventAsync(It.Is<Event>(e => e.AvailableSeats == expectedAvailableSeats), It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(), Times.Once);
+            fixture.MockCache.Verify(cache => cache.InvalidateEventAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.EnqueueMessageAsync(It.Is<Message>(e => e.MessageType == MessageTypeEnum.SeatsReserved),
+                It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task TryReserveSeats_CacheException_ShouldReserveSeatsAndAddToDb()
+        {
+            // Arrange
+            var fixture = new EventServiceFixture();
+            var eventData = fixture.GetEvent();
+            int expectedAvailableSeats = eventData.AvailableSeats - 1;
+            var message = fixture.GetMessage(eventData.Id, MessageTypeEnum.BookingCreated);
+            fixture.SetupDatabaseGetEventForUpdate(eventData.Id, eventData);
+            fixture.MockCache.Setup(cache => cache.InvalidateEventAsync(eventData.Id, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new Exception("Кэш в состоянии ошибки"));
+            fixture.MockUnitOfWork.Setup(uof => uof.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            fixture.MockUnitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(fixture.MockTransaction.Object);
+            // Act
+            await fixture.EventService.TryReserveSeats(message, CancellationToken.None);
+            // Assert
+            fixture.MockRepository.Verify(repo => repo.GetEventForUpdateAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.ReplaceEventAsync(It.Is<Event>(e => e.AvailableSeats == expectedAvailableSeats), It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(), Times.Once);
+            fixture.MockCache.Verify(cache => cache.InvalidateEventAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.EnqueueMessageAsync(It.Is<Message>(e => e.MessageType == MessageTypeEnum.SeatsReserved),
+                It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+
+        [Fact]
+        public async Task TryReserveSeats_EventNotFound_ShouldEnqueueMessage()
+        {
+            // Arrange
+            var fixture = new EventServiceFixture();
+            var eventId = Guid.NewGuid();
+            var message = fixture.GetMessage(eventId, MessageTypeEnum.BookingCreated);
+            fixture.SetupDatabaseGetEventForUpdate(eventId, null);
+            fixture.MockUnitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(fixture.MockTransaction.Object);
+            // Act
+            await fixture.EventService.TryReserveSeats(message, CancellationToken.None);
+            // Assert
+            fixture.MockRepository.Verify(repo => repo.GetEventForUpdateAsync(eventId, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.EnqueueMessageAsync(It.Is<Message>(e => e.MessageType == MessageTypeEnum.ReservationSeatsError),
+                It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.ReplaceEventAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()), Times.Never);
+            fixture.MockUnitOfWork.Verify(uow => uow.CleanContext(), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task TryReserveSeats_NoAvailableSeats_ShouldEnqueuMessage()
+        {
+            // Arrange
+            var fixture = new EventServiceFixture();
+            var eventData = fixture.GetEvent();
+            eventData.AvailableSeats = 0;
+            var message = fixture.GetMessage(eventData.Id, MessageTypeEnum.BookingCreated);
+            fixture.SetupDatabaseGetEventForUpdate(eventData.Id, eventData);
+            fixture.MockUnitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(fixture.MockTransaction.Object);
+            // Act
+            await fixture.EventService.TryReserveSeats(message, CancellationToken.None);
+            // Assert
+            fixture.MockRepository.Verify(repo => repo.GetEventForUpdateAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.EnqueueMessageAsync(It.Is<Message>(e => e.MessageType == MessageTypeEnum.ReservationSeatsError),
+                It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.ReplaceEventAsync(It.IsAny<Event>(), It.IsAny<CancellationToken>()), Times.Never);
+            fixture.MockUnitOfWork.Verify(uow => uow.CleanContext(), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task TryReleaseSeats_ShouldReleaseSeatsAndAddToDbAndUnvalidateCache()
+        {
+            // Arrange
+            var fixture = new EventServiceFixture();
+            var eventData = fixture.GetEvent();
+            int expectedAvailableSeats = eventData.AvailableSeats + 1;
+            var message = fixture.GetMessage(eventData.Id, MessageTypeEnum.BookingCancelled);
+            fixture.SetupDatabaseGetEventForUpdate(eventData.Id, eventData);
+            fixture.MockCache.Setup(cache => cache.InvalidateEventAsync(eventData.Id, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            fixture.MockUnitOfWork.Setup(uof => uof.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            fixture.MockUnitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(fixture.MockTransaction.Object);
+            // Act
+            await fixture.EventService.TryReleaseSeats(message, CancellationToken.None);
+            // Assert
+            fixture.MockRepository.Verify(repo => repo.GetEventForUpdateAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.ReplaceEventAsync(It.Is<Event>(e => e.AvailableSeats == expectedAvailableSeats), It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(), Times.Once);
+            fixture.MockCache.Verify(cache => cache.InvalidateEventAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task TryReleaseSeats_CacheException_ShouldReleaseSeatsAndAddToDb()
+        {
+            // Arrange
+            var fixture = new EventServiceFixture();
+            var eventData = fixture.GetEvent();
+            int expectedAvailableSeats = eventData.AvailableSeats + 1;
+            var message = fixture.GetMessage(eventData.Id, MessageTypeEnum.BookingCancelled);
+            fixture.SetupDatabaseGetEventForUpdate(eventData.Id, eventData);
+            fixture.MockCache.Setup(cache => cache.InvalidateEventAsync(eventData.Id, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new Exception("Кэш в состоянии ошибки"));
+            fixture.MockUnitOfWork.Setup(uof => uof.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            fixture.MockUnitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(fixture.MockTransaction.Object);
+            // Act
+            await fixture.EventService.TryReleaseSeats(message, CancellationToken.None);
+            // Assert
+            fixture.MockRepository.Verify(repo => repo.GetEventForUpdateAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockRepository.Verify(repo => repo.ReplaceEventAsync(It.Is<Event>(e => e.AvailableSeats == expectedAvailableSeats), It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(), Times.Once);
+            fixture.MockCache.Verify(cache => cache.InvalidateEventAsync(eventData.Id, It.IsAny<CancellationToken>()), Times.Once);
+            fixture.MockTransaction.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }

@@ -72,6 +72,6 @@ namespace Events.Application
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task TryReleseSeats(Message message, CancellationToken ct = default);
+        Task TryReleaseSeats(Message message, CancellationToken ct = default);
     }
 }

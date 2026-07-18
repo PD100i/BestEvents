@@ -36,9 +36,9 @@ namespace Events.Infrastructure
         public bool AbortOnConnectFail { get; set; } = false;
 
         /// <summary>
-        /// Time-to-live (TTL) для кэширования событий в секундах. По умолчанию 3 секунды.
+        /// Time-to-live (TTL) для кэширования событий в секундах. По умолчанию 60 секунд.
         /// </summary>
-        public int GetEvntTTL_sec { get; set; } = 3;
+        public int GetEvntTTL_sec { get; set; } = 60;
 
         /// <summary>
         /// Time-to-live (TTL) для кэширования топовых событий в секундах. По умолчанию 60 секунд.

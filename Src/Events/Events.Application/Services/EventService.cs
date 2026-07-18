@@ -21,6 +21,13 @@ namespace Events.Application
         public async Task<Event> CreateEventAsync(Event _event, CancellationToken ct = default)
         {
             await repository.AddEventAsync(_event, ct);
+            try
+            {    await cache.InvalidateEventAsync(_event.Id, ct);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, _event.Id) + " " + ex.Message, ex);
+            }
             await uow.SaveChangesAsync(ct);
             return _event;
         }
@@ -29,30 +36,42 @@ namespace Events.Application
         public async Task DeleteEventAsync(Guid id, CancellationToken ct = default)
         {
             await repository.DeleteEventAsync(id, ct);
-            await cache.InvalidateEventAsync(id, ct);
+            try
+            {
+                await cache.InvalidateEventAsync(id, ct);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, id) + " " + ex.Message, ex);
+            }
             await uow.SaveChangesAsync(ct);
         }
 
         /// <inheritdoc/>
         public async Task<Event> GetEventAsync(Guid id, CancellationToken ct = default)
         {
+            Event? _event = null;
             try
             {
-                return await cache.GetEventAsync(id, ct);
+                _event = await cache.GetEventAsync(id, ct);
+
+                if(_event == null)
+                {
+                    logger.LogWarning(string.Format(Messages_ru.ErrorGetEventFromCache, id));
+                    _event = await repository.GetEventAsync(id, ct);
+                }
             }
             catch(OperationCanceledException)
             {
                 throw;
             }
-            catch (EventNotFoundException ex)
-            {
-                throw;
-            }
+           
             catch (Exception ex)
             {
                 logger.LogWarning(string.Format(Messages_ru.ErrorGetEventFromCache, id) + " " + ex.Message, ex);
-                return await repository.GetEventAsync(id, ct);
+                _event = await repository.GetEventAsync(id, ct);
             }
+            return _event ?? throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
         }
 
         /// <inheritdoc/>
@@ -61,11 +80,12 @@ namespace Events.Application
             return await repository.GetEventsAsync(title, from, to, page, size, ct);
         }
 
-        public Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default)
+        /// <inheritdoc/>
+        public async Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default)
         {
             try
             {                 
-                return cache.GetTopPopularEventsAsync(ct);
+                return await cache.GetTopPopularEventsAsync(ct);
             }
             catch (OperationCanceledException)
             {
@@ -74,7 +94,7 @@ namespace Events.Application
             catch (Exception ex)
             {
                 logger.LogWarning(string.Format(Messages_ru.ErrorGetTopPopularEventsFromCache) + " " + ex.Message, ex);
-                return repository.GetTopPopularEventsAsync(ct);
+                return await repository.GetTopPopularEventsAsync(ct);
             }
         }
 
@@ -84,7 +104,14 @@ namespace Events.Application
             if (id != _event.Id)
                 throw new EventWrongParameterException(string.Format(Messages_ru.MismatchIdInReplaceRequest, id, _event.Id));  
             await repository.ReplaceEventAsync(_event, ct);
-            await cache.InvalidateEventAsync(id, ct);
+            try
+            {
+                await cache.InvalidateEventAsync(id, ct);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, id) + " " + ex.Message, ex);
+            }
             await uow.SaveChangesAsync(ct);
         }
 
@@ -96,7 +123,8 @@ namespace Events.Application
                 ct.ThrowIfCancellationRequested();
                 using var transaction = await uow.BeginTransactionAsync();
                 await repository.AddMessageToInboxAsync(message, ct);
-                var _event = await repository.GetEventForUpdateAsync(message.EventId, ct);
+                var _event = await repository.GetEventForUpdateAsync(message.EventId, ct)
+                    ?? throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, message.EventId));
                 _event.ReleaseSeats();
                 await repository.ReplaceEventAsync(_event, ct);
                 await cache.InvalidateEventAsync(message.EventId, ct);
@@ -121,7 +149,8 @@ namespace Events.Application
                 ct.ThrowIfCancellationRequested();
                 using var transaction = await uow.BeginTransactionAsync();
                 await repository.AddMessageToInboxAsync(message, ct);
-                Event _event = await repository.GetEventForUpdateAsync(message.EventId, ct);
+                Event _event = await repository.GetEventForUpdateAsync(message.EventId, ct) 
+                    ?? throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, message.EventId));
                 _event.TryReserveSeats();
                 await repository.EnqueueMessageAsync(new Message() 
                 {

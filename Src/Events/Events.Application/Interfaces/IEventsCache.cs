@@ -15,7 +15,7 @@ namespace Events.Application
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Event> GetEventAsync(Guid id, CancellationToken ct = default);
+        Task<Event?> GetEventAsync(Guid id, CancellationToken ct = default);
 
 
         /// <summary>

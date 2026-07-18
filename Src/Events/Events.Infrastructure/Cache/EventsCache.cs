@@ -10,7 +10,7 @@ namespace Events.Infrastructure
     {
 
         /// <inheritdoc/>
-        public async Task<Event> GetEventAsync(Guid id, CancellationToken ct = default)
+        public async Task<Event?> GetEventAsync(Guid id, CancellationToken ct = default)
         {
             string key = $"event:{id}";
             var db = connectionMultiplexery.GetDatabase();
@@ -18,8 +18,6 @@ namespace Events.Infrastructure
             if (cache.HasValue)
             {
                 var _event = System.Text.Json.JsonSerializer.Deserialize<Event>(cache.ToString());
-                if (_event == null) 
-                    throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
                 return _event;
             }
             else

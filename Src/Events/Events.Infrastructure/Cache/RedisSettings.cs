@@ -34,5 +34,15 @@ namespace Events.Infrastructure
         /// Определяет, следует ли прерывать попытки подключения при сбое. По умолчанию false.
         /// </summary>
         public bool AbortOnConnectFail { get; set; } = false;
+
+        /// <summary>
+        /// Time-to-live (TTL) для кэширования событий в секундах. По умолчанию 3 секунды.
+        /// </summary>
+        public int GetEvntTTL_sec { get; set; } = 3;
+
+        /// <summary>
+        /// Time-to-live (TTL) для кэширования топовых событий в секундах. По умолчанию 60 секунд.
+        /// </summary>  
+        public int GetTopEvntsTTL_sec { get; set; } = 60;
     }
 }

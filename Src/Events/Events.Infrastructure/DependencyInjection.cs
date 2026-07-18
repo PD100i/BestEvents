@@ -34,13 +34,10 @@ namespace Events.Infrastructure
             services.AddSingleton<EventFilters>();
             services.AddSingleton<Pagination<EventEntity>>();
             services.AddSingleton<EntityMapper>();           
-            services.AddSingleton<IEventsCache, EventsCache>();
-
-
-            
+                       
             var redisSection = сonfiguration.GetSection("RedisSettings");
             var redisSettings = redisSection.Get<RedisSettings>() ?? throw new InvalidOperationException(Messages_ru.RedisSettingsNotFound);
-            
+            services.Configure<RedisSettings>(redisSection);
 
             var redisConfigurationOptions = new ConfigurationOptions
             {
@@ -56,6 +53,7 @@ namespace Events.Infrastructure
                 redisConfigurationOptions.Password = password;
 
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfigurationOptions));
+            services.AddSingleton<IEventsCache, EventsCache>();
 
             services.AddHostedService<SeatsReservedPublisher>();
             services.AddHostedService<SeatsReservationErrorPublisher>();

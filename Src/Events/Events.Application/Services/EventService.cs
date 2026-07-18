@@ -127,7 +127,14 @@ namespace Events.Application
                     ?? throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, message.EventId));
                 _event.ReleaseSeats();
                 await repository.ReplaceEventAsync(_event, ct);
-                await cache.InvalidateEventAsync(message.EventId, ct);
+                try
+                {
+                    await cache.InvalidateEventAsync(message.EventId, ct);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, message.EventId) + " " + ex.Message, ex);
+                }
                 await uow.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
                 logger.LogInformation(string.Format(Messages_ru.SeatsReleased, message.EventId, message.BookingId));
@@ -161,7 +168,14 @@ namespace Events.Application
                     MessageType = MessageTypeEnum.SeatsReserved
                 }, ct);
                 await repository.ReplaceEventAsync(_event, ct);
-                await cache.InvalidateEventAsync(message.EventId, ct);
+                try
+                {
+                    await cache.InvalidateEventAsync(message.EventId, ct);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, message.EventId) + " " + ex.Message, ex);
+                }
                 await uow.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
                 logger.LogInformation(string.Format(Messages_ru.SeatsReserved, message.EventId, message.BookingId));

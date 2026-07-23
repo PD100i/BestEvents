@@ -147,4 +147,7 @@
   <data name="AuthorizationError" xml:space="preserve">
     <value>Ошибка авторизации</value>
   </data>
+  <data name="OtlpEndpointNotFound" xml:space="preserve">
+    <value>Не найдены настройки эндпоинта OTLP</value>
+  </data>
 </root>

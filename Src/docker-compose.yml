@@ -25,12 +25,16 @@
       - ConnectionStrings__Default=Host=db-events;Port=5432;Database=events;Username=postgres;Password=postgres;
       - Kafka__BootstrapServers=kafka:29092
       - JwtSettings__SecretKey=${JWT_SECRET_KEY}
+      - RedisSettings__Password=${REDIS_PASSWORD}
+      - RedisSettings__Endpoints=events-redis:6379   
     ports:
       - "5002:8080"
     depends_on:
       kafka:
         condition: service_started
       db-events:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   bookings.presentation:
@@ -99,10 +103,20 @@
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://127.0.0.1:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: events-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s

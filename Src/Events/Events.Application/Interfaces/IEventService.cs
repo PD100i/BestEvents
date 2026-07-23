@@ -21,12 +21,19 @@ namespace Events.Application
         Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default);
 
         /// <summary>
-        /// Возвращает событие по его идентификатору. Если событие с таким идентификатором не найдено, возвращает null.
+        /// Возвращает событие по его идентификатору
         /// </summary>
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<Event> GetEventAsync(Guid id, CancellationToken ct = default);
+
+        /// <summary>
+        /// Возвращает список самых популярных событий
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Создает новое событие
@@ -65,6 +72,6 @@ namespace Events.Application
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task TryReleseSeats(Message message, CancellationToken ct = default);
+        Task TryReleaseSeats(Message message, CancellationToken ct = default);
     }
 }

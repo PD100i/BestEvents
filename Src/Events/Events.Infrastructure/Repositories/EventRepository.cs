@@ -5,22 +5,20 @@ using Events.Application.Exceptions;
 using Common;
 using Microsoft.Extensions.Logging;
 
-
 namespace Events.Infrastructure
 {
     /// <summary>
     /// Сервис событий, реализующий интерфейс IEventService. 
     /// </summary>
-    public class EventRepository(AppDbContext db, EntityMapper mapper, EventFilters filters, Pagination<EventEntity> pagination, ILogger<EventRepository> logger) : IEventRepository
+    public class EventRepository(AppDbContext db, EntityMapper mapper, EventFilters filters, Pagination<EventEntity> pagination) : IEventRepository
     {
         /// <inheritdoc/>
-        public async Task<Event> AddEventAsync(Event _event, CancellationToken ct = default)
+        public async Task AddEventAsync(Event _event, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var entity = mapper.MapEventToEntity(_event);
             await db.Events.AddAsync(entity, ct);
             await db.SaveChangesAsync(ct);
-            return _event;
         }
         
 
@@ -36,17 +34,17 @@ namespace Events.Infrastructure
         }
 
         /// <inheritdoc/>
-        public async Task<Event> GetEventAsync(Guid id, CancellationToken ct = default)
+        public async Task<Event?> GetEventAsync(Guid id, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var eventEntity = await db.Events.FirstOrDefaultAsync(e => e.Id == id, ct);
             if (eventEntity == null)
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
+                return null;
             return mapper.MapEntityToEvent(eventEntity);
         }
 
         /// <inheritdoc/>
-        public async Task<Event> GetEventForUpdateAsync(Guid id, CancellationToken ct = default)
+        public async Task<Event?> GetEventForUpdateAsync(Guid id, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
@@ -58,7 +56,7 @@ namespace Events.Infrastructure
                 .FirstOrDefaultAsync(ct);
 
             if (eventEntity == null)
-                throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
+                return null;
 
             return mapper.MapEntityToEvent(eventEntity);
         }
@@ -80,7 +78,7 @@ namespace Events.Infrastructure
 
         
         /// <inheritdoc/>
-        public async Task<Event> ReplaceEventAsync(Event _event, CancellationToken ct = default)
+        public async Task ReplaceEventAsync(Event _event, CancellationToken ct = default)
         {
             try
             {
@@ -88,7 +86,6 @@ namespace Events.Infrastructure
                 if (existingEvent == null)
                     throw new EventNotFoundException(Messages_ru.EventNotFound);
                 mapper.UpdateEventEntity(_event, existingEvent);
-                return _event;
             }
             catch (Exception ex)
             {
@@ -120,7 +117,6 @@ namespace Events.Infrastructure
         /// <inheritdoc/>
         public async Task<Message?> GetOldestUnpublishedMessageAsync(MessageTypeEnum messageType, CancellationToken ct = default)
         {
-            ct.ThrowIfCancellationRequested();
             var message = await db.Outbox
                 .Where(m => m.MessageType == messageType)
                 .OrderBy(m => m.CreatedAt)
@@ -128,6 +124,15 @@ namespace Events.Infrastructure
             if (message == null)
                 return null;
             return mapper.MapBookingMessageEntityToMessage(message);
+        }
+
+        public async Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default)
+        {
+            var events = await db.Events
+                .OrderByDescending(e => (e.TotalSeats - e.AvailableSeats)/(double)e.TotalSeats)
+                .Take(10)
+                .ToListAsync(ct);
+            return mapper.MapEntityListToEventList(events);
         }
     }
 }

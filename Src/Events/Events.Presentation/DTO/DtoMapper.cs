@@ -47,8 +47,13 @@ namespace Events.Presentation
         /// <returns>DTO модель пагинированного результата</returns>
         public partial PaginatedResultDto MapPaginatedResultToPaginationResultDto(PaginatedResult<Event> paginatedResult);
 
+        /// <summary>
+        /// Мапинг из списка доменных моделей Event в список DTO EventInfoDto для передачи данных в контроллере и отображения пользователю
+        /// </summary>
+        /// <param name="events"></param>
+        /// <returns></returns>
+        public partial List<EventInfoDto> MapEventListToEventInfoDtoList(List<Event> events);
 
-        private string GuidToString(Guid id) => id.ToString();
 
         /// <summary>
         /// Мапинг из строки в Guid с проверкой формата. 
@@ -60,6 +65,8 @@ namespace Events.Presentation
         {
             return Guid.TryParse(id, out Guid result) ? result : throw new EventWrongParameterException(Messages_ru.WrongIdFormat);
         }
+
+        private string GuidToString(Guid id) => id.ToString();
 
     }
 }

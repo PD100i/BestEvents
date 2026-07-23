@@ -72,5 +72,12 @@ namespace Events.Infrastructure
         /// <param name="entity">Сущность базы данных</param>
         /// <returns></returns>
         public partial Message MapBookingMessageEntityToMessage(MessageEntity entity);
+
+        /// <summary>
+        /// Мапинг списка сущностей EventEntity в список доменных моделей Event для использования в бизнес-логике приложения.
+        /// </summary>
+        /// <param name="entities">Список сущностей EventEntity, которые нужно преобразовать.</param>
+        /// <returns>Список доменных моделей Event, соответствующих списку сущностей EventEntity.</returns>
+        public partial List<Event> MapEntityListToEventList(List<EventEntity> entities);
     }
 }

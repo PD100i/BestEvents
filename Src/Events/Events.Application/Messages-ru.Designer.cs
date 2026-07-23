@@ -61,6 +61,33 @@ namespace Events.Application {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ошибка при чтении из кэша события по идентификатору {0}..
+        /// </summary>
+        public static string ErrorGetEventFromCache {
+            get {
+                return ResourceManager.GetString("ErrorGetEventFromCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка при чтении из кэша топ-10 событий по популярности..
+        /// </summary>
+        public static string ErrorGetTopPopularEventsFromCache {
+            get {
+                return ResourceManager.GetString("ErrorGetTopPopularEventsFromCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string ErrorInvalidateEventInCache {
+            get {
+                return ResourceManager.GetString("ErrorInvalidateEventInCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не удалось освободить место на событие {0}, зарезервированное для бронирования {1}..
         /// </summary>
         public static string ErrorReleaseSeats {
@@ -75,6 +102,15 @@ namespace Events.Application {
         public static string ErrorReserveSeats {
             get {
                 return ResourceManager.GetString("ErrorReserveSeats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не найдено событие с идентификатором {0}.
+        /// </summary>
+        public static string EventNotFound {
+            get {
+                return ResourceManager.GetString("EventNotFound", resourceCulture);
             }
         }
         

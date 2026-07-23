@@ -20,7 +20,7 @@ namespace Events.Infrastructure.Consumers
 
             var service = scope.ServiceProvider.GetRequiredService<IEventService>();
 
-            await service.TryReleseSeats(value, ct);
+            await service.TryReleaseSeats(value, ct);
         }
     }
 }

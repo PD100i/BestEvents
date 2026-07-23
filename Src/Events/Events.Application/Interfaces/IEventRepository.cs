@@ -21,12 +21,19 @@ namespace Events.Application
         Task<PaginatedResult<Event>> GetEventsAsync(string? title, DateTime? from, DateTime? to, int page = 1, int size = 10, CancellationToken ct = default);
 
         /// <summary>
+        /// Возвращает список самых популярных событий
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<List<Event>> GetTopPopularEventsAsync(CancellationToken ct = default);
+
+        /// <summary>
         /// Возвращает событие по его идентификатору. 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Event> GetEventAsync(Guid id, CancellationToken ct = default);
+        Task<Event?> GetEventAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
         /// Возвращает событие по его идентификатору для последующего обновления. Блокирует строку БД 
@@ -34,21 +41,21 @@ namespace Events.Application
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Event> GetEventForUpdateAsync(Guid id, CancellationToken ct = default);
+        Task<Event?> GetEventForUpdateAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
         /// Создает новое событие
         /// </summary>
         /// <param name="_event"></param>
         /// /// <param name="ct"></param>
-        Task<Event> AddEventAsync(Event _event, CancellationToken ct = default);
+        Task AddEventAsync(Event _event, CancellationToken ct = default);
         /// <summary>
         /// Обновляет событие. Метод должен сохранять изменения в базе данных и разблокировать запись, чтобы другие транзакции могли получить доступ к ней
         /// </summary>
         /// <param name="_event"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Event> ReplaceEventAsync(Event _event, CancellationToken ct = default);
+        Task ReplaceEventAsync(Event _event, CancellationToken ct = default);
 
         /// <summary>
         /// Удаляет событие по его идентификатору

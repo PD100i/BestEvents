@@ -23,7 +23,7 @@ namespace Events.Application
             }
             catch (Exception ex)
             {
-                logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, _event.Id) + " " + ex.Message, ex);
+                logger.LogWarning(ex, "Ошибка при инвалидации кэша для события {EventId}.", _event.Id);
             }
             await uow.SaveChangesAsync(ct);
             return _event;
@@ -39,7 +39,7 @@ namespace Events.Application
             }
             catch (Exception ex)
             {
-                logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, id) + " " + ex.Message, ex);
+                logger.LogWarning(ex, "Ошибка при инвалидации кэша для события {EventId}.", id);
             }
             await uow.SaveChangesAsync(ct);
         }
@@ -54,7 +54,7 @@ namespace Events.Application
 
                 if(_event == null)
                 {
-                    logger.LogWarning(string.Format(Messages_ru.ErrorGetEventFromCache, id));
+                    logger.LogWarning("Ошибка при чтении из кэша события по идентификатору {EventId}.", id);
                     _event = await repository.GetEventAsync(id, ct);
                 }
             }
@@ -65,7 +65,7 @@ namespace Events.Application
            
             catch (Exception ex)
             {
-                logger.LogWarning(string.Format(Messages_ru.ErrorGetEventFromCache, id) + " " + ex.Message, ex);
+                logger.LogWarning(ex, "Ошибка при чтении из кэша события по идентификатору {EventId}.", id);
                 _event = await repository.GetEventAsync(id, ct);
             }
             return _event ?? throw new EventNotFoundException(string.Format(Messages_ru.EventNotFound, id));
@@ -90,7 +90,7 @@ namespace Events.Application
             }
             catch (Exception ex)
             {
-                logger.LogWarning(string.Format(Messages_ru.ErrorGetTopPopularEventsFromCache) + " " + ex.Message, ex);
+                logger.LogWarning(ex, "Ошибка при чтении из кэша топ-10 событий по популярности.");
                 return await repository.GetTopPopularEventsAsync(ct);
             }
         }
@@ -107,7 +107,7 @@ namespace Events.Application
             }
             catch (Exception ex)
             {
-                logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, id) + " " + ex.Message, ex);
+                logger.LogWarning(ex, "Ошибка инвалидации кэша для события {EventId}", id);
             }
             await uow.SaveChangesAsync(ct);
         }
@@ -130,16 +130,16 @@ namespace Events.Application
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, message.EventId) + " " + ex.Message, ex);
+                    logger.LogWarning(ex, "Ошибка инвалидации кэша для события {EventId}", message.EventId);
                 }
                 await uow.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
-                logger.LogInformation(string.Format(Messages_ru.SeatsReleased, message.EventId, message.BookingId));
+                logger.LogInformation("Освобождено место на событие {EventId}, зарезервированное для бронирования {BookingId}", message.EventId, message.BookingId);
 
             }
             catch (Exception ex)
             {
-                logger.LogWarning(string.Format(Messages_ru.ErrorReleaseSeats, message.EventId, message.BookingId) + " " + ex.Message);
+                logger.LogWarning(ex, "Не удалось освободить место на событие {EventId}, зарезервированное для бронирования {BookingId}.", message.EventId, message.BookingId);
             }
         }
 
@@ -171,11 +171,11 @@ namespace Events.Application
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWarning(string.Format(Messages_ru.ErrorInvalidateEventInCache, message.EventId) + " " + ex.Message, ex);
+                    logger.LogWarning(ex, "Ошибка инвалидации кэша для события {EventId}", message.EventId);
                 }
                 await uow.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
-                logger.LogInformation(string.Format(Messages_ru.SeatsReserved, message.EventId, message.BookingId));
+                logger.LogInformation("Зарезервировано место на событие {EventId} для бронирования {BookingId}", message.EventId, message.BookingId);
 
             }
             catch (EventNotFoundException ex)
@@ -190,7 +190,7 @@ namespace Events.Application
                     MessageType = MessageTypeEnum.ReservationSeatsError
                 }, ct);
                 await uow.SaveChangesAsync(ct);
-                logger.LogInformation(string.Format(Messages_ru.ErrorReserveSeats, message.EventId, message.BookingId) + " " + ex.Message);
+                logger.LogInformation(ex, "Не удалось зарезервировать место на событие {EventId} для бронирования {BookingId}.", message.EventId, message.BookingId);
             }
             catch (ReserveSeatsException ex)
             {
@@ -204,11 +204,11 @@ namespace Events.Application
                     MessageType = MessageTypeEnum.ReservationSeatsError
                 }, ct);
                 await uow.SaveChangesAsync(ct);
-                logger.LogInformation(string.Format(Messages_ru.ErrorReserveSeats, message.EventId, message.BookingId) + " " + ex.Message);
+                logger.LogInformation(ex, "Не удалось зарезервировать место на событие {EventId} для бронирования {BookingId}.", message.EventId, message.BookingId);
             }
             catch(Exception ex)
             {
-                logger.LogInformation(string.Format(Messages_ru.ErrorReserveSeats, message.EventId, message.BookingId) + " " + ex.Message);
+                logger.LogInformation(ex, "Не удалось зарезервировать место на событие {EventId} для бронирования {BookingId}.", message.EventId, message.BookingId);
             }
         }
     }

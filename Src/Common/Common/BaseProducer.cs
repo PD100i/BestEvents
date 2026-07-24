@@ -39,7 +39,8 @@ namespace Common
                 Value = _value
             };
             var results = await producer.ProduceAsync(topic, message);
-            logger.LogInformation($"Сообщение {results.Key} опубликовано в топик {results.Topic} в партицию {results.Partition}");
+            logger.LogInformation("Сообщение {results.Key} опубликовано в топик {results.Topic} в партицию {results.Partition}", 
+                results.Key, results.Topic, results.Partition);
 
         }
     }

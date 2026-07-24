@@ -38,7 +38,7 @@ namespace Users.Presentation
             }
             catch (UserRegisterException ex)
             {
-                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogInformation(ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;
                 ErrorDetails details = new()
@@ -52,7 +52,7 @@ namespace Users.Presentation
             }
             catch (CreateTokenException ex)
             {
-                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogInformation(ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 404;
                 ErrorDetails details = new()
@@ -67,7 +67,7 @@ namespace Users.Presentation
             
             catch ( Exception ex)
             {
-                _logger.LogError(ex, $"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogError(ex, ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 500;
                 ErrorDetails details = new()

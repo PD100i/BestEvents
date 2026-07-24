@@ -25,7 +25,7 @@ namespace Common
                 .Build();
 
             consumer.Subscribe(topic);
-            logger.LogInformation($"Kafka Consumer подписался на топик {topic}");
+            logger.LogInformation("Kafka Consumer подписался на топик {topic}", topic);
 
             try
             {
@@ -35,7 +35,7 @@ namespace Common
                     {
                         var result = await Task.Run(() => consumer.Consume(stoppingToken));
 
-                        logger.LogInformation($"Получено сообщение. Key: {result.Message.Key}, Value: {result.Message.Value}");
+                        logger.LogInformation("Получено сообщение. Key: {Key}, Value: {Value}", result.Message.Key, result.Message.Value);
 
                         T? _value = JsonSerializer.Deserialize<T>(result.Message.Value) 
                             ?? throw new DeserializeMessageException($"Ошибка десериализации сообщения: " + result.Message.Value);
@@ -63,7 +63,7 @@ namespace Common
             }
             catch (OperationCanceledException)
             {
-                logger.LogInformation($"Цикл Consumer остановлен через CancellationToken.");
+                logger.LogInformation("Цикл Consumer остановлен через CancellationToken.");
             }
             finally
             {

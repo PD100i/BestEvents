@@ -138,4 +138,7 @@
   <data name="SecretKeyNotFound" xml:space="preserve">
     <value>Не найден секрктный ключ для JWT аутентификации</value>
   </data>
+  <data name="OtlpEndpointNotFound" xml:space="preserve">
+    <value>Не найдены настройки эндпоинта OTLP</value>
+  </data>
 </root>

@@ -79,8 +79,6 @@ app.Use(async (context, next) =>
 });
 
 
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -90,6 +88,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+app.MapPrometheusScrapingEndpoint();
 app.MapControllers();
 
 app.Run();

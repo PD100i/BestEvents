@@ -2,6 +2,8 @@
 using Events.Infrastructure;
 using Events.Presentation;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 
 
@@ -15,6 +17,10 @@ builder.Services.AddControllers();
 
 
 var app = builder.Build();
+
+builder.Host.UseSerilog((ctx, cfg) =>
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+       .WriteTo.Console(new CompactJsonFormatter()));
 
 app.Use(async (context, next) =>
 {

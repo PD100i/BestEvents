@@ -1,16 +1,18 @@
-﻿using Users.Application;
-using Users.Application.Exceptions;
-using Users.Domain;
-using System.Security.Cryptography;
-using System.Text;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
+using System.Data;
+using System.Security.Cryptography;
+using System.Text;
+using Users.Application;
+using Users.Application.Exceptions;
+using Users.Domain;
 
 
 namespace Users.Infrastructure
 {
-    public class UserIdentityService(IConfiguration configuration, IUserRepository userRepository) : IUserIdentityService
+    public class UserIdentityService(IConfiguration configuration, IUserRepository userRepository, ILogger<UserIdentityService> logger) : IUserIdentityService
     {
         /// <inheritdoc/>
         public async Task RegistrUserAsync(string userName, string password, string? role, CancellationToken ct = default)
@@ -28,6 +30,7 @@ namespace Users.Infrastructure
             {
                 User user = User.CreateUser(id, userName, hash, role);
                 await userRepository.AddUserAsync(user, ct);
+                logger.LogInformation("Зарегистрирован пользователь Id - {UserId}, Role - {Role}", id, role);
             }
             catch (Exception ex)
             {
@@ -67,7 +70,7 @@ namespace Users.Infrastructure
                 IssuedAt = DateTime.UtcNow,
                 SigningCredentials = creds
             };
-
+            logger.LogInformation("Выдан токен пользователю с Id - {UserId}", user.Id);
             return new JsonWebTokenHandler().CreateToken(descriptor);
         }
 

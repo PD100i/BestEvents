@@ -70,6 +70,15 @@ namespace Events.Presentation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не найдены настройки эндпоинта OTLP.
+        /// </summary>
+        public static string OtlpEndpointNotFound {
+            get {
+                return ResourceManager.GetString("OtlpEndpointNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка регистрации.
         /// </summary>
         public static string RegisterError {

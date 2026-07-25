@@ -39,7 +39,7 @@ namespace Bookings.Presentation
             }           
             catch(NoRightForOperation ex)
             {
-                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogInformation(ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 403;
                 ErrorDetails details = new()
@@ -54,7 +54,7 @@ namespace Bookings.Presentation
             
             catch (BookingNotFoundException ex)
             {
-                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogInformation(ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 404;
                 ErrorDetails details = new()
@@ -69,7 +69,7 @@ namespace Bookings.Presentation
             
             catch (CreateBookingException ex)
             {
-                _logger.LogWarning($"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogWarning(ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;
                 ErrorDetails details = new()
@@ -83,7 +83,7 @@ namespace Bookings.Presentation
             }
             catch (BookingLimitExceededException ex)
             {
-                _logger.LogWarning($"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogWarning(ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 409;
                 ErrorDetails details = new()
@@ -98,7 +98,7 @@ namespace Bookings.Presentation
            
             catch (BookingWrongParameterException ex)
             {
-                _logger.LogInformation($"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogInformation(ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;
                 ErrorDetails details = new()
@@ -113,7 +113,7 @@ namespace Bookings.Presentation
            
             catch ( Exception ex)
             {
-                _logger.LogError(ex, $"Request: {context.Request.Path}. {ex.Message}");
+                _logger.LogError(ex, ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 500;
                 ErrorDetails details = new()

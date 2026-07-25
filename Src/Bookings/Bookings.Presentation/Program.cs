@@ -3,9 +3,16 @@ using Bookings.Application;
 using Bookings.Infrastructure;
 using Bookings.Presentation;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Trace;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, cfg) =>
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+       .WriteTo.Console(new CompactJsonFormatter()));
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -32,6 +39,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+app.MapPrometheusScrapingEndpoint();
 app.MapControllers();
 
 app.Run();

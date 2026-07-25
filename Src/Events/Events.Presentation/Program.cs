@@ -2,10 +2,16 @@
 using Events.Infrastructure;
 using Events.Presentation;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, cfg) =>
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+       .WriteTo.Console(new CompactJsonFormatter()));
 
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -15,6 +21,7 @@ builder.Services.AddControllers();
 
 
 var app = builder.Build();
+
 
 app.Use(async (context, next) =>
 {
@@ -79,8 +86,6 @@ app.Use(async (context, next) =>
 });
 
 
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -90,6 +95,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+app.MapPrometheusScrapingEndpoint();
 app.MapControllers();
 
 app.Run();

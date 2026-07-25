@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
-using StackExchange.Redis;
 
 
 namespace Events.Presentation
@@ -67,6 +70,20 @@ namespace Events.Presentation
 
 
             services.AddSingleton<DtoMapper>();
+
+            services.AddOpenTelemetry()
+                .WithTracing(tracing => tracing
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
+                    .AddOtlpExporter(o => o.Endpoint = new Uri(configuration["Otlp:Endpoint"] ?? throw new InvalidDataException(Messages_ru.OtlpEndpointNotFound)))
+                )
+                .WithMetrics(metrics => metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddPrometheusExporter()
+                )
+                .ConfigureResource(r => r.AddService(serviceName: "events-service"));
 
             services.AddSwaggerGen(options =>
             {

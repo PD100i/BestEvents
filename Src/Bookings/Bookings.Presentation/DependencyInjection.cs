@@ -3,6 +3,9 @@ using Bookings.Application;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.Reflection;
 using System.Text;
 
@@ -82,6 +85,21 @@ namespace Bookings.Presentation
                     [new OpenApiSecuritySchemeReference(BearerSheme, document)] = []
                 });
             });
+
+            services.AddOpenTelemetry()
+                .WithTracing(tracing => tracing
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
+                    .AddOtlpExporter(o => o.Endpoint = new Uri(configuration["Otlp:Endpoint"] ?? throw new InvalidDataException(Messages_ru.OtlpEndpointNotFound)))
+                ) 
+                .WithMetrics(metrics => metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddPrometheusExporter()
+                )
+                .ConfigureResource(r => r.AddService(serviceName: "bookings-service"));
+
 
             return services;
         }

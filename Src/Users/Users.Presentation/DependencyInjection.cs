@@ -70,7 +70,7 @@ namespace Users.Presentation
                     .AddRuntimeInstrumentation()
                     .AddPrometheusExporter()
                 )
-                .ConfigureResource(r => r.AddService(serviceName: "events-service"));
+                .ConfigureResource(r => r.AddService(serviceName: "users-service"));
 
             services.AddSwaggerGen(options =>
             {

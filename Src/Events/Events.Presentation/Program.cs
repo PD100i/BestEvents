@@ -9,6 +9,10 @@ using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseSerilog((ctx, cfg) =>
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+       .WriteTo.Console(new CompactJsonFormatter()));
+
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddPresentation(builder.Configuration);
@@ -18,9 +22,6 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-builder.Host.UseSerilog((ctx, cfg) =>
-    cfg.ReadFrom.Configuration(ctx.Configuration)
-       .WriteTo.Console(new CompactJsonFormatter()));
 
 app.Use(async (context, next) =>
 {
